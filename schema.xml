@@ -81,7 +81,7 @@
         <column name="password" phpName="Password" type="CHAR" size="128" required="true" />
         <column name="role_id" phpName="RoleId" type="BIGINT" size="20" required="true" />
         <column name="status" phpName="Status" type="VARCHAR" sqlType="ENUM('Pending','Active','Not Active', 'Deleted')" required="true" />
-        <foreign-key foreignTable="role" phpName="UserRoleId" refPhpName="UserRoleId" onDelete="NO ACTION" onUpdate="RESTRICT">
+        <foreign-key foreignTable="role" phpName="Role" refPhpName="User" onDelete="NO ACTION" onUpdate="RESTRICT">
             <reference local="role_id" foreign="id" />
         </foreign-key>
     </table>

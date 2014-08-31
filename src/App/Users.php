@@ -18,11 +18,11 @@ class Users
     {
         // check role's permission
         $permission = RolePermissionQuery::create()->select('create_user')->findOneById($currentUser->role_id, $con);
-        if (!$permission || $permission != 1) throw new Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         // check if picked username is already used by anyone
         $user = UserQuery::create()->filterByUser($params->user)->count($con);
-        if ($user != 0) throw new Exception('User ID sudah terpakai. Pilih User ID lainnya.');
+        if ($user != 0) throw new \Exception('User ID sudah terpakai. Pilih User ID lainnya.');
 
         $role = RoleQuery::create()->findOneById($currentUser->role_id);
 
@@ -61,15 +61,15 @@ class Users
     {
         // check role's permission
         $permission = RolePermissionQuery::create()->select('destroy_user')->findOneById($currentUser->role_id, $con);
-        if (!$permission || $permission != 1) throw new Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        if (in_array(1, $params->id)) throw new Exception('Default Admin tidak boleh dihapus!');
+        if (in_array(1, $params->id)) throw new \Exception('Default Admin tidak boleh dihapus!');
 
         $users = UserQuery::create()
             ->filterById($params->id)
             ->find($con);
 
-        if (!$users) throw new Exception('Data tidak ditemukan');
+        if (!$users) throw new \Exception('Data tidak ditemukan');
 
         foreach($users as $user)
         {
@@ -94,7 +94,7 @@ class Users
     {
         // check role's permission
         $permission = RolePermissionQuery::create()->select('update_user')->findOneById($currentUser->role_id, $con);
-        if (!$permission || $permission != 1) throw new Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         $user = UserQuery::create()
             ->filterByStatus('Active')
@@ -108,9 +108,11 @@ class Users
             ->withColumn('Detail.Name', 'name')
             ->withColumn('Detail.Address', 'address')
             ->withColumn('Detail.Phone', 'phone')
+            ->leftJoin('Role')
+            ->withColumn('Role.Name', 'role')
             ->findOneById($params->id);
 
-        if (!$user) throw new Exception('Data tidak ditemukan');
+        if (!$user) throw new \Exception('Data tidak ditemukan');
 
         $results['success'] = true;
         $results['root'] = $user;
@@ -138,7 +140,9 @@ class Users
             ->leftJoin('Detail')
             ->withColumn('Detail.Name', 'name')
             ->withColumn('Detail.Address', 'address')
-            ->withColumn('Detail.Phone', 'phone');
+            ->withColumn('Detail.Phone', 'phone')
+            ->leftJoin('Role')
+            ->withColumn('Role.Name', 'role');
 
         foreach($params->sort as $sorter){
             $user->orderBy($sorter->property, $sorter->direction);
@@ -164,10 +168,10 @@ class Users
     {
         // check role's permission
         $permission = RolePermissionQuery::create()->select('reset_pass_user')->findOneById($currentUser->role_id, $con);
-        if (!$permission || $permission != 1) throw new Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         $user = UserQuery::create()->findOneById($params->id, $con);
-        if (!$user) throw new Exception('Data tidak ditemukan');
+        if (!$user) throw new \Exception('Data tidak ditemukan');
 
         $user->setPassword(hash('sha512', $user->getUser()))
             ->save($con);
@@ -182,21 +186,21 @@ class Users
     {
         // check role's permission
         $permission = RolePermissionQuery::create()->select('update_user')->findOneById($currentUser->role_id, $con);
-        if (!$permission || $permission != 1) throw new Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        if ($params->id == 1 && $params->user != 'admin') throw new Exception('User ID Default Admin tidak boleh diubah.');
-        if ($params->id == 1 && $params->role_id != 1) throw new Exception('Role Default Admin tidak boleh diubah.');
+        if ($params->id == 1 && $params->user != 'admin') throw new \Exception('User ID Default Admin tidak boleh diubah.');
+        if ($params->id == 1 && $params->role_id != 1) throw new \Exception('Role Default Admin tidak boleh diubah.');
 
         // check whether picked username is already taken
         $user = UserQuery::create()
             ->filterByUser($params->user)
             ->where("id not like ?", $params->id)
             ->count($con);
-        if ($user != 0) throw new Exception('User ID sudah terpakai. Pilih User ID lainnya.');
+        if ($user != 0) throw new \Exception('User ID sudah terpakai. Pilih User ID lainnya.');
 
         $user = UserQuery::create()->findOneById($params->id, $con);
         $detail = UserDetailQuery::create()->findOneById($params->id, $con);
-        if(!$user || !$detailUser) throw new Exception('Data tidak ditemukan');
+        if(!$user || !$detailUser) throw new \Exception('Data tidak ditemukan');
 
         $user->setUser($params->user)
             ->setRoleId($params->role_id)

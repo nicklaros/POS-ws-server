@@ -159,7 +159,7 @@ class UserTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('UserRoleId', '\\ORM\\Role', RelationMap::MANY_TO_ONE, array('role_id' => 'id', ), 'NO ACTION', 'RESTRICT');
+        $this->addRelation('Role', '\\ORM\\Role', RelationMap::MANY_TO_ONE, array('role_id' => 'id', ), 'NO ACTION', 'RESTRICT');
         $this->addRelation('Detail', '\\ORM\\UserDetail', RelationMap::ONE_TO_ONE, array('id' => 'id', ), 'CASCADE', 'RESTRICT');
     } // buildRelations()
     /**
