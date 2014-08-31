@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+
+<config>
+    <propel>
+		<datasources>
+			<datasource id="pos">
+				<adapter>mysql</adapter>
+				<classname>Propel\Runtime\Connection\ConnectionWrapper</classname>
+				<connection>
+					<dsn>mysql:host=localhost;dbname=pos</dsn>
+					<user>root</user>
+					<password></password>
+				</connection>
+			</datasource>
+		</datasources>
+        <runtime>
+            <defaultConnection>pos</defaultConnection>
+            <connection>pos</connection>
+        </runtime>
+        <generator>
+            <defaultConnection>pos</defaultConnection>
+            <connection>pos</connection>
+            <namespaceAutoPackage>true</namespaceAutoPackage>
+        </generator>
+    </propel>
+</config>
+

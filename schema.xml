@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<database name="pos" defaultIdMethod="native" namespace="ORM">
+
+    <table name="category" phpName="Category">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="name" phpName="Name" type="CHAR" size="128" />
+    </table>
+
+    <table name="menu" phpName="Menu">
+        <column name="id" phpName="Id" type="BIGINT" size="20" primaryKey="true" required="true"/>
+        <column name="sub" phpName="Sub" type="CHAR" size="32" />
+        <column name="order" phpName="Order" type="TINYINT" size="3" />
+        <column name="icon" phpName="Icon" type="CHAR" size="32" />
+        <column name="text" phpName="Text" type="CHAR" size="128" />
+        <column name="action" phpName="Action" type="CHAR" size="32" />
+        <column name="state" phpName="State" type="BOOLEAN" />
+        <column name="status" phpName="Status" type="VARCHAR" sqlType="ENUM('Pending','Active','Not Active', 'Deleted')" />
+    </table>
+
+    <table name="option" phpName="Option">
+        <column name="id" phpName="Id" type="BIGINT" size="20" primaryKey="true" required="true"/>
+        <column name="user_id" phpName="UserId" type="BIGINT" size="20" required="true" />
+        <column name="name" phpName="Name" type="CHAR" size="128" required="true" />
+        <column name="value" phpName="Value" type="CHAR" size="128" />
+    </table>
+
+    <table name="product" phpName="Product">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="code" phpName="Code" type="CHAR" size="20" />
+        <column name="name" phpName="Name" type="CHAR" size="128" />
+    </table>
+
+    <table name="role" phpName="Role">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="name" phpName="Name" type="CHAR" size="128" />
+    </table>
+
+    <table name="role_permission" phpName="RolePermission">
+        <column name="id" phpName="Id" type="BIGINT" size="20" primaryKey="true" required="true" />
+        <column name="create_user" phpName="CreateUser" type="BOOLEAN" />
+        <column name="read_user" phpName="ReadUser" type="BOOLEAN" />
+        <column name="update_user" phpName="UpdateUser" type="BOOLEAN" />
+        <column name="destroy_user" phpName="DestroyUser" type="BOOLEAN" />
+        <column name="reset_pass_user" phpName="ResetPassUser" type="BOOLEAN" />
+        <foreign-key foreignTable="role" phpName="Role" refPhpName="Permission" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference local="id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="row_history" phpName="RowHistory">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true" required="true" />
+        <column name="data" phpName="Data" type="CHAR" size="32" />
+        <column name="row_id" phpName="RowId" type="BIGINT" size="20" />
+        <column name="time" phpName="Time" type="timestamp" />
+        <column name="operation" phpName="Operation" type="VARCHAR" sqlType="ENUM('create', 'read', 'update', 'destroy')" />
+        <column name="user_id" phpName="UserID" type="BIGINT" size="20" />
+        <foreign-key foreignTable="user_detail" phpName="UserDetail" refPhpName="History" onDelete="NO ACTION" onUpdate="RESTRICT">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="stock" phpName="Stock">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="product_id" phpName="ProductId" type="BIGINT" size="20" />
+        <column name="amount" phpName="Amount" type="BIGINT" size="20" />
+        <column name="unit" phpName="Unit" type="CHAR" size="32" />
+        <column name="buy" phpName="Buy" type="BIGINT" size="20" />
+        <column name="sell_public" phpName="SellPublic" type="BIGINT" size="20" />
+        <column name="sell_distributor" phpName="SellDistributor" type="BIGINT" size="20" />
+        <column name="sell_misc" phpName="SellMisc" type="BIGINT" size="20" />
+        <column name="discount" phpName="Discount" type="TINYINT" size="3" />
+        <foreign-key foreignTable="product" phpName="Product" refPhpName="Stock" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference local="product_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="user" phpName="User">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="user" phpName="User" type="CHAR" size="128" required="true" />
+        <column name="password" phpName="Password" type="CHAR" size="128" required="true" />
+        <column name="role_id" phpName="RoleId" type="BIGINT" size="20" required="true" />
+        <column name="status" phpName="Status" type="VARCHAR" sqlType="ENUM('Pending','Active','Not Active', 'Deleted')" required="true" />
+        <foreign-key foreignTable="role" phpName="UserRoleId" refPhpName="UserRoleId" onDelete="NO ACTION" onUpdate="RESTRICT">
+            <reference local="role_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="user_detail" phpName="UserDetail">
+        <column name="id" phpName="Id" type="BIGINT" size="20" primaryKey="true" required="true" />
+        <column name="name" phpName="Name" type="CHAR" size="128" required="true" />
+        <column name="address" phpName="Address" type="CHAR" size="128" />
+        <column name="phone" phpName="Phone" type="CHAR" size="20" />
+        <foreign-key foreignTable="user" phpName="User" refPhpName="Detail" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference local="id" foreign="id"/>
+        </foreign-key>
+    </table>
+	
+</database>

@@ -1,0 +1,14 @@
+{
+    "autoload": {
+        "psr-0": {
+            "App": "src",
+            "ORM": "src",
+			"Util": "src"
+        }
+    },
+    "require": {
+        "cboden/ratchet": "0.3.*",
+        "react/zmq": "0.2.*|0.3.*",
+		"propel/propel": "2.0.0-alpha3"
+    }
+}

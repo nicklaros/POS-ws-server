@@ -34,3 +34,13 @@ Icon
 # Files that might appear on external disk
 .Spotlight-V100
 .Trashes
+
+# Folder
+.idea/
+generated-classes/
+generated-conf/
+generated-sql/
+vendor/
+
+propel.xml
+propel-config.php
