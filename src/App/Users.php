@@ -6,6 +6,8 @@ use ORM\Role;
 use ORM\RoleQuery;
 use ORM\RolePermission;
 use ORM\RolePermissionQuery;
+use ORM\RowHistory;
+use ORM\RowHistoryQuery;
 use ORM\User;
 use ORM\UserQuery;
 use ORM\UserDetail;
@@ -44,9 +46,9 @@ class Users
 
         // insert into row_history table
         $rowHistory = new RowHistory();
-        $rowHistory->setRow($user->getId())
+        $rowHistory->setRowId($user->getId())
             ->setData('user')
-            ->setTime($time)
+            ->setTime(time())
             ->setOperation('create')
             ->setUserId($currentUser->id)
             ->save($con);
@@ -76,11 +78,11 @@ class Users
             $user->setUser('')->setStatus('Deleted')->save($con);
 
             $rowHistory = new RowHistory();
-            $rowHistory->setRow($row->getId())
+            $rowHistory->setRowId($user->getId())
                 ->setData('user')
-                ->setTime($time)
+                ->setTime(time())
                 ->setOperation("destroy")
-                ->setUser($currentUser->id)
+                ->setUserId($currentUser->id)
                 ->save($con);
         }
 
@@ -194,13 +196,13 @@ class Users
         // check whether picked username is already taken
         $user = UserQuery::create()
             ->filterByUser($params->user)
-            ->where("id not like ?", $params->id)
+            ->where("User.Id not like ?", $params->id)
             ->count($con);
         if ($user != 0) throw new \Exception('User ID sudah terpakai. Pilih User ID lainnya.');
 
         $user = UserQuery::create()->findOneById($params->id, $con);
         $detail = UserDetailQuery::create()->findOneById($params->id, $con);
-        if(!$user || !$detailUser) throw new \Exception('Data tidak ditemukan');
+        if(!$user || !$detail) throw new \Exception('Data tidak ditemukan');
 
         $user->setUser($params->user)
             ->setRoleId($params->role_id)
@@ -212,11 +214,11 @@ class Users
             ->save($con);
 
         $rowHistory = new RowHistory();
-        $rowHistory->setRow($params->id)
+        $rowHistory->setRowId($params->id)
             ->setData('user')
-            ->setTime($time)
+            ->setTime(time())
             ->setOperation('update')
-            ->setUser($currentUser->id)
+            ->setUserId($currentUser->id)
             ->save($con);
 
         $results['success'] = true;
