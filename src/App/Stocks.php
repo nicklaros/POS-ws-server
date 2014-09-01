@@ -2,23 +2,46 @@
 
 namespace App;
 
-use ORM\Product;
-use ORM\ProductQuery;
-use ORM\Role;
-use ORM\RoleQuery;
-use ORM\RolePermission;
 use ORM\RolePermissionQuery;
+use ORM\RowHistory;
 use ORM\Stock;
 use ORM\StockQuery;
-use ORM\User;
-use ORM\UserQuery;
 
 class Stocks
 {
 
     public static function create($params, $currentUser, $con)
     {
-    
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('create_stock')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        // create new stock
+        $stock = new Stock();
+        $stock
+            ->setProductId($params->product_id)
+            ->setAmount($params->amount)
+            ->setUnit($params->unit)
+            ->setBuy($params->buy)
+            ->setSellPublic($params->sell_public)
+            ->setSellDistributor($params->sell_distributor)
+            ->setSellMisc($params->sell_misc)
+            ->setDiscount($params->discount)
+            ->save($con);
+
+        // log history
+        $rowHistory = new RowHistory();
+        $rowHistory->setRowId($stock->getId())
+            ->setData('stock')
+            ->setTime(time())
+            ->setOperation('create')
+            ->setUserId($currentUser->id)
+            ->save($con);
+
+        $results['success'] = true;
+        $results['id'] = $stock->getId();
+
+        return $results;
     }
 
     public static function destroy($params, $currentUser, $con)

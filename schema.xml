@@ -38,6 +38,10 @@
 
     <table name="role_permission" phpName="RolePermission">
         <column name="id" phpName="Id" type="BIGINT" size="20" primaryKey="true" required="true" />
+        <column name="create_stock" phpName="CreateStock" type="BOOLEAN" />
+        <column name="read_stock" phpName="ReadStock" type="BOOLEAN" />
+        <column name="update_stock" phpName="UpdateStock" type="BOOLEAN" />
+        <column name="destroy_stock" phpName="DestroyStock" type="BOOLEAN" />
         <column name="create_user" phpName="CreateUser" type="BOOLEAN" />
         <column name="read_user" phpName="ReadUser" type="BOOLEAN" />
         <column name="update_user" phpName="UpdateUser" type="BOOLEAN" />

@@ -59,7 +59,7 @@ class RolePermissionTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 10;
 
     /**
      * The number of lazy-loaded columns
@@ -69,12 +69,32 @@ class RolePermissionTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 10;
 
     /**
      * the column name for the ID field
      */
     const COL_ID = 'role_permission.ID';
+
+    /**
+     * the column name for the CREATE_STOCK field
+     */
+    const COL_CREATE_STOCK = 'role_permission.CREATE_STOCK';
+
+    /**
+     * the column name for the READ_STOCK field
+     */
+    const COL_READ_STOCK = 'role_permission.READ_STOCK';
+
+    /**
+     * the column name for the UPDATE_STOCK field
+     */
+    const COL_UPDATE_STOCK = 'role_permission.UPDATE_STOCK';
+
+    /**
+     * the column name for the DESTROY_STOCK field
+     */
+    const COL_DESTROY_STOCK = 'role_permission.DESTROY_STOCK';
 
     /**
      * the column name for the CREATE_USER field
@@ -113,12 +133,12 @@ class RolePermissionTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'CreateUser', 'ReadUser', 'UpdateUser', 'DestroyUser', 'ResetPassUser', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'createUser', 'readUser', 'updateUser', 'destroyUser', 'resetPassUser', ),
-        self::TYPE_COLNAME       => array(RolePermissionTableMap::COL_ID, RolePermissionTableMap::COL_CREATE_USER, RolePermissionTableMap::COL_READ_USER, RolePermissionTableMap::COL_UPDATE_USER, RolePermissionTableMap::COL_DESTROY_USER, RolePermissionTableMap::COL_RESET_PASS_USER, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_CREATE_USER', 'COL_READ_USER', 'COL_UPDATE_USER', 'COL_DESTROY_USER', 'COL_RESET_PASS_USER', ),
-        self::TYPE_FIELDNAME     => array('id', 'create_user', 'read_user', 'update_user', 'destroy_user', 'reset_pass_user', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'CreateStock', 'ReadStock', 'UpdateStock', 'DestroyStock', 'CreateUser', 'ReadUser', 'UpdateUser', 'DestroyUser', 'ResetPassUser', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'createStock', 'readStock', 'updateStock', 'destroyStock', 'createUser', 'readUser', 'updateUser', 'destroyUser', 'resetPassUser', ),
+        self::TYPE_COLNAME       => array(RolePermissionTableMap::COL_ID, RolePermissionTableMap::COL_CREATE_STOCK, RolePermissionTableMap::COL_READ_STOCK, RolePermissionTableMap::COL_UPDATE_STOCK, RolePermissionTableMap::COL_DESTROY_STOCK, RolePermissionTableMap::COL_CREATE_USER, RolePermissionTableMap::COL_READ_USER, RolePermissionTableMap::COL_UPDATE_USER, RolePermissionTableMap::COL_DESTROY_USER, RolePermissionTableMap::COL_RESET_PASS_USER, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_CREATE_STOCK', 'COL_READ_STOCK', 'COL_UPDATE_STOCK', 'COL_DESTROY_STOCK', 'COL_CREATE_USER', 'COL_READ_USER', 'COL_UPDATE_USER', 'COL_DESTROY_USER', 'COL_RESET_PASS_USER', ),
+        self::TYPE_FIELDNAME     => array('id', 'create_stock', 'read_stock', 'update_stock', 'destroy_stock', 'create_user', 'read_user', 'update_user', 'destroy_user', 'reset_pass_user', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -128,12 +148,12 @@ class RolePermissionTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'CreateUser' => 1, 'ReadUser' => 2, 'UpdateUser' => 3, 'DestroyUser' => 4, 'ResetPassUser' => 5, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'createUser' => 1, 'readUser' => 2, 'updateUser' => 3, 'destroyUser' => 4, 'resetPassUser' => 5, ),
-        self::TYPE_COLNAME       => array(RolePermissionTableMap::COL_ID => 0, RolePermissionTableMap::COL_CREATE_USER => 1, RolePermissionTableMap::COL_READ_USER => 2, RolePermissionTableMap::COL_UPDATE_USER => 3, RolePermissionTableMap::COL_DESTROY_USER => 4, RolePermissionTableMap::COL_RESET_PASS_USER => 5, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_CREATE_USER' => 1, 'COL_READ_USER' => 2, 'COL_UPDATE_USER' => 3, 'COL_DESTROY_USER' => 4, 'COL_RESET_PASS_USER' => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'create_user' => 1, 'read_user' => 2, 'update_user' => 3, 'destroy_user' => 4, 'reset_pass_user' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'CreateStock' => 1, 'ReadStock' => 2, 'UpdateStock' => 3, 'DestroyStock' => 4, 'CreateUser' => 5, 'ReadUser' => 6, 'UpdateUser' => 7, 'DestroyUser' => 8, 'ResetPassUser' => 9, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'createStock' => 1, 'readStock' => 2, 'updateStock' => 3, 'destroyStock' => 4, 'createUser' => 5, 'readUser' => 6, 'updateUser' => 7, 'destroyUser' => 8, 'resetPassUser' => 9, ),
+        self::TYPE_COLNAME       => array(RolePermissionTableMap::COL_ID => 0, RolePermissionTableMap::COL_CREATE_STOCK => 1, RolePermissionTableMap::COL_READ_STOCK => 2, RolePermissionTableMap::COL_UPDATE_STOCK => 3, RolePermissionTableMap::COL_DESTROY_STOCK => 4, RolePermissionTableMap::COL_CREATE_USER => 5, RolePermissionTableMap::COL_READ_USER => 6, RolePermissionTableMap::COL_UPDATE_USER => 7, RolePermissionTableMap::COL_DESTROY_USER => 8, RolePermissionTableMap::COL_RESET_PASS_USER => 9, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_CREATE_STOCK' => 1, 'COL_READ_STOCK' => 2, 'COL_UPDATE_STOCK' => 3, 'COL_DESTROY_STOCK' => 4, 'COL_CREATE_USER' => 5, 'COL_READ_USER' => 6, 'COL_UPDATE_USER' => 7, 'COL_DESTROY_USER' => 8, 'COL_RESET_PASS_USER' => 9, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'create_stock' => 1, 'read_stock' => 2, 'update_stock' => 3, 'destroy_stock' => 4, 'create_user' => 5, 'read_user' => 6, 'update_user' => 7, 'destroy_user' => 8, 'reset_pass_user' => 9, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -153,6 +173,10 @@ class RolePermissionTableMap extends TableMap
         $this->setUseIdGenerator(false);
         // columns
         $this->addForeignPrimaryKey('ID', 'Id', 'BIGINT' , 'role', 'ID', true, 20, null);
+        $this->addColumn('CREATE_STOCK', 'CreateStock', 'BOOLEAN', false, 1, null);
+        $this->addColumn('READ_STOCK', 'ReadStock', 'BOOLEAN', false, 1, null);
+        $this->addColumn('UPDATE_STOCK', 'UpdateStock', 'BOOLEAN', false, 1, null);
+        $this->addColumn('DESTROY_STOCK', 'DestroyStock', 'BOOLEAN', false, 1, null);
         $this->addColumn('CREATE_USER', 'CreateUser', 'BOOLEAN', false, 1, null);
         $this->addColumn('READ_USER', 'ReadUser', 'BOOLEAN', false, 1, null);
         $this->addColumn('UPDATE_USER', 'UpdateUser', 'BOOLEAN', false, 1, null);
@@ -310,6 +334,10 @@ class RolePermissionTableMap extends TableMap
     {
         if (null === $alias) {
             $criteria->addSelectColumn(RolePermissionTableMap::COL_ID);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_CREATE_STOCK);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_STOCK);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_STOCK);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_DESTROY_STOCK);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_CREATE_USER);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_USER);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_USER);
@@ -317,6 +345,10 @@ class RolePermissionTableMap extends TableMap
             $criteria->addSelectColumn(RolePermissionTableMap::COL_RESET_PASS_USER);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
+            $criteria->addSelectColumn($alias . '.CREATE_STOCK');
+            $criteria->addSelectColumn($alias . '.READ_STOCK');
+            $criteria->addSelectColumn($alias . '.UPDATE_STOCK');
+            $criteria->addSelectColumn($alias . '.DESTROY_STOCK');
             $criteria->addSelectColumn($alias . '.CREATE_USER');
             $criteria->addSelectColumn($alias . '.READ_USER');
             $criteria->addSelectColumn($alias . '.UPDATE_USER');

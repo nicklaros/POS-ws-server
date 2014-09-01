@@ -2,12 +2,8 @@
 
 namespace App;
 
-use ORM\Role;
-use ORM\RoleQuery;
-use ORM\RolePermission;
 use ORM\RolePermissionQuery;
 use ORM\RowHistory;
-use ORM\RowHistoryQuery;
 use ORM\User;
 use ORM\UserQuery;
 use ORM\UserDetail;
@@ -124,6 +120,10 @@ class Users
 
     public static function read($params, $currentUser, $con)
     {
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('read_user')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
         $page = (isset($params->page) ? $params->page : 0);
         $limit = (isset($params->limit) ? $params->limit : 100);
 
