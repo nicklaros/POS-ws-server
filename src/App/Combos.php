@@ -11,6 +11,7 @@ class Combos
     public static function product($params, $currentUser, $con)
     {
         $products = ProductQuery::create()
+            ->filterByStatus('Active')
             ->orderBy('name', 'ASC');
 
         if(isset($params->query)){
