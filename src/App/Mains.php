@@ -97,6 +97,7 @@ class Mains implements MessageComponentInterface {
         // list of all module that can be requested
         $registeredModule = array(
             'combo',
+            'product',
             'stock',
             'user'
         );
@@ -146,6 +147,30 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
     
+    private function product($from, $method, $params, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create',
+            'destroy',
+            'loadFormEdit',
+            'read',
+            'update'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Products::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+
     private function stock($from, $method, $params, $con){
         $results = [];
         

@@ -22,14 +22,12 @@ class Users
         $user = UserQuery::create()->filterByUser($params->user)->count($con);
         if ($user != 0) throw new \Exception('User ID sudah terpakai. Pilih User ID lainnya.');
 
-        $role = RoleQuery::create()->findOneById($currentUser->role_id);
-
         // create new user
         $user = new User();
         $user->setUser($params->user)
             ->setPassword(hash('sha512', $params->user))
             ->setRoleId($params->role_id)
-            ->setStatus($role->getName() == 'Super User' ? 'Active' : 'Pending')
+            ->setStatus('Active')
             ->save($con);
 
         // create user detail

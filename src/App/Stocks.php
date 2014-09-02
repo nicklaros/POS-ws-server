@@ -4,6 +4,7 @@ namespace App;
 
 use ORM\RolePermissionQuery;
 use ORM\RowHistory;
+use ORM\ProductQuery;
 use ORM\Stock;
 use ORM\StockQuery;
 
@@ -16,6 +17,10 @@ class Stocks
         $permission = RolePermissionQuery::create()->select('create_stock')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
+        // check whether chosen product is still Active
+        $product = ProductQuery::create()->select('status')->findOneById($params->product_id, $con);
+        if (!$product || $product != 'Active') throw new \Exception('Produk tidak ditemukan. Mungkin Produk itu sudah dihapus.');
+        
         // create new stock
         $stock = new Stock();
         $stock
@@ -27,6 +32,7 @@ class Stocks
             ->setSellDistributor($params->sell_distributor)
             ->setSellMisc($params->sell_misc)
             ->setDiscount($params->discount)
+            ->setStatus('Active')
             ->save($con);
 
         // log history
@@ -110,11 +116,17 @@ class Stocks
 
     public static function read($params, $currentUser, $con)
     {
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('read_stock')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
         $page = (isset($params->page) ? $params->page : 0);
         $limit = (isset($params->limit) ? $params->limit : 100);
 
         $stock = StockQuery::create()
             ->filterByStatus('Active');
+            
+        $stock->useProductQuery()->filterByStatus('Active')->endUse();
 
         if(isset($params->code)) $stock->useProductQuery()->filterByCode("%$params->code%")->endUse();
         if(isset($params->product)) $stock->useProductQuery()->filterByName("%$params->product%")->endUse();
@@ -163,6 +175,10 @@ class Stocks
         $permission = RolePermissionQuery::create()->select('update_stock')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
+        // check whether chosen product is still Active
+        $product = ProductQuery::create()->select('status')->findOneById($params->product_id, $con);
+        if (!$product || $product != 'Active') throw new \Exception('Produk tidak ditemukan. Mungkin Produk itu sudah dihapus.');
+        
         $stock = StockQuery::create()->findOneById($params->id, $con);
         if(!$stock) throw new \Exception('Data tidak ditemukan');
 
