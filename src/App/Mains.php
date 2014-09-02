@@ -2,28 +2,12 @@
 
 namespace App;
 
+use App\Combos;
 use App\Stocks;
 use App\Users;
-use ORM\Category;
-use ORM\CategoryQuery;
-use ORM\Menu;
-use ORM\MenuQuery;
-use ORM\Option;
-use ORM\OptionQuery;
-use ORM\Product;
-use ORM\ProductQuery;
-use ORM\Role;
+
 use ORM\RoleQuery;
-use ORM\RolePermission;
-use ORM\RolePermissionQuery;
-use ORM\RowHistory;
-use ORM\RowHistoryQuery;
-use ORM\Stock;
-use ORM\StockQuery;
-use ORM\User;
-use ORM\UserQuery;
-use ORM\UserDetail;
-use ORM\UserDetailQuery;
+
 use Propel\Runtime\Propel;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
@@ -113,8 +97,6 @@ class Mains implements MessageComponentInterface {
         // list of all module that can be requested
         $registeredModule = array(
             'combo',
-            'pembelian',
-            'penjualan',
             'stock',
             'user'
         );
@@ -145,93 +127,28 @@ class Mains implements MessageComponentInterface {
 
     private function combo($from, $method, $params, $con){
         $results = [];
-        $time = time();
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'product',
+            'unit'
+        );
 
-        $state = $from->Session->get('pos/state');
-        $currentUser = (object) $from->Session->get('pos/currentUser');
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
 
-        // check state
-        if ($state != 1) throw new Exception('Akses ditolak. Anda belum login.');
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
 
-        switch ($method){
-            case 'barang':
-                $arrSelect = [
-                    'id',
-                    'kode',
-                    'nama'
-                ];
-
-                $barang = BarangQuery::create()
-                    ->orderBy('nama', 'ASC');
-
-                if(isset($params->query)){
-                    $barang->condition('cond1', 'Barang.Nama like ?', "%$params->query%");
-                    $barang->condition('cond2', 'Barang.Kode like ?', "%$params->query%");
-                    $barang->where(array('cond1', 'cond2'), 'or');
-                }
-                $barang = $barang->select($arrSelect)
-                    ->limit(20)
-                    ->find($con);
-
-                $arr = [];
-                foreach($barang as $row) {
-                    $arr[] = $row;
-                }
-                $results['success'] = true;
-                $results['data'] = $arr;
-
-                break;
-
-            default:
-                $results['success'] = false;
-                $results['errmsg'] = 'Wrong turn buddy';
-                break;
-        }
+        // route to requested module and method
+        $results = Combos::$method($params, $currentUser, $con);
 
         return $results;
     }
-
-    private function pembelian($from, $method, $params, $con){
-        $results = [];
-
-        switch ($method){
-            case 'create':
-                break;
-            case 'update':
-                break;
-            case 'destroy':
-                break;
-            default:
-                $results['success'] = false;
-                $results['errmsg'] = 'Wrong turn buddy';
-                break;
-        }
-
-        return $results;
-    }
-
-    private function penjualan($from, $method, $params, $con){
-        $results = [];
-
-        switch ($method){
-            case 'create':
-                break;
-            case 'update':
-                break;
-            case 'destroy':
-                break;
-            default:
-                $results['success'] = false;
-                $results['errmsg'] = 'Wrong turn buddy';
-                break;
-        }
-
-        return $results;
-    }
-
+    
     private function stock($from, $method, $params, $con){
         $results = [];
-                
+        
         // list of all method that can be called in current module
         $registeredMethod = array(
             'create',

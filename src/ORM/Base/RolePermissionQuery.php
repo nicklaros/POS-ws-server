@@ -21,6 +21,10 @@ use Propel\Runtime\Exception\PropelException;
  *
  *
  * @method     ChildRolePermissionQuery orderById($order = Criteria::ASC) Order by the id column
+ * @method     ChildRolePermissionQuery orderByCreateStock($order = Criteria::ASC) Order by the create_stock column
+ * @method     ChildRolePermissionQuery orderByReadStock($order = Criteria::ASC) Order by the read_stock column
+ * @method     ChildRolePermissionQuery orderByUpdateStock($order = Criteria::ASC) Order by the update_stock column
+ * @method     ChildRolePermissionQuery orderByDestroyStock($order = Criteria::ASC) Order by the destroy_stock column
  * @method     ChildRolePermissionQuery orderByCreateUser($order = Criteria::ASC) Order by the create_user column
  * @method     ChildRolePermissionQuery orderByReadUser($order = Criteria::ASC) Order by the read_user column
  * @method     ChildRolePermissionQuery orderByUpdateUser($order = Criteria::ASC) Order by the update_user column
@@ -28,6 +32,10 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildRolePermissionQuery orderByResetPassUser($order = Criteria::ASC) Order by the reset_pass_user column
  *
  * @method     ChildRolePermissionQuery groupById() Group by the id column
+ * @method     ChildRolePermissionQuery groupByCreateStock() Group by the create_stock column
+ * @method     ChildRolePermissionQuery groupByReadStock() Group by the read_stock column
+ * @method     ChildRolePermissionQuery groupByUpdateStock() Group by the update_stock column
+ * @method     ChildRolePermissionQuery groupByDestroyStock() Group by the destroy_stock column
  * @method     ChildRolePermissionQuery groupByCreateUser() Group by the create_user column
  * @method     ChildRolePermissionQuery groupByReadUser() Group by the read_user column
  * @method     ChildRolePermissionQuery groupByUpdateUser() Group by the update_user column
@@ -48,6 +56,10 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildRolePermission findOneOrCreate(ConnectionInterface $con = null) Return the first ChildRolePermission matching the query, or a new ChildRolePermission object populated from the query conditions when no match is found
  *
  * @method     ChildRolePermission findOneById(string $id) Return the first ChildRolePermission filtered by the id column
+ * @method     ChildRolePermission findOneByCreateStock(boolean $create_stock) Return the first ChildRolePermission filtered by the create_stock column
+ * @method     ChildRolePermission findOneByReadStock(boolean $read_stock) Return the first ChildRolePermission filtered by the read_stock column
+ * @method     ChildRolePermission findOneByUpdateStock(boolean $update_stock) Return the first ChildRolePermission filtered by the update_stock column
+ * @method     ChildRolePermission findOneByDestroyStock(boolean $destroy_stock) Return the first ChildRolePermission filtered by the destroy_stock column
  * @method     ChildRolePermission findOneByCreateUser(boolean $create_user) Return the first ChildRolePermission filtered by the create_user column
  * @method     ChildRolePermission findOneByReadUser(boolean $read_user) Return the first ChildRolePermission filtered by the read_user column
  * @method     ChildRolePermission findOneByUpdateUser(boolean $update_user) Return the first ChildRolePermission filtered by the update_user column
@@ -56,6 +68,10 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildRolePermission[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildRolePermission objects based on current ModelCriteria
  * @method     ChildRolePermission[]|ObjectCollection findById(string $id) Return ChildRolePermission objects filtered by the id column
+ * @method     ChildRolePermission[]|ObjectCollection findByCreateStock(boolean $create_stock) Return ChildRolePermission objects filtered by the create_stock column
+ * @method     ChildRolePermission[]|ObjectCollection findByReadStock(boolean $read_stock) Return ChildRolePermission objects filtered by the read_stock column
+ * @method     ChildRolePermission[]|ObjectCollection findByUpdateStock(boolean $update_stock) Return ChildRolePermission objects filtered by the update_stock column
+ * @method     ChildRolePermission[]|ObjectCollection findByDestroyStock(boolean $destroy_stock) Return ChildRolePermission objects filtered by the destroy_stock column
  * @method     ChildRolePermission[]|ObjectCollection findByCreateUser(boolean $create_user) Return ChildRolePermission objects filtered by the create_user column
  * @method     ChildRolePermission[]|ObjectCollection findByReadUser(boolean $read_user) Return ChildRolePermission objects filtered by the read_user column
  * @method     ChildRolePermission[]|ObjectCollection findByUpdateUser(boolean $update_user) Return ChildRolePermission objects filtered by the update_user column
@@ -150,7 +166,7 @@ abstract class RolePermissionQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT ID, CREATE_USER, READ_USER, UPDATE_USER, DESTROY_USER, RESET_PASS_USER FROM role_permission WHERE ID = :p0';
+        $sql = 'SELECT ID, CREATE_STOCK, READ_STOCK, UPDATE_STOCK, DESTROY_STOCK, CREATE_USER, READ_USER, UPDATE_USER, DESTROY_USER, RESET_PASS_USER FROM role_permission WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -281,6 +297,114 @@ abstract class RolePermissionQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(RolePermissionTableMap::COL_ID, $id, $comparison);
+    }
+
+    /**
+     * Filter the query on the create_stock column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByCreateStock(true); // WHERE create_stock = true
+     * $query->filterByCreateStock('yes'); // WHERE create_stock = true
+     * </code>
+     *
+     * @param     boolean|string $createStock The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRolePermissionQuery The current query, for fluid interface
+     */
+    public function filterByCreateStock($createStock = null, $comparison = null)
+    {
+        if (is_string($createStock)) {
+            $createStock = in_array(strtolower($createStock), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(RolePermissionTableMap::COL_CREATE_STOCK, $createStock, $comparison);
+    }
+
+    /**
+     * Filter the query on the read_stock column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByReadStock(true); // WHERE read_stock = true
+     * $query->filterByReadStock('yes'); // WHERE read_stock = true
+     * </code>
+     *
+     * @param     boolean|string $readStock The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRolePermissionQuery The current query, for fluid interface
+     */
+    public function filterByReadStock($readStock = null, $comparison = null)
+    {
+        if (is_string($readStock)) {
+            $readStock = in_array(strtolower($readStock), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(RolePermissionTableMap::COL_READ_STOCK, $readStock, $comparison);
+    }
+
+    /**
+     * Filter the query on the update_stock column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUpdateStock(true); // WHERE update_stock = true
+     * $query->filterByUpdateStock('yes'); // WHERE update_stock = true
+     * </code>
+     *
+     * @param     boolean|string $updateStock The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRolePermissionQuery The current query, for fluid interface
+     */
+    public function filterByUpdateStock($updateStock = null, $comparison = null)
+    {
+        if (is_string($updateStock)) {
+            $updateStock = in_array(strtolower($updateStock), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(RolePermissionTableMap::COL_UPDATE_STOCK, $updateStock, $comparison);
+    }
+
+    /**
+     * Filter the query on the destroy_stock column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByDestroyStock(true); // WHERE destroy_stock = true
+     * $query->filterByDestroyStock('yes'); // WHERE destroy_stock = true
+     * </code>
+     *
+     * @param     boolean|string $destroyStock The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRolePermissionQuery The current query, for fluid interface
+     */
+    public function filterByDestroyStock($destroyStock = null, $comparison = null)
+    {
+        if (is_string($destroyStock)) {
+            $destroyStock = in_array(strtolower($destroyStock), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(RolePermissionTableMap::COL_DESTROY_STOCK, $destroyStock, $comparison);
     }
 
     /**

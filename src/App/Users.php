@@ -2,10 +2,8 @@
 
 namespace App;
 
-use ORM\Role;
-use ORM\RoleQuery;
-use ORM\RolePermission;
 use ORM\RolePermissionQuery;
+use ORM\RowHistory;
 use ORM\User;
 use ORM\UserQuery;
 use ORM\UserDetail;
@@ -44,9 +42,9 @@ class Users
 
         // insert into row_history table
         $rowHistory = new RowHistory();
-        $rowHistory->setRow($user->getId())
+        $rowHistory->setRowId($user->getId())
             ->setData('user')
-            ->setTime($time)
+            ->setTime(time())
             ->setOperation('create')
             ->setUserId($currentUser->id)
             ->save($con);
@@ -76,11 +74,11 @@ class Users
             $user->setUser('')->setStatus('Deleted')->save($con);
 
             $rowHistory = new RowHistory();
-            $rowHistory->setRow($row->getId())
+            $rowHistory->setRowId($user->getId())
                 ->setData('user')
-                ->setTime($time)
+                ->setTime(time())
                 ->setOperation("destroy")
-                ->setUser($currentUser->id)
+                ->setUserId($currentUser->id)
                 ->save($con);
         }
 
@@ -115,13 +113,17 @@ class Users
         if (!$user) throw new \Exception('Data tidak ditemukan');
 
         $results['success'] = true;
-        $results['root'] = $user;
+        $results['data'] = $user;
 
         return $results;
     }
 
     public static function read($params, $currentUser, $con)
     {
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('read_user')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
         $page = (isset($params->page) ? $params->page : 0);
         $limit = (isset($params->limit) ? $params->limit : 100);
 
@@ -194,13 +196,13 @@ class Users
         // check whether picked username is already taken
         $user = UserQuery::create()
             ->filterByUser($params->user)
-            ->where("id not like ?", $params->id)
+            ->where("User.Id not like ?", $params->id)
             ->count($con);
         if ($user != 0) throw new \Exception('User ID sudah terpakai. Pilih User ID lainnya.');
 
         $user = UserQuery::create()->findOneById($params->id, $con);
         $detail = UserDetailQuery::create()->findOneById($params->id, $con);
-        if(!$user || !$detailUser) throw new \Exception('Data tidak ditemukan');
+        if(!$user || !$detail) throw new \Exception('Data tidak ditemukan');
 
         $user->setUser($params->user)
             ->setRoleId($params->role_id)
@@ -212,11 +214,11 @@ class Users
             ->save($con);
 
         $rowHistory = new RowHistory();
-        $rowHistory->setRow($params->id)
+        $rowHistory->setRowId($params->id)
             ->setData('user')
-            ->setTime($time)
+            ->setTime(time())
             ->setOperation('update')
-            ->setUser($currentUser->id)
+            ->setUserId($currentUser->id)
             ->save($con);
 
         $results['success'] = true;

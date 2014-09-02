@@ -7,6 +7,8 @@ use \PDO;
 use ORM\Product as ChildProduct;
 use ORM\ProductQuery as ChildProductQuery;
 use ORM\StockQuery as ChildStockQuery;
+use ORM\Unit as ChildUnit;
+use ORM\UnitQuery as ChildUnitQuery;
 use ORM\Map\StockTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -73,10 +75,10 @@ abstract class Stock implements ActiveRecordInterface
     protected $amount;
 
     /**
-     * The value for the unit field.
+     * The value for the unit_id field.
      * @var        string
      */
-    protected $unit;
+    protected $unit_id;
 
     /**
      * The value for the buy field.
@@ -109,9 +111,20 @@ abstract class Stock implements ActiveRecordInterface
     protected $discount;
 
     /**
+     * The value for the status field.
+     * @var        string
+     */
+    protected $status;
+
+    /**
      * @var        ChildProduct
      */
     protected $aProduct;
+
+    /**
+     * @var        ChildUnit
+     */
+    protected $aUnit;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -369,13 +382,13 @@ abstract class Stock implements ActiveRecordInterface
     }
 
     /**
-     * Get the [unit] column value.
+     * Get the [unit_id] column value.
      *
      * @return string
      */
-    public function getUnit()
+    public function getUnitId()
     {
-        return $this->unit;
+        return $this->unit_id;
     }
 
     /**
@@ -429,6 +442,16 @@ abstract class Stock implements ActiveRecordInterface
     }
 
     /**
+     * Get the [status] column value.
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -473,8 +496,8 @@ abstract class Stock implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : StockTableMap::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)];
             $this->amount = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : StockTableMap::translateFieldName('Unit', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->unit = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : StockTableMap::translateFieldName('UnitId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->unit_id = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : StockTableMap::translateFieldName('Buy', TableMap::TYPE_PHPNAME, $indexType)];
             $this->buy = (null !== $col) ? (string) $col : null;
@@ -490,6 +513,9 @@ abstract class Stock implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : StockTableMap::translateFieldName('Discount', TableMap::TYPE_PHPNAME, $indexType)];
             $this->discount = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : StockTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->status = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -498,7 +524,7 @@ abstract class Stock implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 9; // 9 = StockTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 10; // 10 = StockTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\ORM\\Stock'), 0, $e);
@@ -522,6 +548,9 @@ abstract class Stock implements ActiveRecordInterface
     {
         if ($this->aProduct !== null && $this->product_id !== $this->aProduct->getId()) {
             $this->aProduct = null;
+        }
+        if ($this->aUnit !== null && $this->unit_id !== $this->aUnit->getId()) {
+            $this->aUnit = null;
         }
     } // ensureConsistency
 
@@ -590,24 +619,28 @@ abstract class Stock implements ActiveRecordInterface
     } // setAmount()
 
     /**
-     * Set the value of [unit] column.
+     * Set the value of [unit_id] column.
      *
      * @param  string $v new value
      * @return $this|\ORM\Stock The current object (for fluent API support)
      */
-    public function setUnit($v)
+    public function setUnitId($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->unit !== $v) {
-            $this->unit = $v;
-            $this->modifiedColumns[StockTableMap::COL_UNIT] = true;
+        if ($this->unit_id !== $v) {
+            $this->unit_id = $v;
+            $this->modifiedColumns[StockTableMap::COL_UNIT_ID] = true;
+        }
+
+        if ($this->aUnit !== null && $this->aUnit->getId() !== $v) {
+            $this->aUnit = null;
         }
 
         return $this;
-    } // setUnit()
+    } // setUnitId()
 
     /**
      * Set the value of [buy] column.
@@ -710,6 +743,26 @@ abstract class Stock implements ActiveRecordInterface
     } // setDiscount()
 
     /**
+     * Set the value of [status] column.
+     *
+     * @param  string $v new value
+     * @return $this|\ORM\Stock The current object (for fluent API support)
+     */
+    public function setStatus($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->status !== $v) {
+            $this->status = $v;
+            $this->modifiedColumns[StockTableMap::COL_STATUS] = true;
+        }
+
+        return $this;
+    } // setStatus()
+
+    /**
      * Reloads this object from datastore based on primary key and (optionally) resets all associated objects.
      *
      * This will only work if the object has been saved and has a valid primary key set.
@@ -747,6 +800,7 @@ abstract class Stock implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aProduct = null;
+            $this->aUnit = null;
         } // if (deep)
     }
 
@@ -858,6 +912,13 @@ abstract class Stock implements ActiveRecordInterface
                 $this->setProduct($this->aProduct);
             }
 
+            if ($this->aUnit !== null) {
+                if ($this->aUnit->isModified() || $this->aUnit->isNew()) {
+                    $affectedRows += $this->aUnit->save($con);
+                }
+                $this->setUnit($this->aUnit);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -904,8 +965,8 @@ abstract class Stock implements ActiveRecordInterface
         if ($this->isColumnModified(StockTableMap::COL_AMOUNT)) {
             $modifiedColumns[':p' . $index++]  = 'AMOUNT';
         }
-        if ($this->isColumnModified(StockTableMap::COL_UNIT)) {
-            $modifiedColumns[':p' . $index++]  = 'UNIT';
+        if ($this->isColumnModified(StockTableMap::COL_UNIT_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'UNIT_ID';
         }
         if ($this->isColumnModified(StockTableMap::COL_BUY)) {
             $modifiedColumns[':p' . $index++]  = 'BUY';
@@ -921,6 +982,9 @@ abstract class Stock implements ActiveRecordInterface
         }
         if ($this->isColumnModified(StockTableMap::COL_DISCOUNT)) {
             $modifiedColumns[':p' . $index++]  = 'DISCOUNT';
+        }
+        if ($this->isColumnModified(StockTableMap::COL_STATUS)) {
+            $modifiedColumns[':p' . $index++]  = 'STATUS';
         }
 
         $sql = sprintf(
@@ -942,8 +1006,8 @@ abstract class Stock implements ActiveRecordInterface
                     case 'AMOUNT':
                         $stmt->bindValue($identifier, $this->amount, PDO::PARAM_INT);
                         break;
-                    case 'UNIT':
-                        $stmt->bindValue($identifier, $this->unit, PDO::PARAM_STR);
+                    case 'UNIT_ID':
+                        $stmt->bindValue($identifier, $this->unit_id, PDO::PARAM_INT);
                         break;
                     case 'BUY':
                         $stmt->bindValue($identifier, $this->buy, PDO::PARAM_INT);
@@ -959,6 +1023,9 @@ abstract class Stock implements ActiveRecordInterface
                         break;
                     case 'DISCOUNT':
                         $stmt->bindValue($identifier, $this->discount, PDO::PARAM_INT);
+                        break;
+                    case 'STATUS':
+                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1032,7 +1099,7 @@ abstract class Stock implements ActiveRecordInterface
                 return $this->getAmount();
                 break;
             case 3:
-                return $this->getUnit();
+                return $this->getUnitId();
                 break;
             case 4:
                 return $this->getBuy();
@@ -1048,6 +1115,9 @@ abstract class Stock implements ActiveRecordInterface
                 break;
             case 8:
                 return $this->getDiscount();
+                break;
+            case 9:
+                return $this->getStatus();
                 break;
             default:
                 return null;
@@ -1081,12 +1151,13 @@ abstract class Stock implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getProductId(),
             $keys[2] => $this->getAmount(),
-            $keys[3] => $this->getUnit(),
+            $keys[3] => $this->getUnitId(),
             $keys[4] => $this->getBuy(),
             $keys[5] => $this->getSellPublic(),
             $keys[6] => $this->getSellDistributor(),
             $keys[7] => $this->getSellMisc(),
             $keys[8] => $this->getDiscount(),
+            $keys[9] => $this->getStatus(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1096,6 +1167,9 @@ abstract class Stock implements ActiveRecordInterface
         if ($includeForeignObjects) {
             if (null !== $this->aProduct) {
                 $result['Product'] = $this->aProduct->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aUnit) {
+                $result['Unit'] = $this->aUnit->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1141,7 +1215,7 @@ abstract class Stock implements ActiveRecordInterface
                 $this->setAmount($value);
                 break;
             case 3:
-                $this->setUnit($value);
+                $this->setUnitId($value);
                 break;
             case 4:
                 $this->setBuy($value);
@@ -1157,6 +1231,9 @@ abstract class Stock implements ActiveRecordInterface
                 break;
             case 8:
                 $this->setDiscount($value);
+                break;
+            case 9:
+                $this->setStatus($value);
                 break;
         } // switch()
 
@@ -1194,7 +1271,7 @@ abstract class Stock implements ActiveRecordInterface
             $this->setAmount($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setUnit($arr[$keys[3]]);
+            $this->setUnitId($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
             $this->setBuy($arr[$keys[4]]);
@@ -1210,6 +1287,9 @@ abstract class Stock implements ActiveRecordInterface
         }
         if (array_key_exists($keys[8], $arr)) {
             $this->setDiscount($arr[$keys[8]]);
+        }
+        if (array_key_exists($keys[9], $arr)) {
+            $this->setStatus($arr[$keys[9]]);
         }
     }
 
@@ -1255,8 +1335,8 @@ abstract class Stock implements ActiveRecordInterface
         if ($this->isColumnModified(StockTableMap::COL_AMOUNT)) {
             $criteria->add(StockTableMap::COL_AMOUNT, $this->amount);
         }
-        if ($this->isColumnModified(StockTableMap::COL_UNIT)) {
-            $criteria->add(StockTableMap::COL_UNIT, $this->unit);
+        if ($this->isColumnModified(StockTableMap::COL_UNIT_ID)) {
+            $criteria->add(StockTableMap::COL_UNIT_ID, $this->unit_id);
         }
         if ($this->isColumnModified(StockTableMap::COL_BUY)) {
             $criteria->add(StockTableMap::COL_BUY, $this->buy);
@@ -1272,6 +1352,9 @@ abstract class Stock implements ActiveRecordInterface
         }
         if ($this->isColumnModified(StockTableMap::COL_DISCOUNT)) {
             $criteria->add(StockTableMap::COL_DISCOUNT, $this->discount);
+        }
+        if ($this->isColumnModified(StockTableMap::COL_STATUS)) {
+            $criteria->add(StockTableMap::COL_STATUS, $this->status);
         }
 
         return $criteria;
@@ -1361,12 +1444,13 @@ abstract class Stock implements ActiveRecordInterface
     {
         $copyObj->setProductId($this->getProductId());
         $copyObj->setAmount($this->getAmount());
-        $copyObj->setUnit($this->getUnit());
+        $copyObj->setUnitId($this->getUnitId());
         $copyObj->setBuy($this->getBuy());
         $copyObj->setSellPublic($this->getSellPublic());
         $copyObj->setSellDistributor($this->getSellDistributor());
         $copyObj->setSellMisc($this->getSellMisc());
         $copyObj->setDiscount($this->getDiscount());
+        $copyObj->setStatus($this->getStatus());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1447,6 +1531,57 @@ abstract class Stock implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildUnit object.
+     *
+     * @param  ChildUnit $v
+     * @return $this|\ORM\Stock The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUnit(ChildUnit $v = null)
+    {
+        if ($v === null) {
+            $this->setUnitId(NULL);
+        } else {
+            $this->setUnitId($v->getId());
+        }
+
+        $this->aUnit = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUnit object, it will not be re-added.
+        if ($v !== null) {
+            $v->addStock($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUnit object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUnit The associated ChildUnit object.
+     * @throws PropelException
+     */
+    public function getUnit(ConnectionInterface $con = null)
+    {
+        if ($this->aUnit === null && (($this->unit_id !== "" && $this->unit_id !== null))) {
+            $this->aUnit = ChildUnitQuery::create()->findPk($this->unit_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUnit->addStocks($this);
+             */
+        }
+
+        return $this->aUnit;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -1456,15 +1591,19 @@ abstract class Stock implements ActiveRecordInterface
         if (null !== $this->aProduct) {
             $this->aProduct->removeStock($this);
         }
+        if (null !== $this->aUnit) {
+            $this->aUnit->removeStock($this);
+        }
         $this->id = null;
         $this->product_id = null;
         $this->amount = null;
-        $this->unit = null;
+        $this->unit_id = null;
         $this->buy = null;
         $this->sell_public = null;
         $this->sell_distributor = null;
         $this->sell_misc = null;
         $this->discount = null;
+        $this->status = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1486,6 +1625,7 @@ abstract class Stock implements ActiveRecordInterface
         } // if ($deep)
 
         $this->aProduct = null;
+        $this->aUnit = null;
     }
 
     /**
