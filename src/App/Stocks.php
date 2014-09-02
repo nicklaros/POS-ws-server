@@ -21,7 +21,7 @@ class Stocks
         $stock
             ->setProductId($params->product_id)
             ->setAmount($params->amount)
-            ->setUnit($params->unit)
+            ->setUnitId($params->unit_id)
             ->setBuy($params->buy)
             ->setSellPublic($params->sell_public)
             ->setSellDistributor($params->sell_distributor)
@@ -46,12 +46,66 @@ class Stocks
 
     public static function destroy($params, $currentUser, $con)
     {
-    
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('destroy_stock')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        $stocks = StockQuery::create()
+            ->filterById($params->id)
+            ->find($con);
+
+        if (!$stocks) throw new \Exception('Data tidak ditemukan');
+
+        foreach($stocks as $stock)
+        {
+            $stock->setStatus('Deleted')->save($con);
+
+            $rowHistory = new RowHistory();
+            $rowHistory->setRowId($stock->getId())
+                ->setData('stock')
+                ->setTime(time())
+                ->setOperation("destroy")
+                ->setUserId($currentUser->id)
+                ->save($con);
+        }
+
+        $results['success'] = true;
+        $results['id'] = $params->id;
+
+        return $results;
     }
 
     public static function loadFormEdit($params, $currentUser, $con)
     {
-    
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('update_stock')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        $stock = StockQuery::create()
+            ->filterByStatus('Active')
+            ->select(array(
+                'id',
+                'product_id',
+                'amount',
+                'unit_id',
+                'buy',
+                'sell_public',
+                'sell_distributor',
+                'sell_misc',
+                'discount',
+            ))
+            ->leftJoin('Product')
+            ->withColumn('Product.Name', 'product')
+            ->leftJoin('Unit')
+            ->withColumn('Unit.Name', 'unit')
+            ->findOneById($params->id);
+
+        if (!$stock) throw new \Exception('Data tidak ditemukan');
+
+        $results['success'] = true;
+        $results['data'] = $stock;
+
+        return $results;
     }
 
     public static function read($params, $currentUser, $con)
@@ -59,16 +113,18 @@ class Stocks
         $page = (isset($params->page) ? $params->page : 0);
         $limit = (isset($params->limit) ? $params->limit : 100);
 
-        $stock = StockQuery::create();
+        $stock = StockQuery::create()
+            ->filterByStatus('Active');
 
         if(isset($params->code)) $stock->useProductQuery()->filterByCode("%$params->code%")->endUse();
-        if(isset($params->name)) $stock->useProductQuery()->filterByName("%$params->name%")->endUse();
+        if(isset($params->product)) $stock->useProductQuery()->filterByName("%$params->product%")->endUse();
 
         $stock = $stock
             ->select(array(
                 'id',
+                'product_id',
                 'amount',
-                'unit',
+                'unit_id',
                 'buy',
                 'sell_public',
                 'sell_distributor',
@@ -77,7 +133,9 @@ class Stocks
             ))
             ->leftJoin('Product')
             ->withColumn('Product.Code', 'code')
-            ->withColumn('Product.Name', 'name');
+            ->withColumn('Product.Name', 'product')
+            ->leftJoin('Unit')
+            ->withColumn('Unit.Name', 'unit');
 
         foreach($params->sort as $sorter){
             $stock->orderBy($sorter->property, $sorter->direction);
@@ -101,7 +159,36 @@ class Stocks
 
     public static function update($params, $currentUser, $con)
     {
-    
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('update_stock')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        $stock = StockQuery::create()->findOneById($params->id, $con);
+        if(!$stock) throw new \Exception('Data tidak ditemukan');
+
+        $stock
+            ->setProductId($params->product_id)
+            ->setAmount($params->amount)
+            ->setUnitId($params->unit_id)
+            ->setBuy($params->buy)
+            ->setSellPublic($params->sell_public)
+            ->setSellDistributor($params->sell_distributor)
+            ->setSellMisc($params->sell_misc)
+            ->setDiscount($params->discount)
+            ->save($con);
+
+        $rowHistory = new RowHistory();
+        $rowHistory->setRowId($params->id)
+            ->setData('stock')
+            ->setTime(time())
+            ->setOperation('update')
+            ->setUserId($currentUser->id)
+            ->save($con);
+
+        $results['success'] = true;
+        $results['id'] = $params->id;
+
+        return $results;
     }
 
 }

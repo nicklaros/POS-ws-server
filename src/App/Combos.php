@@ -2,8 +2,8 @@
 
 namespace App;
 
-use ORM\Product;
 use ORM\ProductQuery;
+use ORM\UnitQuery;
 
 class Combos
 {
@@ -30,6 +30,31 @@ class Combos
         $data = [];
         foreach($products as $product) {
             $data[] = $product;
+        }
+        $results['success'] = true;
+        $results['data'] = $data;
+        
+        return $results;
+    }
+
+    public static function unit($params, $currentUser, $con)
+    {
+        $units = UnitQuery::create()
+            ->orderBy('name', 'ASC');
+
+        if (isset($params->query)) $units->where('Unit.Name like ?', "%$params->query%");
+        
+        $units = $units
+            ->select(array(
+                'id',
+                'name'
+            ))
+            ->limit(20)
+            ->find($con);
+
+        $data = [];
+        foreach($units as $unit) {
+            $data[] = $unit;
         }
         $results['success'] = true;
         $results['data'] = $data;

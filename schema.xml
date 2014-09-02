@@ -68,15 +68,24 @@
         <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
         <column name="product_id" phpName="ProductId" type="BIGINT" size="20" />
         <column name="amount" phpName="Amount" type="BIGINT" size="20" />
-        <column name="unit" phpName="Unit" type="CHAR" size="32" />
+        <column name="unit_id" phpName="UnitId" type="BIGINT" size="20" />
         <column name="buy" phpName="Buy" type="BIGINT" size="20" />
         <column name="sell_public" phpName="SellPublic" type="BIGINT" size="20" />
         <column name="sell_distributor" phpName="SellDistributor" type="BIGINT" size="20" />
         <column name="sell_misc" phpName="SellMisc" type="BIGINT" size="20" />
         <column name="discount" phpName="Discount" type="TINYINT" size="3" />
+        <column name="status" phpName="Status" type="VARCHAR" sqlType="ENUM('Pending','Active','Not Active', 'Deleted')" required="true" />
         <foreign-key foreignTable="product" phpName="Product" refPhpName="Stock" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="product_id" foreign="id" />
         </foreign-key>
+        <foreign-key foreignTable="unit" phpName="Unit" refPhpName="Stock" onDelete="NO ACTION" onUpdate="RESTRICT">
+            <reference local="unit_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="unit" phpName="Unit">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="name" phpName="Name" type="CHAR" size="32" required="true" />
     </table>
 
     <table name="user" phpName="User">

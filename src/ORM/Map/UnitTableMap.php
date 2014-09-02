@@ -2,8 +2,8 @@
 
 namespace ORM\Map;
 
-use ORM\Stock;
-use ORM\StockQuery;
+use ORM\Unit;
+use ORM\UnitQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'stock' table.
+ * This class defines the structure of the 'unit' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class StockTableMap extends TableMap
+class UnitTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class StockTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'ORM.Map.StockTableMap';
+    const CLASS_NAME = 'ORM.Map.UnitTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class StockTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'stock';
+    const TABLE_NAME = 'unit';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\ORM\\Stock';
+    const OM_CLASS = '\\ORM\\Unit';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'ORM.Stock';
+    const CLASS_DEFAULT = 'ORM.Unit';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 10;
+    const NUM_COLUMNS = 2;
 
     /**
      * The number of lazy-loaded columns
@@ -69,57 +69,17 @@ class StockTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 10;
+    const NUM_HYDRATE_COLUMNS = 2;
 
     /**
      * the column name for the ID field
      */
-    const COL_ID = 'stock.ID';
+    const COL_ID = 'unit.ID';
 
     /**
-     * the column name for the PRODUCT_ID field
+     * the column name for the NAME field
      */
-    const COL_PRODUCT_ID = 'stock.PRODUCT_ID';
-
-    /**
-     * the column name for the AMOUNT field
-     */
-    const COL_AMOUNT = 'stock.AMOUNT';
-
-    /**
-     * the column name for the UNIT_ID field
-     */
-    const COL_UNIT_ID = 'stock.UNIT_ID';
-
-    /**
-     * the column name for the BUY field
-     */
-    const COL_BUY = 'stock.BUY';
-
-    /**
-     * the column name for the SELL_PUBLIC field
-     */
-    const COL_SELL_PUBLIC = 'stock.SELL_PUBLIC';
-
-    /**
-     * the column name for the SELL_DISTRIBUTOR field
-     */
-    const COL_SELL_DISTRIBUTOR = 'stock.SELL_DISTRIBUTOR';
-
-    /**
-     * the column name for the SELL_MISC field
-     */
-    const COL_SELL_MISC = 'stock.SELL_MISC';
-
-    /**
-     * the column name for the DISCOUNT field
-     */
-    const COL_DISCOUNT = 'stock.DISCOUNT';
-
-    /**
-     * the column name for the STATUS field
-     */
-    const COL_STATUS = 'stock.STATUS';
+    const COL_NAME = 'unit.NAME';
 
     /**
      * The default string format for model objects of the related table
@@ -133,12 +93,12 @@ class StockTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'ProductId', 'Amount', 'UnitId', 'Buy', 'SellPublic', 'SellDistributor', 'SellMisc', 'Discount', 'Status', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'productId', 'amount', 'unitId', 'buy', 'sellPublic', 'sellDistributor', 'sellMisc', 'discount', 'status', ),
-        self::TYPE_COLNAME       => array(StockTableMap::COL_ID, StockTableMap::COL_PRODUCT_ID, StockTableMap::COL_AMOUNT, StockTableMap::COL_UNIT_ID, StockTableMap::COL_BUY, StockTableMap::COL_SELL_PUBLIC, StockTableMap::COL_SELL_DISTRIBUTOR, StockTableMap::COL_SELL_MISC, StockTableMap::COL_DISCOUNT, StockTableMap::COL_STATUS, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_PRODUCT_ID', 'COL_AMOUNT', 'COL_UNIT_ID', 'COL_BUY', 'COL_SELL_PUBLIC', 'COL_SELL_DISTRIBUTOR', 'COL_SELL_MISC', 'COL_DISCOUNT', 'COL_STATUS', ),
-        self::TYPE_FIELDNAME     => array('id', 'product_id', 'amount', 'unit_id', 'buy', 'sell_public', 'sell_distributor', 'sell_misc', 'discount', 'status', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+        self::TYPE_PHPNAME       => array('Id', 'Name', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'name', ),
+        self::TYPE_COLNAME       => array(UnitTableMap::COL_ID, UnitTableMap::COL_NAME, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_NAME', ),
+        self::TYPE_FIELDNAME     => array('id', 'name', ),
+        self::TYPE_NUM           => array(0, 1, )
     );
 
     /**
@@ -148,12 +108,12 @@ class StockTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'ProductId' => 1, 'Amount' => 2, 'UnitId' => 3, 'Buy' => 4, 'SellPublic' => 5, 'SellDistributor' => 6, 'SellMisc' => 7, 'Discount' => 8, 'Status' => 9, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'productId' => 1, 'amount' => 2, 'unitId' => 3, 'buy' => 4, 'sellPublic' => 5, 'sellDistributor' => 6, 'sellMisc' => 7, 'discount' => 8, 'status' => 9, ),
-        self::TYPE_COLNAME       => array(StockTableMap::COL_ID => 0, StockTableMap::COL_PRODUCT_ID => 1, StockTableMap::COL_AMOUNT => 2, StockTableMap::COL_UNIT_ID => 3, StockTableMap::COL_BUY => 4, StockTableMap::COL_SELL_PUBLIC => 5, StockTableMap::COL_SELL_DISTRIBUTOR => 6, StockTableMap::COL_SELL_MISC => 7, StockTableMap::COL_DISCOUNT => 8, StockTableMap::COL_STATUS => 9, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_PRODUCT_ID' => 1, 'COL_AMOUNT' => 2, 'COL_UNIT_ID' => 3, 'COL_BUY' => 4, 'COL_SELL_PUBLIC' => 5, 'COL_SELL_DISTRIBUTOR' => 6, 'COL_SELL_MISC' => 7, 'COL_DISCOUNT' => 8, 'COL_STATUS' => 9, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'product_id' => 1, 'amount' => 2, 'unit_id' => 3, 'buy' => 4, 'sell_public' => 5, 'sell_distributor' => 6, 'sell_misc' => 7, 'discount' => 8, 'status' => 9, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'name' => 1, ),
+        self::TYPE_COLNAME       => array(UnitTableMap::COL_ID => 0, UnitTableMap::COL_NAME => 1, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_NAME' => 1, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, ),
+        self::TYPE_NUM           => array(0, 1, )
     );
 
     /**
@@ -166,22 +126,14 @@ class StockTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('stock');
-        $this->setPhpName('Stock');
-        $this->setClassName('\\ORM\\Stock');
+        $this->setName('unit');
+        $this->setPhpName('Unit');
+        $this->setClassName('\\ORM\\Unit');
         $this->setPackage('ORM');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('ID', 'Id', 'BIGINT', true, 20, null);
-        $this->addForeignKey('PRODUCT_ID', 'ProductId', 'BIGINT', 'product', 'ID', false, 20, null);
-        $this->addColumn('AMOUNT', 'Amount', 'BIGINT', false, 20, null);
-        $this->addForeignKey('UNIT_ID', 'UnitId', 'BIGINT', 'unit', 'ID', false, 20, null);
-        $this->addColumn('BUY', 'Buy', 'BIGINT', false, 20, null);
-        $this->addColumn('SELL_PUBLIC', 'SellPublic', 'BIGINT', false, 20, null);
-        $this->addColumn('SELL_DISTRIBUTOR', 'SellDistributor', 'BIGINT', false, 20, null);
-        $this->addColumn('SELL_MISC', 'SellMisc', 'BIGINT', false, 20, null);
-        $this->addColumn('DISCOUNT', 'Discount', 'TINYINT', false, 3, null);
-        $this->addColumn('STATUS', 'Status', 'VARCHAR', true, null, null);
+        $this->addColumn('NAME', 'Name', 'CHAR', true, 32, null);
     } // initialize()
 
     /**
@@ -189,8 +141,7 @@ class StockTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Product', '\\ORM\\Product', RelationMap::MANY_TO_ONE, array('product_id' => 'id', ), 'CASCADE', 'RESTRICT');
-        $this->addRelation('Unit', '\\ORM\\Unit', RelationMap::MANY_TO_ONE, array('unit_id' => 'id', ), 'NO ACTION', 'RESTRICT');
+        $this->addRelation('Stock', '\\ORM\\Stock', RelationMap::ONE_TO_MANY, array('id' => 'unit_id', ), 'NO ACTION', 'RESTRICT', 'Stocks');
     } // buildRelations()
 
     /**
@@ -250,7 +201,7 @@ class StockTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? StockTableMap::CLASS_DEFAULT : StockTableMap::OM_CLASS;
+        return $withPrefix ? UnitTableMap::CLASS_DEFAULT : UnitTableMap::OM_CLASS;
     }
 
     /**
@@ -264,22 +215,22 @@ class StockTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Stock object, last column rank)
+     * @return array           (Unit object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = StockTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = StockTableMap::getInstanceFromPool($key))) {
+        $key = UnitTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = UnitTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + StockTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + UnitTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = StockTableMap::OM_CLASS;
-            /** @var Stock $obj */
+            $cls = UnitTableMap::OM_CLASS;
+            /** @var Unit $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            StockTableMap::addInstanceToPool($obj, $key);
+            UnitTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -302,18 +253,18 @@ class StockTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = StockTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = StockTableMap::getInstanceFromPool($key))) {
+            $key = UnitTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = UnitTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Stock $obj */
+                /** @var Unit $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                StockTableMap::addInstanceToPool($obj, $key);
+                UnitTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -334,27 +285,11 @@ class StockTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(StockTableMap::COL_ID);
-            $criteria->addSelectColumn(StockTableMap::COL_PRODUCT_ID);
-            $criteria->addSelectColumn(StockTableMap::COL_AMOUNT);
-            $criteria->addSelectColumn(StockTableMap::COL_UNIT_ID);
-            $criteria->addSelectColumn(StockTableMap::COL_BUY);
-            $criteria->addSelectColumn(StockTableMap::COL_SELL_PUBLIC);
-            $criteria->addSelectColumn(StockTableMap::COL_SELL_DISTRIBUTOR);
-            $criteria->addSelectColumn(StockTableMap::COL_SELL_MISC);
-            $criteria->addSelectColumn(StockTableMap::COL_DISCOUNT);
-            $criteria->addSelectColumn(StockTableMap::COL_STATUS);
+            $criteria->addSelectColumn(UnitTableMap::COL_ID);
+            $criteria->addSelectColumn(UnitTableMap::COL_NAME);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
-            $criteria->addSelectColumn($alias . '.PRODUCT_ID');
-            $criteria->addSelectColumn($alias . '.AMOUNT');
-            $criteria->addSelectColumn($alias . '.UNIT_ID');
-            $criteria->addSelectColumn($alias . '.BUY');
-            $criteria->addSelectColumn($alias . '.SELL_PUBLIC');
-            $criteria->addSelectColumn($alias . '.SELL_DISTRIBUTOR');
-            $criteria->addSelectColumn($alias . '.SELL_MISC');
-            $criteria->addSelectColumn($alias . '.DISCOUNT');
-            $criteria->addSelectColumn($alias . '.STATUS');
+            $criteria->addSelectColumn($alias . '.NAME');
         }
     }
 
@@ -367,7 +302,7 @@ class StockTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(StockTableMap::DATABASE_NAME)->getTable(StockTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(UnitTableMap::DATABASE_NAME)->getTable(UnitTableMap::TABLE_NAME);
     }
 
     /**
@@ -375,16 +310,16 @@ class StockTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(StockTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(StockTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new StockTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(UnitTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(UnitTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new UnitTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Stock or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Unit or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Stock object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Unit object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -395,27 +330,27 @@ class StockTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(StockTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(UnitTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \ORM\Stock) { // it's a model object
+        } elseif ($values instanceof \ORM\Unit) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(StockTableMap::DATABASE_NAME);
-            $criteria->add(StockTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(UnitTableMap::DATABASE_NAME);
+            $criteria->add(UnitTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = StockQuery::create()->mergeWith($criteria);
+        $query = UnitQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            StockTableMap::clearInstancePool();
+            UnitTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                StockTableMap::removeInstanceFromPool($singleval);
+                UnitTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -423,20 +358,20 @@ class StockTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the stock table.
+     * Deletes all rows from the unit table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return StockQuery::create()->doDeleteAll($con);
+        return UnitQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Stock or Criteria object.
+     * Performs an INSERT on the database, given a Unit or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Stock object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Unit object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -445,22 +380,22 @@ class StockTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(StockTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(UnitTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Stock object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Unit object
         }
 
-        if ($criteria->containsKey(StockTableMap::COL_ID) && $criteria->keyContainsValue(StockTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.StockTableMap::COL_ID.')');
+        if ($criteria->containsKey(UnitTableMap::COL_ID) && $criteria->keyContainsValue(UnitTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.UnitTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = StockQuery::create()->mergeWith($criteria);
+        $query = UnitQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -469,7 +404,7 @@ class StockTableMap extends TableMap
         });
     }
 
-} // StockTableMap
+} // UnitTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-StockTableMap::buildTableMap();
+UnitTableMap::buildTableMap();

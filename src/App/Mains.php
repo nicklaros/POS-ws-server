@@ -5,26 +5,9 @@ namespace App;
 use App\Combos;
 use App\Stocks;
 use App\Users;
-use ORM\Category;
-use ORM\CategoryQuery;
-use ORM\Menu;
-use ORM\MenuQuery;
-use ORM\Option;
-use ORM\OptionQuery;
-use ORM\Product;
-use ORM\ProductQuery;
-use ORM\Role;
+
 use ORM\RoleQuery;
-use ORM\RolePermission;
-use ORM\RolePermissionQuery;
-use ORM\RowHistory;
-use ORM\RowHistoryQuery;
-use ORM\Stock;
-use ORM\StockQuery;
-use ORM\User;
-use ORM\UserQuery;
-use ORM\UserDetail;
-use ORM\UserDetailQuery;
+
 use Propel\Runtime\Propel;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
@@ -114,8 +97,6 @@ class Mains implements MessageComponentInterface {
         // list of all module that can be requested
         $registeredModule = array(
             'combo',
-            'pembelian',
-            'penjualan',
             'stock',
             'user'
         );
@@ -149,7 +130,8 @@ class Mains implements MessageComponentInterface {
         
         // list of all method that can be called in current module
         $registeredMethod = array(
-            'product'
+            'product',
+            'unit'
         );
 
         // if called method is not registered then deny access
@@ -163,52 +145,17 @@ class Mains implements MessageComponentInterface {
 
         return $results;
     }
-
-    private function pembelian($from, $method, $params, $con){
-        $results = [];
-
-        switch ($method){
-            case 'create':
-                break;
-            case 'update':
-                break;
-            case 'destroy':
-                break;
-            default:
-                $results['success'] = false;
-                $results['errmsg'] = 'Wrong turn buddy';
-                break;
-        }
-
-        return $results;
-    }
-
-    private function penjualan($from, $method, $params, $con){
-        $results = [];
-
-        switch ($method){
-            case 'create':
-                break;
-            case 'update':
-                break;
-            case 'destroy':
-                break;
-            default:
-                $results['success'] = false;
-                $results['errmsg'] = 'Wrong turn buddy';
-                break;
-        }
-
-        return $results;
-    }
-
+    
     private function stock($from, $method, $params, $con){
         $results = [];
         
         // list of all method that can be called in current module
         $registeredMethod = array(
             'create',
-            'read'
+            'destroy',
+            'loadFormEdit',
+            'read',
+            'update'
         );
 
         // if called method is not registered then deny access

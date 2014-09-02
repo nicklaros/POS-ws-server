@@ -113,7 +113,7 @@ class Users
         if (!$user) throw new \Exception('Data tidak ditemukan');
 
         $results['success'] = true;
-        $results['root'] = $user;
+        $results['data'] = $user;
 
         return $results;
     }
