@@ -2,8 +2,8 @@
 
 namespace ORM\Map;
 
-use ORM\Stock;
-use ORM\StockQuery;
+use ORM\SalesDetail;
+use ORM\SalesDetailQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'stock' table.
+ * This class defines the structure of the 'sales_detail' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class StockTableMap extends TableMap
+class SalesDetailTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class StockTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'ORM.Map.StockTableMap';
+    const CLASS_NAME = 'ORM.Map.SalesDetailTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class StockTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'stock';
+    const TABLE_NAME = 'sales_detail';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\ORM\\Stock';
+    const OM_CLASS = '\\ORM\\SalesDetail';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'ORM.Stock';
+    const CLASS_DEFAULT = 'ORM.SalesDetail';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 10;
+    const NUM_COLUMNS = 15;
 
     /**
      * The number of lazy-loaded columns
@@ -69,57 +69,82 @@ class StockTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 10;
+    const NUM_HYDRATE_COLUMNS = 15;
 
     /**
      * the column name for the ID field
      */
-    const COL_ID = 'stock.ID';
+    const COL_ID = 'sales_detail.ID';
 
     /**
-     * the column name for the PRODUCT_ID field
+     * the column name for the SALES_ID field
      */
-    const COL_PRODUCT_ID = 'stock.PRODUCT_ID';
+    const COL_SALES_ID = 'sales_detail.SALES_ID';
+
+    /**
+     * the column name for the TYPE field
+     */
+    const COL_TYPE = 'sales_detail.TYPE';
+
+    /**
+     * the column name for the STOCK_ID field
+     */
+    const COL_STOCK_ID = 'sales_detail.STOCK_ID';
 
     /**
      * the column name for the AMOUNT field
      */
-    const COL_AMOUNT = 'stock.AMOUNT';
+    const COL_AMOUNT = 'sales_detail.AMOUNT';
 
     /**
      * the column name for the UNIT_ID field
      */
-    const COL_UNIT_ID = 'stock.UNIT_ID';
+    const COL_UNIT_ID = 'sales_detail.UNIT_ID';
 
     /**
-     * the column name for the BUY field
+     * the column name for the UNIT_PRICE field
      */
-    const COL_BUY = 'stock.BUY';
-
-    /**
-     * the column name for the SELL_PUBLIC field
-     */
-    const COL_SELL_PUBLIC = 'stock.SELL_PUBLIC';
-
-    /**
-     * the column name for the SELL_DISTRIBUTOR field
-     */
-    const COL_SELL_DISTRIBUTOR = 'stock.SELL_DISTRIBUTOR';
-
-    /**
-     * the column name for the SELL_MISC field
-     */
-    const COL_SELL_MISC = 'stock.SELL_MISC';
+    const COL_UNIT_PRICE = 'sales_detail.UNIT_PRICE';
 
     /**
      * the column name for the DISCOUNT field
      */
-    const COL_DISCOUNT = 'stock.DISCOUNT';
+    const COL_DISCOUNT = 'sales_detail.DISCOUNT';
+
+    /**
+     * the column name for the TOTAL_PRICE field
+     */
+    const COL_TOTAL_PRICE = 'sales_detail.TOTAL_PRICE';
+
+    /**
+     * the column name for the STOCK_BUY field
+     */
+    const COL_STOCK_BUY = 'sales_detail.STOCK_BUY';
+
+    /**
+     * the column name for the STOCK_SELL_PUBLIC field
+     */
+    const COL_STOCK_SELL_PUBLIC = 'sales_detail.STOCK_SELL_PUBLIC';
+
+    /**
+     * the column name for the STOCK_SELL_DISTRIBUTOR field
+     */
+    const COL_STOCK_SELL_DISTRIBUTOR = 'sales_detail.STOCK_SELL_DISTRIBUTOR';
+
+    /**
+     * the column name for the STOCK_SELL_MISC field
+     */
+    const COL_STOCK_SELL_MISC = 'sales_detail.STOCK_SELL_MISC';
+
+    /**
+     * the column name for the STOCK_DISCOUNT field
+     */
+    const COL_STOCK_DISCOUNT = 'sales_detail.STOCK_DISCOUNT';
 
     /**
      * the column name for the STATUS field
      */
-    const COL_STATUS = 'stock.STATUS';
+    const COL_STATUS = 'sales_detail.STATUS';
 
     /**
      * The default string format for model objects of the related table
@@ -133,12 +158,12 @@ class StockTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'ProductId', 'Amount', 'UnitId', 'Buy', 'SellPublic', 'SellDistributor', 'SellMisc', 'Discount', 'Status', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'productId', 'amount', 'unitId', 'buy', 'sellPublic', 'sellDistributor', 'sellMisc', 'discount', 'status', ),
-        self::TYPE_COLNAME       => array(StockTableMap::COL_ID, StockTableMap::COL_PRODUCT_ID, StockTableMap::COL_AMOUNT, StockTableMap::COL_UNIT_ID, StockTableMap::COL_BUY, StockTableMap::COL_SELL_PUBLIC, StockTableMap::COL_SELL_DISTRIBUTOR, StockTableMap::COL_SELL_MISC, StockTableMap::COL_DISCOUNT, StockTableMap::COL_STATUS, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_PRODUCT_ID', 'COL_AMOUNT', 'COL_UNIT_ID', 'COL_BUY', 'COL_SELL_PUBLIC', 'COL_SELL_DISTRIBUTOR', 'COL_SELL_MISC', 'COL_DISCOUNT', 'COL_STATUS', ),
-        self::TYPE_FIELDNAME     => array('id', 'product_id', 'amount', 'unit_id', 'buy', 'sell_public', 'sell_distributor', 'sell_misc', 'discount', 'status', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+        self::TYPE_PHPNAME       => array('Id', 'SalesId', 'Type', 'StockId', 'Amount', 'UnitId', 'UnitPrice', 'Discount', 'TotalPrice', 'StockBuy', 'StockSellPublic', 'StockSellDistributor', 'StockSellMisc', 'StockDiscount', 'Status', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'salesId', 'type', 'stockId', 'amount', 'unitId', 'unitPrice', 'discount', 'totalPrice', 'stockBuy', 'stockSellPublic', 'stockSellDistributor', 'stockSellMisc', 'stockDiscount', 'status', ),
+        self::TYPE_COLNAME       => array(SalesDetailTableMap::COL_ID, SalesDetailTableMap::COL_SALES_ID, SalesDetailTableMap::COL_TYPE, SalesDetailTableMap::COL_STOCK_ID, SalesDetailTableMap::COL_AMOUNT, SalesDetailTableMap::COL_UNIT_ID, SalesDetailTableMap::COL_UNIT_PRICE, SalesDetailTableMap::COL_DISCOUNT, SalesDetailTableMap::COL_TOTAL_PRICE, SalesDetailTableMap::COL_STOCK_BUY, SalesDetailTableMap::COL_STOCK_SELL_PUBLIC, SalesDetailTableMap::COL_STOCK_SELL_DISTRIBUTOR, SalesDetailTableMap::COL_STOCK_SELL_MISC, SalesDetailTableMap::COL_STOCK_DISCOUNT, SalesDetailTableMap::COL_STATUS, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_SALES_ID', 'COL_TYPE', 'COL_STOCK_ID', 'COL_AMOUNT', 'COL_UNIT_ID', 'COL_UNIT_PRICE', 'COL_DISCOUNT', 'COL_TOTAL_PRICE', 'COL_STOCK_BUY', 'COL_STOCK_SELL_PUBLIC', 'COL_STOCK_SELL_DISTRIBUTOR', 'COL_STOCK_SELL_MISC', 'COL_STOCK_DISCOUNT', 'COL_STATUS', ),
+        self::TYPE_FIELDNAME     => array('id', 'sales_id', 'type', 'stock_id', 'amount', 'unit_id', 'unit_price', 'discount', 'total_price', 'stock_buy', 'stock_sell_public', 'stock_sell_distributor', 'stock_sell_misc', 'stock_discount', 'status', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, )
     );
 
     /**
@@ -148,12 +173,12 @@ class StockTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'ProductId' => 1, 'Amount' => 2, 'UnitId' => 3, 'Buy' => 4, 'SellPublic' => 5, 'SellDistributor' => 6, 'SellMisc' => 7, 'Discount' => 8, 'Status' => 9, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'productId' => 1, 'amount' => 2, 'unitId' => 3, 'buy' => 4, 'sellPublic' => 5, 'sellDistributor' => 6, 'sellMisc' => 7, 'discount' => 8, 'status' => 9, ),
-        self::TYPE_COLNAME       => array(StockTableMap::COL_ID => 0, StockTableMap::COL_PRODUCT_ID => 1, StockTableMap::COL_AMOUNT => 2, StockTableMap::COL_UNIT_ID => 3, StockTableMap::COL_BUY => 4, StockTableMap::COL_SELL_PUBLIC => 5, StockTableMap::COL_SELL_DISTRIBUTOR => 6, StockTableMap::COL_SELL_MISC => 7, StockTableMap::COL_DISCOUNT => 8, StockTableMap::COL_STATUS => 9, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_PRODUCT_ID' => 1, 'COL_AMOUNT' => 2, 'COL_UNIT_ID' => 3, 'COL_BUY' => 4, 'COL_SELL_PUBLIC' => 5, 'COL_SELL_DISTRIBUTOR' => 6, 'COL_SELL_MISC' => 7, 'COL_DISCOUNT' => 8, 'COL_STATUS' => 9, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'product_id' => 1, 'amount' => 2, 'unit_id' => 3, 'buy' => 4, 'sell_public' => 5, 'sell_distributor' => 6, 'sell_misc' => 7, 'discount' => 8, 'status' => 9, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'SalesId' => 1, 'Type' => 2, 'StockId' => 3, 'Amount' => 4, 'UnitId' => 5, 'UnitPrice' => 6, 'Discount' => 7, 'TotalPrice' => 8, 'StockBuy' => 9, 'StockSellPublic' => 10, 'StockSellDistributor' => 11, 'StockSellMisc' => 12, 'StockDiscount' => 13, 'Status' => 14, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'salesId' => 1, 'type' => 2, 'stockId' => 3, 'amount' => 4, 'unitId' => 5, 'unitPrice' => 6, 'discount' => 7, 'totalPrice' => 8, 'stockBuy' => 9, 'stockSellPublic' => 10, 'stockSellDistributor' => 11, 'stockSellMisc' => 12, 'stockDiscount' => 13, 'status' => 14, ),
+        self::TYPE_COLNAME       => array(SalesDetailTableMap::COL_ID => 0, SalesDetailTableMap::COL_SALES_ID => 1, SalesDetailTableMap::COL_TYPE => 2, SalesDetailTableMap::COL_STOCK_ID => 3, SalesDetailTableMap::COL_AMOUNT => 4, SalesDetailTableMap::COL_UNIT_ID => 5, SalesDetailTableMap::COL_UNIT_PRICE => 6, SalesDetailTableMap::COL_DISCOUNT => 7, SalesDetailTableMap::COL_TOTAL_PRICE => 8, SalesDetailTableMap::COL_STOCK_BUY => 9, SalesDetailTableMap::COL_STOCK_SELL_PUBLIC => 10, SalesDetailTableMap::COL_STOCK_SELL_DISTRIBUTOR => 11, SalesDetailTableMap::COL_STOCK_SELL_MISC => 12, SalesDetailTableMap::COL_STOCK_DISCOUNT => 13, SalesDetailTableMap::COL_STATUS => 14, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_SALES_ID' => 1, 'COL_TYPE' => 2, 'COL_STOCK_ID' => 3, 'COL_AMOUNT' => 4, 'COL_UNIT_ID' => 5, 'COL_UNIT_PRICE' => 6, 'COL_DISCOUNT' => 7, 'COL_TOTAL_PRICE' => 8, 'COL_STOCK_BUY' => 9, 'COL_STOCK_SELL_PUBLIC' => 10, 'COL_STOCK_SELL_DISTRIBUTOR' => 11, 'COL_STOCK_SELL_MISC' => 12, 'COL_STOCK_DISCOUNT' => 13, 'COL_STATUS' => 14, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'sales_id' => 1, 'type' => 2, 'stock_id' => 3, 'amount' => 4, 'unit_id' => 5, 'unit_price' => 6, 'discount' => 7, 'total_price' => 8, 'stock_buy' => 9, 'stock_sell_public' => 10, 'stock_sell_distributor' => 11, 'stock_sell_misc' => 12, 'stock_discount' => 13, 'status' => 14, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, )
     );
 
     /**
@@ -166,21 +191,26 @@ class StockTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('stock');
-        $this->setPhpName('Stock');
-        $this->setClassName('\\ORM\\Stock');
+        $this->setName('sales_detail');
+        $this->setPhpName('SalesDetail');
+        $this->setClassName('\\ORM\\SalesDetail');
         $this->setPackage('ORM');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('ID', 'Id', 'BIGINT', true, 20, null);
-        $this->addForeignKey('PRODUCT_ID', 'ProductId', 'BIGINT', 'product', 'ID', false, 20, null);
-        $this->addColumn('AMOUNT', 'Amount', 'BIGINT', false, 20, null);
+        $this->addForeignKey('SALES_ID', 'SalesId', 'BIGINT', 'sales', 'ID', false, 20, null);
+        $this->addColumn('TYPE', 'Type', 'CHAR', false, null, null);
+        $this->addForeignKey('STOCK_ID', 'StockId', 'BIGINT', 'stock', 'ID', false, 20, null);
+        $this->addColumn('AMOUNT', 'Amount', 'TINYINT', false, 3, null);
         $this->addForeignKey('UNIT_ID', 'UnitId', 'BIGINT', 'unit', 'ID', false, 20, null);
-        $this->addColumn('BUY', 'Buy', 'INTEGER', false, 10, null);
-        $this->addColumn('SELL_PUBLIC', 'SellPublic', 'INTEGER', false, 10, null);
-        $this->addColumn('SELL_DISTRIBUTOR', 'SellDistributor', 'INTEGER', false, 10, null);
-        $this->addColumn('SELL_MISC', 'SellMisc', 'INTEGER', false, 10, null);
+        $this->addColumn('UNIT_PRICE', 'UnitPrice', 'INTEGER', false, 10, null);
         $this->addColumn('DISCOUNT', 'Discount', 'TINYINT', false, 3, null);
+        $this->addColumn('TOTAL_PRICE', 'TotalPrice', 'INTEGER', false, 10, null);
+        $this->addColumn('STOCK_BUY', 'StockBuy', 'INTEGER', false, 10, null);
+        $this->addColumn('STOCK_SELL_PUBLIC', 'StockSellPublic', 'INTEGER', false, 10, null);
+        $this->addColumn('STOCK_SELL_DISTRIBUTOR', 'StockSellDistributor', 'INTEGER', false, 10, null);
+        $this->addColumn('STOCK_SELL_MISC', 'StockSellMisc', 'INTEGER', false, 10, null);
+        $this->addColumn('STOCK_DISCOUNT', 'StockDiscount', 'TINYINT', false, 3, null);
         $this->addColumn('STATUS', 'Status', 'CHAR', true, null, null);
     } // initialize()
 
@@ -189,9 +219,9 @@ class StockTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Product', '\\ORM\\Product', RelationMap::MANY_TO_ONE, array('product_id' => 'id', ), 'CASCADE', 'RESTRICT');
+        $this->addRelation('Sales', '\\ORM\\Sales', RelationMap::MANY_TO_ONE, array('sales_id' => 'id', ), 'CASCADE', 'RESTRICT');
+        $this->addRelation('Stock', '\\ORM\\Stock', RelationMap::MANY_TO_ONE, array('stock_id' => 'id', ), 'RESTRICT', 'RESTRICT');
         $this->addRelation('Unit', '\\ORM\\Unit', RelationMap::MANY_TO_ONE, array('unit_id' => 'id', ), 'NO ACTION', 'RESTRICT');
-        $this->addRelation('Sales', '\\ORM\\SalesDetail', RelationMap::ONE_TO_MANY, array('id' => 'stock_id', ), 'RESTRICT', 'RESTRICT', 'Saless');
     } // buildRelations()
 
     /**
@@ -251,7 +281,7 @@ class StockTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? StockTableMap::CLASS_DEFAULT : StockTableMap::OM_CLASS;
+        return $withPrefix ? SalesDetailTableMap::CLASS_DEFAULT : SalesDetailTableMap::OM_CLASS;
     }
 
     /**
@@ -265,22 +295,22 @@ class StockTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Stock object, last column rank)
+     * @return array           (SalesDetail object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = StockTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = StockTableMap::getInstanceFromPool($key))) {
+        $key = SalesDetailTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = SalesDetailTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + StockTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + SalesDetailTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = StockTableMap::OM_CLASS;
-            /** @var Stock $obj */
+            $cls = SalesDetailTableMap::OM_CLASS;
+            /** @var SalesDetail $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            StockTableMap::addInstanceToPool($obj, $key);
+            SalesDetailTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -303,18 +333,18 @@ class StockTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = StockTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = StockTableMap::getInstanceFromPool($key))) {
+            $key = SalesDetailTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = SalesDetailTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Stock $obj */
+                /** @var SalesDetail $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                StockTableMap::addInstanceToPool($obj, $key);
+                SalesDetailTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -335,26 +365,36 @@ class StockTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(StockTableMap::COL_ID);
-            $criteria->addSelectColumn(StockTableMap::COL_PRODUCT_ID);
-            $criteria->addSelectColumn(StockTableMap::COL_AMOUNT);
-            $criteria->addSelectColumn(StockTableMap::COL_UNIT_ID);
-            $criteria->addSelectColumn(StockTableMap::COL_BUY);
-            $criteria->addSelectColumn(StockTableMap::COL_SELL_PUBLIC);
-            $criteria->addSelectColumn(StockTableMap::COL_SELL_DISTRIBUTOR);
-            $criteria->addSelectColumn(StockTableMap::COL_SELL_MISC);
-            $criteria->addSelectColumn(StockTableMap::COL_DISCOUNT);
-            $criteria->addSelectColumn(StockTableMap::COL_STATUS);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_ID);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_SALES_ID);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_TYPE);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_STOCK_ID);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_AMOUNT);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_UNIT_ID);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_UNIT_PRICE);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_DISCOUNT);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_TOTAL_PRICE);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_STOCK_BUY);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_STOCK_SELL_PUBLIC);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_STOCK_SELL_DISTRIBUTOR);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_STOCK_SELL_MISC);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_STOCK_DISCOUNT);
+            $criteria->addSelectColumn(SalesDetailTableMap::COL_STATUS);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
-            $criteria->addSelectColumn($alias . '.PRODUCT_ID');
+            $criteria->addSelectColumn($alias . '.SALES_ID');
+            $criteria->addSelectColumn($alias . '.TYPE');
+            $criteria->addSelectColumn($alias . '.STOCK_ID');
             $criteria->addSelectColumn($alias . '.AMOUNT');
             $criteria->addSelectColumn($alias . '.UNIT_ID');
-            $criteria->addSelectColumn($alias . '.BUY');
-            $criteria->addSelectColumn($alias . '.SELL_PUBLIC');
-            $criteria->addSelectColumn($alias . '.SELL_DISTRIBUTOR');
-            $criteria->addSelectColumn($alias . '.SELL_MISC');
+            $criteria->addSelectColumn($alias . '.UNIT_PRICE');
             $criteria->addSelectColumn($alias . '.DISCOUNT');
+            $criteria->addSelectColumn($alias . '.TOTAL_PRICE');
+            $criteria->addSelectColumn($alias . '.STOCK_BUY');
+            $criteria->addSelectColumn($alias . '.STOCK_SELL_PUBLIC');
+            $criteria->addSelectColumn($alias . '.STOCK_SELL_DISTRIBUTOR');
+            $criteria->addSelectColumn($alias . '.STOCK_SELL_MISC');
+            $criteria->addSelectColumn($alias . '.STOCK_DISCOUNT');
             $criteria->addSelectColumn($alias . '.STATUS');
         }
     }
@@ -368,7 +408,7 @@ class StockTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(StockTableMap::DATABASE_NAME)->getTable(StockTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(SalesDetailTableMap::DATABASE_NAME)->getTable(SalesDetailTableMap::TABLE_NAME);
     }
 
     /**
@@ -376,16 +416,16 @@ class StockTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(StockTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(StockTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new StockTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(SalesDetailTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(SalesDetailTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new SalesDetailTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Stock or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a SalesDetail or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Stock object or primary key or array of primary keys
+     * @param mixed               $values Criteria or SalesDetail object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -396,27 +436,27 @@ class StockTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(StockTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(SalesDetailTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \ORM\Stock) { // it's a model object
+        } elseif ($values instanceof \ORM\SalesDetail) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(StockTableMap::DATABASE_NAME);
-            $criteria->add(StockTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(SalesDetailTableMap::DATABASE_NAME);
+            $criteria->add(SalesDetailTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = StockQuery::create()->mergeWith($criteria);
+        $query = SalesDetailQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            StockTableMap::clearInstancePool();
+            SalesDetailTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                StockTableMap::removeInstanceFromPool($singleval);
+                SalesDetailTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -424,20 +464,20 @@ class StockTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the stock table.
+     * Deletes all rows from the sales_detail table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return StockQuery::create()->doDeleteAll($con);
+        return SalesDetailQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Stock or Criteria object.
+     * Performs an INSERT on the database, given a SalesDetail or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Stock object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or SalesDetail object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -446,22 +486,22 @@ class StockTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(StockTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(SalesDetailTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Stock object
+            $criteria = $criteria->buildCriteria(); // build Criteria from SalesDetail object
         }
 
-        if ($criteria->containsKey(StockTableMap::COL_ID) && $criteria->keyContainsValue(StockTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.StockTableMap::COL_ID.')');
+        if ($criteria->containsKey(SalesDetailTableMap::COL_ID) && $criteria->keyContainsValue(SalesDetailTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.SalesDetailTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = StockQuery::create()->mergeWith($criteria);
+        $query = SalesDetailQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -470,7 +510,7 @@ class StockTableMap extends TableMap
         });
     }
 
-} // StockTableMap
+} // SalesDetailTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-StockTableMap::buildTableMap();
+SalesDetailTableMap::buildTableMap();
