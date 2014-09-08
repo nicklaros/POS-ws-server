@@ -29,11 +29,10 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildSalesDetailQuery orderByUnitPrice($order = Criteria::ASC) Order by the unit_price column
  * @method     ChildSalesDetailQuery orderByDiscount($order = Criteria::ASC) Order by the discount column
  * @method     ChildSalesDetailQuery orderByTotalPrice($order = Criteria::ASC) Order by the total_price column
- * @method     ChildSalesDetailQuery orderByStockBuy($order = Criteria::ASC) Order by the stock_buy column
- * @method     ChildSalesDetailQuery orderByStockSellPublic($order = Criteria::ASC) Order by the stock_sell_public column
- * @method     ChildSalesDetailQuery orderByStockSellDistributor($order = Criteria::ASC) Order by the stock_sell_distributor column
- * @method     ChildSalesDetailQuery orderByStockSellMisc($order = Criteria::ASC) Order by the stock_sell_misc column
- * @method     ChildSalesDetailQuery orderByStockDiscount($order = Criteria::ASC) Order by the stock_discount column
+ * @method     ChildSalesDetailQuery orderByBuy($order = Criteria::ASC) Order by the buy column
+ * @method     ChildSalesDetailQuery orderBySellPublic($order = Criteria::ASC) Order by the sell_public column
+ * @method     ChildSalesDetailQuery orderBySellDistributor($order = Criteria::ASC) Order by the sell_distributor column
+ * @method     ChildSalesDetailQuery orderBySellMisc($order = Criteria::ASC) Order by the sell_misc column
  * @method     ChildSalesDetailQuery orderByStatus($order = Criteria::ASC) Order by the status column
  *
  * @method     ChildSalesDetailQuery groupById() Group by the id column
@@ -45,11 +44,10 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildSalesDetailQuery groupByUnitPrice() Group by the unit_price column
  * @method     ChildSalesDetailQuery groupByDiscount() Group by the discount column
  * @method     ChildSalesDetailQuery groupByTotalPrice() Group by the total_price column
- * @method     ChildSalesDetailQuery groupByStockBuy() Group by the stock_buy column
- * @method     ChildSalesDetailQuery groupByStockSellPublic() Group by the stock_sell_public column
- * @method     ChildSalesDetailQuery groupByStockSellDistributor() Group by the stock_sell_distributor column
- * @method     ChildSalesDetailQuery groupByStockSellMisc() Group by the stock_sell_misc column
- * @method     ChildSalesDetailQuery groupByStockDiscount() Group by the stock_discount column
+ * @method     ChildSalesDetailQuery groupByBuy() Group by the buy column
+ * @method     ChildSalesDetailQuery groupBySellPublic() Group by the sell_public column
+ * @method     ChildSalesDetailQuery groupBySellDistributor() Group by the sell_distributor column
+ * @method     ChildSalesDetailQuery groupBySellMisc() Group by the sell_misc column
  * @method     ChildSalesDetailQuery groupByStatus() Group by the status column
  *
  * @method     ChildSalesDetailQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -82,11 +80,10 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildSalesDetail findOneByUnitPrice(int $unit_price) Return the first ChildSalesDetail filtered by the unit_price column
  * @method     ChildSalesDetail findOneByDiscount(int $discount) Return the first ChildSalesDetail filtered by the discount column
  * @method     ChildSalesDetail findOneByTotalPrice(int $total_price) Return the first ChildSalesDetail filtered by the total_price column
- * @method     ChildSalesDetail findOneByStockBuy(int $stock_buy) Return the first ChildSalesDetail filtered by the stock_buy column
- * @method     ChildSalesDetail findOneByStockSellPublic(int $stock_sell_public) Return the first ChildSalesDetail filtered by the stock_sell_public column
- * @method     ChildSalesDetail findOneByStockSellDistributor(int $stock_sell_distributor) Return the first ChildSalesDetail filtered by the stock_sell_distributor column
- * @method     ChildSalesDetail findOneByStockSellMisc(int $stock_sell_misc) Return the first ChildSalesDetail filtered by the stock_sell_misc column
- * @method     ChildSalesDetail findOneByStockDiscount(int $stock_discount) Return the first ChildSalesDetail filtered by the stock_discount column
+ * @method     ChildSalesDetail findOneByBuy(int $buy) Return the first ChildSalesDetail filtered by the buy column
+ * @method     ChildSalesDetail findOneBySellPublic(int $sell_public) Return the first ChildSalesDetail filtered by the sell_public column
+ * @method     ChildSalesDetail findOneBySellDistributor(int $sell_distributor) Return the first ChildSalesDetail filtered by the sell_distributor column
+ * @method     ChildSalesDetail findOneBySellMisc(int $sell_misc) Return the first ChildSalesDetail filtered by the sell_misc column
  * @method     ChildSalesDetail findOneByStatus(string $status) Return the first ChildSalesDetail filtered by the status column
  *
  * @method     ChildSalesDetail[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildSalesDetail objects based on current ModelCriteria
@@ -99,11 +96,10 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildSalesDetail[]|ObjectCollection findByUnitPrice(int $unit_price) Return ChildSalesDetail objects filtered by the unit_price column
  * @method     ChildSalesDetail[]|ObjectCollection findByDiscount(int $discount) Return ChildSalesDetail objects filtered by the discount column
  * @method     ChildSalesDetail[]|ObjectCollection findByTotalPrice(int $total_price) Return ChildSalesDetail objects filtered by the total_price column
- * @method     ChildSalesDetail[]|ObjectCollection findByStockBuy(int $stock_buy) Return ChildSalesDetail objects filtered by the stock_buy column
- * @method     ChildSalesDetail[]|ObjectCollection findByStockSellPublic(int $stock_sell_public) Return ChildSalesDetail objects filtered by the stock_sell_public column
- * @method     ChildSalesDetail[]|ObjectCollection findByStockSellDistributor(int $stock_sell_distributor) Return ChildSalesDetail objects filtered by the stock_sell_distributor column
- * @method     ChildSalesDetail[]|ObjectCollection findByStockSellMisc(int $stock_sell_misc) Return ChildSalesDetail objects filtered by the stock_sell_misc column
- * @method     ChildSalesDetail[]|ObjectCollection findByStockDiscount(int $stock_discount) Return ChildSalesDetail objects filtered by the stock_discount column
+ * @method     ChildSalesDetail[]|ObjectCollection findByBuy(int $buy) Return ChildSalesDetail objects filtered by the buy column
+ * @method     ChildSalesDetail[]|ObjectCollection findBySellPublic(int $sell_public) Return ChildSalesDetail objects filtered by the sell_public column
+ * @method     ChildSalesDetail[]|ObjectCollection findBySellDistributor(int $sell_distributor) Return ChildSalesDetail objects filtered by the sell_distributor column
+ * @method     ChildSalesDetail[]|ObjectCollection findBySellMisc(int $sell_misc) Return ChildSalesDetail objects filtered by the sell_misc column
  * @method     ChildSalesDetail[]|ObjectCollection findByStatus(string $status) Return ChildSalesDetail objects filtered by the status column
  * @method     ChildSalesDetail[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
@@ -194,7 +190,7 @@ abstract class SalesDetailQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT ID, SALES_ID, TYPE, STOCK_ID, AMOUNT, UNIT_ID, UNIT_PRICE, DISCOUNT, TOTAL_PRICE, STOCK_BUY, STOCK_SELL_PUBLIC, STOCK_SELL_DISTRIBUTOR, STOCK_SELL_MISC, STOCK_DISCOUNT, STATUS FROM sales_detail WHERE ID = :p0';
+        $sql = 'SELECT ID, SALES_ID, TYPE, STOCK_ID, AMOUNT, UNIT_ID, UNIT_PRICE, DISCOUNT, TOTAL_PRICE, BUY, SELL_PUBLIC, SELL_DISTRIBUTOR, SELL_MISC, STATUS FROM sales_detail WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -648,16 +644,16 @@ abstract class SalesDetailQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the stock_buy column
+     * Filter the query on the buy column
      *
      * Example usage:
      * <code>
-     * $query->filterByStockBuy(1234); // WHERE stock_buy = 1234
-     * $query->filterByStockBuy(array(12, 34)); // WHERE stock_buy IN (12, 34)
-     * $query->filterByStockBuy(array('min' => 12)); // WHERE stock_buy > 12
+     * $query->filterByBuy(1234); // WHERE buy = 1234
+     * $query->filterByBuy(array(12, 34)); // WHERE buy IN (12, 34)
+     * $query->filterByBuy(array('min' => 12)); // WHERE buy > 12
      * </code>
      *
-     * @param     mixed $stockBuy The value to use as filter.
+     * @param     mixed $buy The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -665,16 +661,16 @@ abstract class SalesDetailQuery extends ModelCriteria
      *
      * @return $this|ChildSalesDetailQuery The current query, for fluid interface
      */
-    public function filterByStockBuy($stockBuy = null, $comparison = null)
+    public function filterByBuy($buy = null, $comparison = null)
     {
-        if (is_array($stockBuy)) {
+        if (is_array($buy)) {
             $useMinMax = false;
-            if (isset($stockBuy['min'])) {
-                $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_BUY, $stockBuy['min'], Criteria::GREATER_EQUAL);
+            if (isset($buy['min'])) {
+                $this->addUsingAlias(SalesDetailTableMap::COL_BUY, $buy['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($stockBuy['max'])) {
-                $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_BUY, $stockBuy['max'], Criteria::LESS_EQUAL);
+            if (isset($buy['max'])) {
+                $this->addUsingAlias(SalesDetailTableMap::COL_BUY, $buy['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -685,20 +681,20 @@ abstract class SalesDetailQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_BUY, $stockBuy, $comparison);
+        return $this->addUsingAlias(SalesDetailTableMap::COL_BUY, $buy, $comparison);
     }
 
     /**
-     * Filter the query on the stock_sell_public column
+     * Filter the query on the sell_public column
      *
      * Example usage:
      * <code>
-     * $query->filterByStockSellPublic(1234); // WHERE stock_sell_public = 1234
-     * $query->filterByStockSellPublic(array(12, 34)); // WHERE stock_sell_public IN (12, 34)
-     * $query->filterByStockSellPublic(array('min' => 12)); // WHERE stock_sell_public > 12
+     * $query->filterBySellPublic(1234); // WHERE sell_public = 1234
+     * $query->filterBySellPublic(array(12, 34)); // WHERE sell_public IN (12, 34)
+     * $query->filterBySellPublic(array('min' => 12)); // WHERE sell_public > 12
      * </code>
      *
-     * @param     mixed $stockSellPublic The value to use as filter.
+     * @param     mixed $sellPublic The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -706,16 +702,16 @@ abstract class SalesDetailQuery extends ModelCriteria
      *
      * @return $this|ChildSalesDetailQuery The current query, for fluid interface
      */
-    public function filterByStockSellPublic($stockSellPublic = null, $comparison = null)
+    public function filterBySellPublic($sellPublic = null, $comparison = null)
     {
-        if (is_array($stockSellPublic)) {
+        if (is_array($sellPublic)) {
             $useMinMax = false;
-            if (isset($stockSellPublic['min'])) {
-                $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_SELL_PUBLIC, $stockSellPublic['min'], Criteria::GREATER_EQUAL);
+            if (isset($sellPublic['min'])) {
+                $this->addUsingAlias(SalesDetailTableMap::COL_SELL_PUBLIC, $sellPublic['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($stockSellPublic['max'])) {
-                $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_SELL_PUBLIC, $stockSellPublic['max'], Criteria::LESS_EQUAL);
+            if (isset($sellPublic['max'])) {
+                $this->addUsingAlias(SalesDetailTableMap::COL_SELL_PUBLIC, $sellPublic['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -726,20 +722,20 @@ abstract class SalesDetailQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_SELL_PUBLIC, $stockSellPublic, $comparison);
+        return $this->addUsingAlias(SalesDetailTableMap::COL_SELL_PUBLIC, $sellPublic, $comparison);
     }
 
     /**
-     * Filter the query on the stock_sell_distributor column
+     * Filter the query on the sell_distributor column
      *
      * Example usage:
      * <code>
-     * $query->filterByStockSellDistributor(1234); // WHERE stock_sell_distributor = 1234
-     * $query->filterByStockSellDistributor(array(12, 34)); // WHERE stock_sell_distributor IN (12, 34)
-     * $query->filterByStockSellDistributor(array('min' => 12)); // WHERE stock_sell_distributor > 12
+     * $query->filterBySellDistributor(1234); // WHERE sell_distributor = 1234
+     * $query->filterBySellDistributor(array(12, 34)); // WHERE sell_distributor IN (12, 34)
+     * $query->filterBySellDistributor(array('min' => 12)); // WHERE sell_distributor > 12
      * </code>
      *
-     * @param     mixed $stockSellDistributor The value to use as filter.
+     * @param     mixed $sellDistributor The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -747,16 +743,16 @@ abstract class SalesDetailQuery extends ModelCriteria
      *
      * @return $this|ChildSalesDetailQuery The current query, for fluid interface
      */
-    public function filterByStockSellDistributor($stockSellDistributor = null, $comparison = null)
+    public function filterBySellDistributor($sellDistributor = null, $comparison = null)
     {
-        if (is_array($stockSellDistributor)) {
+        if (is_array($sellDistributor)) {
             $useMinMax = false;
-            if (isset($stockSellDistributor['min'])) {
-                $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_SELL_DISTRIBUTOR, $stockSellDistributor['min'], Criteria::GREATER_EQUAL);
+            if (isset($sellDistributor['min'])) {
+                $this->addUsingAlias(SalesDetailTableMap::COL_SELL_DISTRIBUTOR, $sellDistributor['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($stockSellDistributor['max'])) {
-                $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_SELL_DISTRIBUTOR, $stockSellDistributor['max'], Criteria::LESS_EQUAL);
+            if (isset($sellDistributor['max'])) {
+                $this->addUsingAlias(SalesDetailTableMap::COL_SELL_DISTRIBUTOR, $sellDistributor['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -767,20 +763,20 @@ abstract class SalesDetailQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_SELL_DISTRIBUTOR, $stockSellDistributor, $comparison);
+        return $this->addUsingAlias(SalesDetailTableMap::COL_SELL_DISTRIBUTOR, $sellDistributor, $comparison);
     }
 
     /**
-     * Filter the query on the stock_sell_misc column
+     * Filter the query on the sell_misc column
      *
      * Example usage:
      * <code>
-     * $query->filterByStockSellMisc(1234); // WHERE stock_sell_misc = 1234
-     * $query->filterByStockSellMisc(array(12, 34)); // WHERE stock_sell_misc IN (12, 34)
-     * $query->filterByStockSellMisc(array('min' => 12)); // WHERE stock_sell_misc > 12
+     * $query->filterBySellMisc(1234); // WHERE sell_misc = 1234
+     * $query->filterBySellMisc(array(12, 34)); // WHERE sell_misc IN (12, 34)
+     * $query->filterBySellMisc(array('min' => 12)); // WHERE sell_misc > 12
      * </code>
      *
-     * @param     mixed $stockSellMisc The value to use as filter.
+     * @param     mixed $sellMisc The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -788,16 +784,16 @@ abstract class SalesDetailQuery extends ModelCriteria
      *
      * @return $this|ChildSalesDetailQuery The current query, for fluid interface
      */
-    public function filterByStockSellMisc($stockSellMisc = null, $comparison = null)
+    public function filterBySellMisc($sellMisc = null, $comparison = null)
     {
-        if (is_array($stockSellMisc)) {
+        if (is_array($sellMisc)) {
             $useMinMax = false;
-            if (isset($stockSellMisc['min'])) {
-                $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_SELL_MISC, $stockSellMisc['min'], Criteria::GREATER_EQUAL);
+            if (isset($sellMisc['min'])) {
+                $this->addUsingAlias(SalesDetailTableMap::COL_SELL_MISC, $sellMisc['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($stockSellMisc['max'])) {
-                $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_SELL_MISC, $stockSellMisc['max'], Criteria::LESS_EQUAL);
+            if (isset($sellMisc['max'])) {
+                $this->addUsingAlias(SalesDetailTableMap::COL_SELL_MISC, $sellMisc['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -808,48 +804,7 @@ abstract class SalesDetailQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_SELL_MISC, $stockSellMisc, $comparison);
-    }
-
-    /**
-     * Filter the query on the stock_discount column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByStockDiscount(1234); // WHERE stock_discount = 1234
-     * $query->filterByStockDiscount(array(12, 34)); // WHERE stock_discount IN (12, 34)
-     * $query->filterByStockDiscount(array('min' => 12)); // WHERE stock_discount > 12
-     * </code>
-     *
-     * @param     mixed $stockDiscount The value to use as filter.
-     *              Use scalar values for equality.
-     *              Use array values for in_array() equivalent.
-     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildSalesDetailQuery The current query, for fluid interface
-     */
-    public function filterByStockDiscount($stockDiscount = null, $comparison = null)
-    {
-        if (is_array($stockDiscount)) {
-            $useMinMax = false;
-            if (isset($stockDiscount['min'])) {
-                $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_DISCOUNT, $stockDiscount['min'], Criteria::GREATER_EQUAL);
-                $useMinMax = true;
-            }
-            if (isset($stockDiscount['max'])) {
-                $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_DISCOUNT, $stockDiscount['max'], Criteria::LESS_EQUAL);
-                $useMinMax = true;
-            }
-            if ($useMinMax) {
-                return $this;
-            }
-            if (null === $comparison) {
-                $comparison = Criteria::IN;
-            }
-        }
-
-        return $this->addUsingAlias(SalesDetailTableMap::COL_STOCK_DISCOUNT, $stockDiscount, $comparison);
+        return $this->addUsingAlias(SalesDetailTableMap::COL_SELL_MISC, $sellMisc, $comparison);
     }
 
     /**

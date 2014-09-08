@@ -100,25 +100,29 @@ class Combos
     {
         $stocks = StockQuery::create()
             ->filterByStatus('Active')
-            ->orderBy('name', 'ASC');
+            ->leftJoin('Product')
+            ->leftJoin('Unit');
 
-        stocks->useProductQuery();
         if(isset($params->query)){
             $stocks->condition('cond1', 'Product.Name like ?', "%$params->query%");
             $stocks->condition('cond2', 'Product.Code like ?', "%$params->query%");
             $stocks->where(array('cond1', 'cond2'), 'or');
         }
-        stocks->endUse();
         
         $stocks = $stocks
             ->select(array(
-                'id'
+                'unit_id',
+                'buy',
+                'sell_public',
+                'sell_distributor',
+                'sell_misc',
+                'discount',
             ))
-            ->leftJoin('Product')
-            ->withColumn('Product.Code', 'code')
-            ->withColumn('Product.Name', 'product')
-            ->leftJoin('Unit')
-            ->withColumn('Unit.Name', 'unit')
+            ->withColumn('Stock.Id', 'stock_id')
+            ->withColumn('Product.Code', 'product_code')
+            ->withColumn('Product.Name', 'product_name')
+            ->withColumn('Unit.Name', 'unit_name')
+            ->orderBy('product_name', 'ASC')
             ->limit(20)
             ->find($con);
 

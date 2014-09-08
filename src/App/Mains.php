@@ -181,6 +181,7 @@ class Mains implements MessageComponentInterface {
         
         // list of all method that can be called in current module
         $registeredMethod = array(
+            'create',
             'read'
         );
 

@@ -113,34 +113,28 @@ abstract class SalesDetail implements ActiveRecordInterface
     protected $total_price;
 
     /**
-     * The value for the stock_buy field.
+     * The value for the buy field.
      * @var        int
      */
-    protected $stock_buy;
+    protected $buy;
 
     /**
-     * The value for the stock_sell_public field.
+     * The value for the sell_public field.
      * @var        int
      */
-    protected $stock_sell_public;
+    protected $sell_public;
 
     /**
-     * The value for the stock_sell_distributor field.
+     * The value for the sell_distributor field.
      * @var        int
      */
-    protected $stock_sell_distributor;
+    protected $sell_distributor;
 
     /**
-     * The value for the stock_sell_misc field.
+     * The value for the sell_misc field.
      * @var        int
      */
-    protected $stock_sell_misc;
-
-    /**
-     * The value for the stock_discount field.
-     * @var        int
-     */
-    protected $stock_discount;
+    protected $sell_misc;
 
     /**
      * The value for the status field.
@@ -479,53 +473,43 @@ abstract class SalesDetail implements ActiveRecordInterface
     }
 
     /**
-     * Get the [stock_buy] column value.
+     * Get the [buy] column value.
      *
      * @return int
      */
-    public function getStockBuy()
+    public function getBuy()
     {
-        return $this->stock_buy;
+        return $this->buy;
     }
 
     /**
-     * Get the [stock_sell_public] column value.
+     * Get the [sell_public] column value.
      *
      * @return int
      */
-    public function getStockSellPublic()
+    public function getSellPublic()
     {
-        return $this->stock_sell_public;
+        return $this->sell_public;
     }
 
     /**
-     * Get the [stock_sell_distributor] column value.
+     * Get the [sell_distributor] column value.
      *
      * @return int
      */
-    public function getStockSellDistributor()
+    public function getSellDistributor()
     {
-        return $this->stock_sell_distributor;
+        return $this->sell_distributor;
     }
 
     /**
-     * Get the [stock_sell_misc] column value.
+     * Get the [sell_misc] column value.
      *
      * @return int
      */
-    public function getStockSellMisc()
+    public function getSellMisc()
     {
-        return $this->stock_sell_misc;
-    }
-
-    /**
-     * Get the [stock_discount] column value.
-     *
-     * @return int
-     */
-    public function getStockDiscount()
-    {
-        return $this->stock_discount;
+        return $this->sell_misc;
     }
 
     /**
@@ -601,22 +585,19 @@ abstract class SalesDetail implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : SalesDetailTableMap::translateFieldName('TotalPrice', TableMap::TYPE_PHPNAME, $indexType)];
             $this->total_price = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : SalesDetailTableMap::translateFieldName('StockBuy', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->stock_buy = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : SalesDetailTableMap::translateFieldName('Buy', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->buy = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : SalesDetailTableMap::translateFieldName('StockSellPublic', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->stock_sell_public = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : SalesDetailTableMap::translateFieldName('SellPublic', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->sell_public = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : SalesDetailTableMap::translateFieldName('StockSellDistributor', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->stock_sell_distributor = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : SalesDetailTableMap::translateFieldName('SellDistributor', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->sell_distributor = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : SalesDetailTableMap::translateFieldName('StockSellMisc', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->stock_sell_misc = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : SalesDetailTableMap::translateFieldName('SellMisc', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->sell_misc = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : SalesDetailTableMap::translateFieldName('StockDiscount', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->stock_discount = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 14 + $startcol : SalesDetailTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : SalesDetailTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
             $this->status = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
@@ -626,7 +607,7 @@ abstract class SalesDetail implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 15; // 15 = SalesDetailTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 14; // 14 = SalesDetailTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\ORM\\SalesDetail'), 0, $e);
@@ -852,104 +833,84 @@ abstract class SalesDetail implements ActiveRecordInterface
     } // setTotalPrice()
 
     /**
-     * Set the value of [stock_buy] column.
+     * Set the value of [buy] column.
      *
      * @param  int $v new value
      * @return $this|\ORM\SalesDetail The current object (for fluent API support)
      */
-    public function setStockBuy($v)
+    public function setBuy($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->stock_buy !== $v) {
-            $this->stock_buy = $v;
-            $this->modifiedColumns[SalesDetailTableMap::COL_STOCK_BUY] = true;
+        if ($this->buy !== $v) {
+            $this->buy = $v;
+            $this->modifiedColumns[SalesDetailTableMap::COL_BUY] = true;
         }
 
         return $this;
-    } // setStockBuy()
+    } // setBuy()
 
     /**
-     * Set the value of [stock_sell_public] column.
+     * Set the value of [sell_public] column.
      *
      * @param  int $v new value
      * @return $this|\ORM\SalesDetail The current object (for fluent API support)
      */
-    public function setStockSellPublic($v)
+    public function setSellPublic($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->stock_sell_public !== $v) {
-            $this->stock_sell_public = $v;
-            $this->modifiedColumns[SalesDetailTableMap::COL_STOCK_SELL_PUBLIC] = true;
+        if ($this->sell_public !== $v) {
+            $this->sell_public = $v;
+            $this->modifiedColumns[SalesDetailTableMap::COL_SELL_PUBLIC] = true;
         }
 
         return $this;
-    } // setStockSellPublic()
+    } // setSellPublic()
 
     /**
-     * Set the value of [stock_sell_distributor] column.
+     * Set the value of [sell_distributor] column.
      *
      * @param  int $v new value
      * @return $this|\ORM\SalesDetail The current object (for fluent API support)
      */
-    public function setStockSellDistributor($v)
+    public function setSellDistributor($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->stock_sell_distributor !== $v) {
-            $this->stock_sell_distributor = $v;
-            $this->modifiedColumns[SalesDetailTableMap::COL_STOCK_SELL_DISTRIBUTOR] = true;
+        if ($this->sell_distributor !== $v) {
+            $this->sell_distributor = $v;
+            $this->modifiedColumns[SalesDetailTableMap::COL_SELL_DISTRIBUTOR] = true;
         }
 
         return $this;
-    } // setStockSellDistributor()
+    } // setSellDistributor()
 
     /**
-     * Set the value of [stock_sell_misc] column.
+     * Set the value of [sell_misc] column.
      *
      * @param  int $v new value
      * @return $this|\ORM\SalesDetail The current object (for fluent API support)
      */
-    public function setStockSellMisc($v)
+    public function setSellMisc($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->stock_sell_misc !== $v) {
-            $this->stock_sell_misc = $v;
-            $this->modifiedColumns[SalesDetailTableMap::COL_STOCK_SELL_MISC] = true;
+        if ($this->sell_misc !== $v) {
+            $this->sell_misc = $v;
+            $this->modifiedColumns[SalesDetailTableMap::COL_SELL_MISC] = true;
         }
 
         return $this;
-    } // setStockSellMisc()
-
-    /**
-     * Set the value of [stock_discount] column.
-     *
-     * @param  int $v new value
-     * @return $this|\ORM\SalesDetail The current object (for fluent API support)
-     */
-    public function setStockDiscount($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->stock_discount !== $v) {
-            $this->stock_discount = $v;
-            $this->modifiedColumns[SalesDetailTableMap::COL_STOCK_DISCOUNT] = true;
-        }
-
-        return $this;
-    } // setStockDiscount()
+    } // setSellMisc()
 
     /**
      * Set the value of [status] column.
@@ -1200,20 +1161,17 @@ abstract class SalesDetail implements ActiveRecordInterface
         if ($this->isColumnModified(SalesDetailTableMap::COL_TOTAL_PRICE)) {
             $modifiedColumns[':p' . $index++]  = 'TOTAL_PRICE';
         }
-        if ($this->isColumnModified(SalesDetailTableMap::COL_STOCK_BUY)) {
-            $modifiedColumns[':p' . $index++]  = 'STOCK_BUY';
+        if ($this->isColumnModified(SalesDetailTableMap::COL_BUY)) {
+            $modifiedColumns[':p' . $index++]  = 'BUY';
         }
-        if ($this->isColumnModified(SalesDetailTableMap::COL_STOCK_SELL_PUBLIC)) {
-            $modifiedColumns[':p' . $index++]  = 'STOCK_SELL_PUBLIC';
+        if ($this->isColumnModified(SalesDetailTableMap::COL_SELL_PUBLIC)) {
+            $modifiedColumns[':p' . $index++]  = 'SELL_PUBLIC';
         }
-        if ($this->isColumnModified(SalesDetailTableMap::COL_STOCK_SELL_DISTRIBUTOR)) {
-            $modifiedColumns[':p' . $index++]  = 'STOCK_SELL_DISTRIBUTOR';
+        if ($this->isColumnModified(SalesDetailTableMap::COL_SELL_DISTRIBUTOR)) {
+            $modifiedColumns[':p' . $index++]  = 'SELL_DISTRIBUTOR';
         }
-        if ($this->isColumnModified(SalesDetailTableMap::COL_STOCK_SELL_MISC)) {
-            $modifiedColumns[':p' . $index++]  = 'STOCK_SELL_MISC';
-        }
-        if ($this->isColumnModified(SalesDetailTableMap::COL_STOCK_DISCOUNT)) {
-            $modifiedColumns[':p' . $index++]  = 'STOCK_DISCOUNT';
+        if ($this->isColumnModified(SalesDetailTableMap::COL_SELL_MISC)) {
+            $modifiedColumns[':p' . $index++]  = 'SELL_MISC';
         }
         if ($this->isColumnModified(SalesDetailTableMap::COL_STATUS)) {
             $modifiedColumns[':p' . $index++]  = 'STATUS';
@@ -1256,20 +1214,17 @@ abstract class SalesDetail implements ActiveRecordInterface
                     case 'TOTAL_PRICE':
                         $stmt->bindValue($identifier, $this->total_price, PDO::PARAM_INT);
                         break;
-                    case 'STOCK_BUY':
-                        $stmt->bindValue($identifier, $this->stock_buy, PDO::PARAM_INT);
+                    case 'BUY':
+                        $stmt->bindValue($identifier, $this->buy, PDO::PARAM_INT);
                         break;
-                    case 'STOCK_SELL_PUBLIC':
-                        $stmt->bindValue($identifier, $this->stock_sell_public, PDO::PARAM_INT);
+                    case 'SELL_PUBLIC':
+                        $stmt->bindValue($identifier, $this->sell_public, PDO::PARAM_INT);
                         break;
-                    case 'STOCK_SELL_DISTRIBUTOR':
-                        $stmt->bindValue($identifier, $this->stock_sell_distributor, PDO::PARAM_INT);
+                    case 'SELL_DISTRIBUTOR':
+                        $stmt->bindValue($identifier, $this->sell_distributor, PDO::PARAM_INT);
                         break;
-                    case 'STOCK_SELL_MISC':
-                        $stmt->bindValue($identifier, $this->stock_sell_misc, PDO::PARAM_INT);
-                        break;
-                    case 'STOCK_DISCOUNT':
-                        $stmt->bindValue($identifier, $this->stock_discount, PDO::PARAM_INT);
+                    case 'SELL_MISC':
+                        $stmt->bindValue($identifier, $this->sell_misc, PDO::PARAM_INT);
                         break;
                     case 'STATUS':
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
@@ -1364,21 +1319,18 @@ abstract class SalesDetail implements ActiveRecordInterface
                 return $this->getTotalPrice();
                 break;
             case 9:
-                return $this->getStockBuy();
+                return $this->getBuy();
                 break;
             case 10:
-                return $this->getStockSellPublic();
+                return $this->getSellPublic();
                 break;
             case 11:
-                return $this->getStockSellDistributor();
+                return $this->getSellDistributor();
                 break;
             case 12:
-                return $this->getStockSellMisc();
+                return $this->getSellMisc();
                 break;
             case 13:
-                return $this->getStockDiscount();
-                break;
-            case 14:
                 return $this->getStatus();
                 break;
             default:
@@ -1419,12 +1371,11 @@ abstract class SalesDetail implements ActiveRecordInterface
             $keys[6] => $this->getUnitPrice(),
             $keys[7] => $this->getDiscount(),
             $keys[8] => $this->getTotalPrice(),
-            $keys[9] => $this->getStockBuy(),
-            $keys[10] => $this->getStockSellPublic(),
-            $keys[11] => $this->getStockSellDistributor(),
-            $keys[12] => $this->getStockSellMisc(),
-            $keys[13] => $this->getStockDiscount(),
-            $keys[14] => $this->getStatus(),
+            $keys[9] => $this->getBuy(),
+            $keys[10] => $this->getSellPublic(),
+            $keys[11] => $this->getSellDistributor(),
+            $keys[12] => $this->getSellMisc(),
+            $keys[13] => $this->getStatus(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1503,21 +1454,18 @@ abstract class SalesDetail implements ActiveRecordInterface
                 $this->setTotalPrice($value);
                 break;
             case 9:
-                $this->setStockBuy($value);
+                $this->setBuy($value);
                 break;
             case 10:
-                $this->setStockSellPublic($value);
+                $this->setSellPublic($value);
                 break;
             case 11:
-                $this->setStockSellDistributor($value);
+                $this->setSellDistributor($value);
                 break;
             case 12:
-                $this->setStockSellMisc($value);
+                $this->setSellMisc($value);
                 break;
             case 13:
-                $this->setStockDiscount($value);
-                break;
-            case 14:
                 $this->setStatus($value);
                 break;
         } // switch()
@@ -1574,22 +1522,19 @@ abstract class SalesDetail implements ActiveRecordInterface
             $this->setTotalPrice($arr[$keys[8]]);
         }
         if (array_key_exists($keys[9], $arr)) {
-            $this->setStockBuy($arr[$keys[9]]);
+            $this->setBuy($arr[$keys[9]]);
         }
         if (array_key_exists($keys[10], $arr)) {
-            $this->setStockSellPublic($arr[$keys[10]]);
+            $this->setSellPublic($arr[$keys[10]]);
         }
         if (array_key_exists($keys[11], $arr)) {
-            $this->setStockSellDistributor($arr[$keys[11]]);
+            $this->setSellDistributor($arr[$keys[11]]);
         }
         if (array_key_exists($keys[12], $arr)) {
-            $this->setStockSellMisc($arr[$keys[12]]);
+            $this->setSellMisc($arr[$keys[12]]);
         }
         if (array_key_exists($keys[13], $arr)) {
-            $this->setStockDiscount($arr[$keys[13]]);
-        }
-        if (array_key_exists($keys[14], $arr)) {
-            $this->setStatus($arr[$keys[14]]);
+            $this->setStatus($arr[$keys[13]]);
         }
     }
 
@@ -1653,20 +1598,17 @@ abstract class SalesDetail implements ActiveRecordInterface
         if ($this->isColumnModified(SalesDetailTableMap::COL_TOTAL_PRICE)) {
             $criteria->add(SalesDetailTableMap::COL_TOTAL_PRICE, $this->total_price);
         }
-        if ($this->isColumnModified(SalesDetailTableMap::COL_STOCK_BUY)) {
-            $criteria->add(SalesDetailTableMap::COL_STOCK_BUY, $this->stock_buy);
+        if ($this->isColumnModified(SalesDetailTableMap::COL_BUY)) {
+            $criteria->add(SalesDetailTableMap::COL_BUY, $this->buy);
         }
-        if ($this->isColumnModified(SalesDetailTableMap::COL_STOCK_SELL_PUBLIC)) {
-            $criteria->add(SalesDetailTableMap::COL_STOCK_SELL_PUBLIC, $this->stock_sell_public);
+        if ($this->isColumnModified(SalesDetailTableMap::COL_SELL_PUBLIC)) {
+            $criteria->add(SalesDetailTableMap::COL_SELL_PUBLIC, $this->sell_public);
         }
-        if ($this->isColumnModified(SalesDetailTableMap::COL_STOCK_SELL_DISTRIBUTOR)) {
-            $criteria->add(SalesDetailTableMap::COL_STOCK_SELL_DISTRIBUTOR, $this->stock_sell_distributor);
+        if ($this->isColumnModified(SalesDetailTableMap::COL_SELL_DISTRIBUTOR)) {
+            $criteria->add(SalesDetailTableMap::COL_SELL_DISTRIBUTOR, $this->sell_distributor);
         }
-        if ($this->isColumnModified(SalesDetailTableMap::COL_STOCK_SELL_MISC)) {
-            $criteria->add(SalesDetailTableMap::COL_STOCK_SELL_MISC, $this->stock_sell_misc);
-        }
-        if ($this->isColumnModified(SalesDetailTableMap::COL_STOCK_DISCOUNT)) {
-            $criteria->add(SalesDetailTableMap::COL_STOCK_DISCOUNT, $this->stock_discount);
+        if ($this->isColumnModified(SalesDetailTableMap::COL_SELL_MISC)) {
+            $criteria->add(SalesDetailTableMap::COL_SELL_MISC, $this->sell_misc);
         }
         if ($this->isColumnModified(SalesDetailTableMap::COL_STATUS)) {
             $criteria->add(SalesDetailTableMap::COL_STATUS, $this->status);
@@ -1765,11 +1707,10 @@ abstract class SalesDetail implements ActiveRecordInterface
         $copyObj->setUnitPrice($this->getUnitPrice());
         $copyObj->setDiscount($this->getDiscount());
         $copyObj->setTotalPrice($this->getTotalPrice());
-        $copyObj->setStockBuy($this->getStockBuy());
-        $copyObj->setStockSellPublic($this->getStockSellPublic());
-        $copyObj->setStockSellDistributor($this->getStockSellDistributor());
-        $copyObj->setStockSellMisc($this->getStockSellMisc());
-        $copyObj->setStockDiscount($this->getStockDiscount());
+        $copyObj->setBuy($this->getBuy());
+        $copyObj->setSellPublic($this->getSellPublic());
+        $copyObj->setSellDistributor($this->getSellDistributor());
+        $copyObj->setSellMisc($this->getSellMisc());
         $copyObj->setStatus($this->getStatus());
         if ($makeNew) {
             $copyObj->setNew(true);
@@ -1977,11 +1918,10 @@ abstract class SalesDetail implements ActiveRecordInterface
         $this->unit_price = null;
         $this->discount = null;
         $this->total_price = null;
-        $this->stock_buy = null;
-        $this->stock_sell_public = null;
-        $this->stock_sell_distributor = null;
-        $this->stock_sell_misc = null;
-        $this->stock_discount = null;
+        $this->buy = null;
+        $this->sell_public = null;
+        $this->sell_distributor = null;
+        $this->sell_misc = null;
         $this->status = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();

@@ -112,11 +112,10 @@
         <column name="unit_price" phpName="UnitPrice" type="INTEGER" size="10" />
         <column name="discount" phpName="Discount" type="TINYINT" size="3" />
         <column name="total_price" phpName="TotalPrice" type="INTEGER" size="10" />
-        <column name="stock_buy" phpName="StockBuy" type="INTEGER" size="10" />
-        <column name="stock_sell_public" phpName="StockSellPublic" type="INTEGER" size="10" />
-        <column name="stock_sell_distributor" phpName="StockSellDistributor" type="INTEGER" size="10" />
-        <column name="stock_sell_misc" phpName="StockSellMisc" type="INTEGER" size="10" />
-        <column name="stock_discount" phpName="StockDiscount" type="TINYINT" size="3" />
+        <column name="buy" phpName="Buy" type="INTEGER" size="10" />
+        <column name="sell_public" phpName="SellPublic" type="INTEGER" size="10" />
+        <column name="sell_distributor" phpName="SellDistributor" type="INTEGER" size="10" />
+        <column name="sell_misc" phpName="SellMisc" type="INTEGER" size="10" />
         <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Deleted')" required="true" />
         <foreign-key foreignTable="sales" phpName="Sales" refPhpName="Detail" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="sales_id" foreign="id" />
