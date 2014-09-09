@@ -145,7 +145,7 @@ class ProductTableMap extends TableMap
         $this->addPrimaryKey('ID', 'Id', 'BIGINT', true, 20, null);
         $this->addColumn('CODE', 'Code', 'CHAR', false, 20, null);
         $this->addColumn('NAME', 'Name', 'CHAR', false, 64, null);
-        $this->addColumn('STATUS', 'Status', 'VARCHAR', false, null, null);
+        $this->addColumn('STATUS', 'Status', 'CHAR', false, null, null);
     } // initialize()
 
     /**

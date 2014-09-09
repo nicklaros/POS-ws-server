@@ -176,12 +176,12 @@ class StockTableMap extends TableMap
         $this->addForeignKey('PRODUCT_ID', 'ProductId', 'BIGINT', 'product', 'ID', false, 20, null);
         $this->addColumn('AMOUNT', 'Amount', 'BIGINT', false, 20, null);
         $this->addForeignKey('UNIT_ID', 'UnitId', 'BIGINT', 'unit', 'ID', false, 20, null);
-        $this->addColumn('BUY', 'Buy', 'BIGINT', false, 20, null);
-        $this->addColumn('SELL_PUBLIC', 'SellPublic', 'BIGINT', false, 20, null);
-        $this->addColumn('SELL_DISTRIBUTOR', 'SellDistributor', 'BIGINT', false, 20, null);
-        $this->addColumn('SELL_MISC', 'SellMisc', 'BIGINT', false, 20, null);
+        $this->addColumn('BUY', 'Buy', 'INTEGER', false, 10, null);
+        $this->addColumn('SELL_PUBLIC', 'SellPublic', 'INTEGER', false, 10, null);
+        $this->addColumn('SELL_DISTRIBUTOR', 'SellDistributor', 'INTEGER', false, 10, null);
+        $this->addColumn('SELL_MISC', 'SellMisc', 'INTEGER', false, 10, null);
         $this->addColumn('DISCOUNT', 'Discount', 'TINYINT', false, 3, null);
-        $this->addColumn('STATUS', 'Status', 'VARCHAR', true, null, null);
+        $this->addColumn('STATUS', 'Status', 'CHAR', true, null, null);
     } // initialize()
 
     /**
@@ -191,6 +191,7 @@ class StockTableMap extends TableMap
     {
         $this->addRelation('Product', '\\ORM\\Product', RelationMap::MANY_TO_ONE, array('product_id' => 'id', ), 'CASCADE', 'RESTRICT');
         $this->addRelation('Unit', '\\ORM\\Unit', RelationMap::MANY_TO_ONE, array('unit_id' => 'id', ), 'NO ACTION', 'RESTRICT');
+        $this->addRelation('Sales', '\\ORM\\SalesDetail', RelationMap::ONE_TO_MANY, array('id' => 'stock_id', ), 'RESTRICT', 'RESTRICT', 'Saless');
     } // buildRelations()
 
     /**
