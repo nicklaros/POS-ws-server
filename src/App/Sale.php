@@ -192,8 +192,8 @@ class Sale
             ->leftJoin('Cashier')
             ->filterByStatus('Active');
             
-        if(isset($params->code)) $sales->useProductQuery()->filterByCode("%$params->code%")->endUse();
-        if(isset($params->product)) $sales->useProductQuery()->filterByName("%$params->product%")->endUse();
+        if(isset($params->nota)) $sales->filterById($params->nota);
+        if(isset($params->customer)) $sales->useCustomerQuery()->filterByName("%$params->customer%")->endUse();
 
         $sales = $sales
             ->select(array(
@@ -251,7 +251,6 @@ class Sale
             ->setNote($params->note)
             ->setStatus('Active')
             ->save($con);
-            
         
         $products = json_decode($params->products);
         
