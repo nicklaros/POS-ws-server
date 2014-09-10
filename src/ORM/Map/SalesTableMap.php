@@ -186,6 +186,7 @@ class SalesTableMap extends TableMap
         $this->addRelation('Customer', '\\ORM\\Customer', RelationMap::MANY_TO_ONE, array('customer_id' => 'id', ), 'NO ACTION', 'RESTRICT');
         $this->addRelation('Cashier', '\\ORM\\UserDetail', RelationMap::MANY_TO_ONE, array('cashier_id' => 'id', ), 'NO ACTION', 'RESTRICT');
         $this->addRelation('Detail', '\\ORM\\SalesDetail', RelationMap::ONE_TO_MANY, array('id' => 'sales_id', ), 'CASCADE', 'RESTRICT', 'Details');
+        $this->addRelation('History', '\\ORM\\SalesHistory', RelationMap::ONE_TO_MANY, array('id' => 'sales_id', ), 'RESTRICT', 'RESTRICT', 'Histories');
     } // buildRelations()
     /**
      * Method to invalidate the instance pool of all tables related to sales     * by a foreign key with ON DELETE CASCADE

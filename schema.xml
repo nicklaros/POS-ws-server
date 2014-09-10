@@ -79,7 +79,7 @@
         <column name="time" phpName="Time" type="TIMESTAMP" />
         <column name="operation" phpName="Operation" type="VARCHAR" sqlType="ENUM('create', 'read', 'update', 'destroy')" />
         <column name="user_id" phpName="UserID" type="BIGINT" size="20" />
-        <foreign-key foreignTable="user_detail" phpName="UserDetail" refPhpName="History" onDelete="NO ACTION" onUpdate="RESTRICT">
+        <foreign-key foreignTable="user_detail" phpName="UserDetail" refPhpName="History" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="user_id" foreign="id" />
         </foreign-key>
     </table>
@@ -93,7 +93,7 @@
         <column name="paid" phpName="Paid" type="INTEGER" size="10" />
         <column name="cashier_id" phpName="CashierId" type="BIGINT" size="20" />
         <column name="note" phpName="Note" type="CHAR" size="32" />
-        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Deleted')" required="true" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Canceled')" required="true" />
         <foreign-key foreignTable="customer" phpName="Customer" refPhpName="Sales" onDelete="NO ACTION" onUpdate="RESTRICT">
             <reference local="customer_id" foreign="id" />
         </foreign-key>
@@ -116,7 +116,7 @@
         <column name="sell_public" phpName="SellPublic" type="INTEGER" size="10" />
         <column name="sell_distributor" phpName="SellDistributor" type="INTEGER" size="10" />
         <column name="sell_misc" phpName="SellMisc" type="INTEGER" size="10" />
-        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Deleted')" required="true" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Canceled')" required="true" />
         <foreign-key foreignTable="sales" phpName="Sales" refPhpName="Detail" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="sales_id" foreign="id" />
         </foreign-key>
@@ -125,6 +125,21 @@
         </foreign-key>
         <foreign-key foreignTable="unit" phpName="Unit" refPhpName="Sales" onDelete="NO ACTION" onUpdate="RESTRICT">
             <reference local="unit_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="sales_history" phpName="SalesHistory">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true" required="true" />
+        <column name="user_id" phpName="UserID" type="BIGINT" size="20" />
+        <column name="sales_id" phpName="SalesId" type="BIGINT" size="20" />
+        <column name="time" phpName="Time" type="TIMESTAMP" />
+        <column name="operation" phpName="Operation" type="VARCHAR" sqlType="ENUM('cancel', 'create', 'loadFormEdit', 'read', 'update', 'viewDetail')" />
+        <column name="data" phpName="Data" type="LONGVARCHAR" />
+        <foreign-key foreignTable="user_detail" phpName="UserDetail" refPhpName="SalesHistory" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="sales" phpName="Sales" refPhpName="History" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference local="sales_id" foreign="id" />
         </foreign-key>
     </table>
 

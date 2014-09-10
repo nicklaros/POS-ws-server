@@ -185,7 +185,8 @@ class Mains implements MessageComponentInterface {
             'destroy',
             'loadFormEdit',
             'read',
-            'update'
+            'update',
+            'viewDetail'
         );
 
         // if called method is not registered then deny access

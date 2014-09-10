@@ -3,11 +3,11 @@
 namespace App;
 
 use ORM\RolePermissionQuery;
-use ORM\RowHistory;
 use ORM\Sales;
 use ORM\SalesQuery;
 use ORM\SalesDetail;
 use ORM\SalesDetailQuery;
+use ORM\SalesHistory;
 use ORM\StockQuery;
 
 class Sale
@@ -33,6 +33,7 @@ class Sale
             ->save($con);
 
         $products = json_decode($params->products);
+        
         foreach ($products as $product)
         {
             // create new record representing product stock which is being saled
@@ -55,19 +56,24 @@ class Sale
 
             // substract stock 
             $stock = StockQuery::create()->findOneById($product->stock_id, $con);
-            $stock
-                ->setAmount($stock->getAmount() - $product->amount)
-                ->save($con);
-
+            if ($stock) {
+                $stock
+                    ->setAmount($stock->getAmount() - $product->amount)
+                    ->save($con);
+            }
         }
+        
 
+        $logData['params'] = $params;
+        
         // log history
-        $rowHistory = new RowHistory();
-        $rowHistory->setRowId($sales->getId())
-            ->setData('sales')
+        $salesHistory = new SalesHistory();
+        $salesHistory
+            ->setUserId($currentUser->id)
+            ->setSalesId($sales->getId())
             ->setTime(time())
             ->setOperation('create')
-            ->setUserId($currentUser->id)
+            ->setData(json_encode($logData))
             ->save($con);
 
         $results['success'] = true;
@@ -90,14 +96,38 @@ class Sale
 
         foreach($sales as $sale)
         {
-            $sale->setStatus('Deleted')->save($con);
+            $sale
+                ->setStatus('Canceled')
+                ->save($con);
 
-            $rowHistory = new RowHistory();
-            $rowHistory->setRowId($sale->getId())
-                ->setData('sales')
-                ->setTime(time())
-                ->setOperation("destroy")
+            $salesDetails = SalesDetailQuery::create()->filterBySalesId($sale->getId())->find($con);
+            
+            $detailId = []; 
+            foreach($salesDetails as $salesDetail){
+                $salesDetail
+                    ->setStatus('Canceled')
+                    ->save($con);
+                    
+                $stock = StockQuery::create()->findOneById($salesDetail->getStockId(), $con);
+                if ($stock) {
+                    $stock
+                        ->setAmount($stock->getAmount() + $salesDetail->getAmount())
+                        ->save($con);
+                }
+            
+                $detailId[] = $salesDetail->getId(); 
+            }
+
+            $logData['detailId'] = $detailId;
+            
+            // log history
+            $salesHistory = new SalesHistory();
+            $salesHistory
                 ->setUserId($currentUser->id)
+                ->setSalesId($sale->getId())
+                ->setTime(time())
+                ->setOperation('cancel')
+                ->setData(json_encode($logData))
                 ->save($con);
         }
 
@@ -106,74 +136,59 @@ class Sale
 
         return $results;
     }
-
+    
     public static function loadFormEdit($params, $currentUser, $con)
     {
         // check role's permission
         $permission = RolePermissionQuery::create()->select('update_sales')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $page = (isset($params->page) ? $params->page : 0);
-        $limit = (isset($params->limit) ? $params->limit : 100);
-
-        $sales = SalesQuery::create()
-            ->leftJoin('Customer')
-            ->leftJoin('Cashier')
-            ->filterByStatus('Active')
-            ->filterById($params->id)
-            ->select(array(
-                'id',
-                'date',
-                'customer_id',
-                'buy_price',
-                'total_price',
-                'paid',
-                'cashier_id',
-                'note'
-            ))
-            ->withColumn('CAST(Sales.Paid AS SIGNED) - CAST(Sales.TotalPrice AS SIGNED)', 'balance')
-            ->withColumn('Customer.Name', 'customer_name')
-            ->withColumn('Cashier.Name', 'cashier_name')
-            ->findOne($con);
-
-        if(!$sales) throw new \Exception("Data tidak ditemukan");
-
-        $salesDetails = SalesDetailQuery::create()
-            ->leftJoin('Unit')
-            ->filterByStatus('Active')
-            ->filterBySalesId($params->id)
-            ->select(array(
-                'id',
-                'sales_id',
-                'type',
-                'stock_id',
-                'amount',
-                'unit_id',
-                'unit_price',
-                'discount',
-                'total_price',
-                'buy',
-                'sell_public',
-                'sell_distributor',
-                'sell_misc'
-            ))
-            ->useStockQuery()
-                ->leftJoin('Product')
-                ->withColumn('Product.Name', 'product_name')
-            ->endUse()
-            ->withColumn('Unit.Name', 'unit_name')
-            ->find($con);
+        $sales = Sale::seeker($params, $currentUser, $con);
         
-        $detail = [];
-        foreach($salesDetails as $salesDetail) {
-            $salesDetail['total_buy_price'] = $salesDetail['buy'] * $salesDetail['amount'];
-            $salesDetail['total_price_wo_discount'] = $salesDetail['unit_price'] * $salesDetail['amount'];
-            $detail[] = $salesDetail;
-        }
+        $logData['data'] = $sales['data'];
+        $logData['detail'] = $sales['detail'];
+        
+        // log history
+        $salesHistory = new SalesHistory();
+        $salesHistory
+            ->setUserId($currentUser->id)
+            ->setSalesId($params->id)
+            ->setTime(time())
+            ->setOperation('loadFormEdit')
+            ->setData(json_encode($logData))
+            ->save($con);
         
         $results['success'] = true;
-        $results['data'] = $sales;
-        $results['detail'] = $detail;
+        $results['data'] = $sales['data'];
+        $results['detail'] = $sales['detail'];
+
+        return $results;
+    }
+    
+    public static function viewDetail($params, $currentUser, $con)
+    {
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('read_sales')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        $sales = Sale::seeker($params, $currentUser, $con);
+        
+        $logData['data'] = $sales['data'];
+        $logData['detail'] = $sales['detail'];
+        
+        // log history
+        $salesHistory = new SalesHistory();
+        $salesHistory
+            ->setUserId($currentUser->id)
+            ->setSalesId($params->id)
+            ->setTime(time())
+            ->setOperation('viewDetail')
+            ->setData(json_encode($logData))
+            ->save($con);
+        
+        $results['success'] = true;
+        $results['data'] = $sales['data'];
+        $results['detail'] = $sales['detail'];
 
         return $results;
     }
@@ -221,9 +236,24 @@ class Sale
         $total = $sales->getNbResults();
         
         $data = [];
-        foreach($sales as $row) {
-            $data[] = $row;
+        $resultId = [];
+        foreach($sales as $sale) {
+            $data[] = $sale;
+            $resultId[] = $sale['id'];
         }
+        
+        $logData['params'] = $params;
+        $logData['resultId'] = $resultId;
+        
+        // log history
+        $salesHistory = new SalesHistory();
+        $salesHistory
+            ->setUserId($currentUser->id)
+            ->setSalesId(0)
+            ->setTime(time())
+            ->setOperation('read')
+            ->setData(json_encode($logData))
+            ->save($con);
         
         $results['success'] = true;
         $results['data'] = $data;
@@ -310,17 +340,84 @@ class Sale
                 ->setStatus("Deleted")
                 ->save($con);
         }
-
-        $rowHistory = new RowHistory();
-        $rowHistory->setRowId($params->id)
-            ->setData('sales')
+        
+        $logData['params'] = $params;
+        
+        // log history
+        $salesHistory = new SalesHistory();
+        $salesHistory
+            ->setUserId($currentUser->id)
+            ->setSalesId($params->id)
             ->setTime(time())
             ->setOperation('update')
-            ->setUserId($currentUser->id)
+            ->setData(json_encode($logData))
             ->save($con);
 
         $results['success'] = true;
         $results['id'] = $params->id;
+
+        return $results;
+    }
+
+    private static function seeker($params, $currentUser, $con)
+    {
+        $sales = SalesQuery::create()
+            ->leftJoin('Customer')
+            ->leftJoin('Cashier')
+            ->filterByStatus('Active')
+            ->filterById($params->id)
+            ->select(array(
+                'id',
+                'date',
+                'customer_id',
+                'buy_price',
+                'total_price',
+                'paid',
+                'cashier_id',
+                'note'
+            ))
+            ->withColumn('CAST(Sales.Paid AS SIGNED) - CAST(Sales.TotalPrice AS SIGNED)', 'balance')
+            ->withColumn('Customer.Name', 'customer_name')
+            ->withColumn('Cashier.Name', 'cashier_name')
+            ->findOne($con);
+
+        if(!$sales) throw new \Exception("Data tidak ditemukan");
+
+        $salesDetails = SalesDetailQuery::create()
+            ->leftJoin('Unit')
+            ->filterByStatus('Active')
+            ->filterBySalesId($params->id)
+            ->select(array(
+                'id',
+                'sales_id',
+                'type',
+                'stock_id',
+                'amount',
+                'unit_id',
+                'unit_price',
+                'discount',
+                'total_price',
+                'buy',
+                'sell_public',
+                'sell_distributor',
+                'sell_misc'
+            ))
+            ->useStockQuery()
+                ->leftJoin('Product')
+                ->withColumn('Product.Name', 'product_name')
+            ->endUse()
+            ->withColumn('Unit.Name', 'unit_name')
+            ->find($con);
+        
+        $detail = [];
+        foreach($salesDetails as $salesDetail) {
+            $salesDetail['total_buy_price'] = $salesDetail['buy'] * $salesDetail['amount'];
+            $salesDetail['total_price_wo_discount'] = $salesDetail['unit_price'] * $salesDetail['amount'];
+            $detail[] = $salesDetail;
+        }
+        
+        $results['data'] = $sales;
+        $results['detail'] = $detail;
 
         return $results;
     }

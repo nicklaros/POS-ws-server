@@ -2,8 +2,8 @@
 
 namespace ORM\Map;
 
-use ORM\RowHistory;
-use ORM\RowHistoryQuery;
+use ORM\SalesHistory;
+use ORM\SalesHistoryQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'row_history' table.
+ * This class defines the structure of the 'sales_history' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class RowHistoryTableMap extends TableMap
+class SalesHistoryTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class RowHistoryTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'ORM.Map.RowHistoryTableMap';
+    const CLASS_NAME = 'ORM.Map.SalesHistoryTableMap';
 
     /**
      * The default database name for this class
@@ -44,17 +44,17 @@ class RowHistoryTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'row_history';
+    const TABLE_NAME = 'sales_history';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\ORM\\RowHistory';
+    const OM_CLASS = '\\ORM\\SalesHistory';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'ORM.RowHistory';
+    const CLASS_DEFAULT = 'ORM.SalesHistory';
 
     /**
      * The total number of columns
@@ -74,32 +74,32 @@ class RowHistoryTableMap extends TableMap
     /**
      * the column name for the ID field
      */
-    const COL_ID = 'row_history.ID';
-
-    /**
-     * the column name for the DATA field
-     */
-    const COL_DATA = 'row_history.DATA';
-
-    /**
-     * the column name for the ROW_ID field
-     */
-    const COL_ROW_ID = 'row_history.ROW_ID';
-
-    /**
-     * the column name for the TIME field
-     */
-    const COL_TIME = 'row_history.TIME';
-
-    /**
-     * the column name for the OPERATION field
-     */
-    const COL_OPERATION = 'row_history.OPERATION';
+    const COL_ID = 'sales_history.ID';
 
     /**
      * the column name for the USER_ID field
      */
-    const COL_USER_ID = 'row_history.USER_ID';
+    const COL_USER_ID = 'sales_history.USER_ID';
+
+    /**
+     * the column name for the SALES_ID field
+     */
+    const COL_SALES_ID = 'sales_history.SALES_ID';
+
+    /**
+     * the column name for the TIME field
+     */
+    const COL_TIME = 'sales_history.TIME';
+
+    /**
+     * the column name for the OPERATION field
+     */
+    const COL_OPERATION = 'sales_history.OPERATION';
+
+    /**
+     * the column name for the DATA field
+     */
+    const COL_DATA = 'sales_history.DATA';
 
     /**
      * The default string format for model objects of the related table
@@ -113,11 +113,11 @@ class RowHistoryTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Data', 'RowId', 'Time', 'Operation', 'UserID', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'data', 'rowId', 'time', 'operation', 'userID', ),
-        self::TYPE_COLNAME       => array(RowHistoryTableMap::COL_ID, RowHistoryTableMap::COL_DATA, RowHistoryTableMap::COL_ROW_ID, RowHistoryTableMap::COL_TIME, RowHistoryTableMap::COL_OPERATION, RowHistoryTableMap::COL_USER_ID, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_DATA', 'COL_ROW_ID', 'COL_TIME', 'COL_OPERATION', 'COL_USER_ID', ),
-        self::TYPE_FIELDNAME     => array('id', 'data', 'row_id', 'time', 'operation', 'user_id', ),
+        self::TYPE_PHPNAME       => array('Id', 'UserID', 'SalesId', 'Time', 'Operation', 'Data', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'userID', 'salesId', 'time', 'operation', 'data', ),
+        self::TYPE_COLNAME       => array(SalesHistoryTableMap::COL_ID, SalesHistoryTableMap::COL_USER_ID, SalesHistoryTableMap::COL_SALES_ID, SalesHistoryTableMap::COL_TIME, SalesHistoryTableMap::COL_OPERATION, SalesHistoryTableMap::COL_DATA, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_USER_ID', 'COL_SALES_ID', 'COL_TIME', 'COL_OPERATION', 'COL_DATA', ),
+        self::TYPE_FIELDNAME     => array('id', 'user_id', 'sales_id', 'time', 'operation', 'data', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
@@ -128,11 +128,11 @@ class RowHistoryTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Data' => 1, 'RowId' => 2, 'Time' => 3, 'Operation' => 4, 'UserID' => 5, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'data' => 1, 'rowId' => 2, 'time' => 3, 'operation' => 4, 'userID' => 5, ),
-        self::TYPE_COLNAME       => array(RowHistoryTableMap::COL_ID => 0, RowHistoryTableMap::COL_DATA => 1, RowHistoryTableMap::COL_ROW_ID => 2, RowHistoryTableMap::COL_TIME => 3, RowHistoryTableMap::COL_OPERATION => 4, RowHistoryTableMap::COL_USER_ID => 5, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_DATA' => 1, 'COL_ROW_ID' => 2, 'COL_TIME' => 3, 'COL_OPERATION' => 4, 'COL_USER_ID' => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'data' => 1, 'row_id' => 2, 'time' => 3, 'operation' => 4, 'user_id' => 5, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'UserID' => 1, 'SalesId' => 2, 'Time' => 3, 'Operation' => 4, 'Data' => 5, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'userID' => 1, 'salesId' => 2, 'time' => 3, 'operation' => 4, 'data' => 5, ),
+        self::TYPE_COLNAME       => array(SalesHistoryTableMap::COL_ID => 0, SalesHistoryTableMap::COL_USER_ID => 1, SalesHistoryTableMap::COL_SALES_ID => 2, SalesHistoryTableMap::COL_TIME => 3, SalesHistoryTableMap::COL_OPERATION => 4, SalesHistoryTableMap::COL_DATA => 5, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_USER_ID' => 1, 'COL_SALES_ID' => 2, 'COL_TIME' => 3, 'COL_OPERATION' => 4, 'COL_DATA' => 5, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'user_id' => 1, 'sales_id' => 2, 'time' => 3, 'operation' => 4, 'data' => 5, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
@@ -146,18 +146,18 @@ class RowHistoryTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('row_history');
-        $this->setPhpName('RowHistory');
-        $this->setClassName('\\ORM\\RowHistory');
+        $this->setName('sales_history');
+        $this->setPhpName('SalesHistory');
+        $this->setClassName('\\ORM\\SalesHistory');
         $this->setPackage('ORM');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('ID', 'Id', 'BIGINT', true, 20, null);
-        $this->addColumn('DATA', 'Data', 'CHAR', false, 32, null);
-        $this->addColumn('ROW_ID', 'RowId', 'BIGINT', false, 20, null);
+        $this->addForeignKey('USER_ID', 'UserID', 'BIGINT', 'user_detail', 'ID', false, 20, null);
+        $this->addForeignKey('SALES_ID', 'SalesId', 'BIGINT', 'sales', 'ID', false, 20, null);
         $this->addColumn('TIME', 'Time', 'TIMESTAMP', false, null, null);
         $this->addColumn('OPERATION', 'Operation', 'VARCHAR', false, null, null);
-        $this->addForeignKey('USER_ID', 'UserID', 'BIGINT', 'user_detail', 'ID', false, 20, null);
+        $this->addColumn('DATA', 'Data', 'LONGVARCHAR', false, null, null);
     } // initialize()
 
     /**
@@ -166,6 +166,7 @@ class RowHistoryTableMap extends TableMap
     public function buildRelations()
     {
         $this->addRelation('UserDetail', '\\ORM\\UserDetail', RelationMap::MANY_TO_ONE, array('user_id' => 'id', ), 'RESTRICT', 'RESTRICT');
+        $this->addRelation('Sales', '\\ORM\\Sales', RelationMap::MANY_TO_ONE, array('sales_id' => 'id', ), 'RESTRICT', 'RESTRICT');
     } // buildRelations()
 
     /**
@@ -225,7 +226,7 @@ class RowHistoryTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? RowHistoryTableMap::CLASS_DEFAULT : RowHistoryTableMap::OM_CLASS;
+        return $withPrefix ? SalesHistoryTableMap::CLASS_DEFAULT : SalesHistoryTableMap::OM_CLASS;
     }
 
     /**
@@ -239,22 +240,22 @@ class RowHistoryTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (RowHistory object, last column rank)
+     * @return array           (SalesHistory object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = RowHistoryTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = RowHistoryTableMap::getInstanceFromPool($key))) {
+        $key = SalesHistoryTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = SalesHistoryTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + RowHistoryTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + SalesHistoryTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = RowHistoryTableMap::OM_CLASS;
-            /** @var RowHistory $obj */
+            $cls = SalesHistoryTableMap::OM_CLASS;
+            /** @var SalesHistory $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            RowHistoryTableMap::addInstanceToPool($obj, $key);
+            SalesHistoryTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -277,18 +278,18 @@ class RowHistoryTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = RowHistoryTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = RowHistoryTableMap::getInstanceFromPool($key))) {
+            $key = SalesHistoryTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = SalesHistoryTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var RowHistory $obj */
+                /** @var SalesHistory $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                RowHistoryTableMap::addInstanceToPool($obj, $key);
+                SalesHistoryTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -309,19 +310,19 @@ class RowHistoryTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(RowHistoryTableMap::COL_ID);
-            $criteria->addSelectColumn(RowHistoryTableMap::COL_DATA);
-            $criteria->addSelectColumn(RowHistoryTableMap::COL_ROW_ID);
-            $criteria->addSelectColumn(RowHistoryTableMap::COL_TIME);
-            $criteria->addSelectColumn(RowHistoryTableMap::COL_OPERATION);
-            $criteria->addSelectColumn(RowHistoryTableMap::COL_USER_ID);
+            $criteria->addSelectColumn(SalesHistoryTableMap::COL_ID);
+            $criteria->addSelectColumn(SalesHistoryTableMap::COL_USER_ID);
+            $criteria->addSelectColumn(SalesHistoryTableMap::COL_SALES_ID);
+            $criteria->addSelectColumn(SalesHistoryTableMap::COL_TIME);
+            $criteria->addSelectColumn(SalesHistoryTableMap::COL_OPERATION);
+            $criteria->addSelectColumn(SalesHistoryTableMap::COL_DATA);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
-            $criteria->addSelectColumn($alias . '.DATA');
-            $criteria->addSelectColumn($alias . '.ROW_ID');
+            $criteria->addSelectColumn($alias . '.USER_ID');
+            $criteria->addSelectColumn($alias . '.SALES_ID');
             $criteria->addSelectColumn($alias . '.TIME');
             $criteria->addSelectColumn($alias . '.OPERATION');
-            $criteria->addSelectColumn($alias . '.USER_ID');
+            $criteria->addSelectColumn($alias . '.DATA');
         }
     }
 
@@ -334,7 +335,7 @@ class RowHistoryTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(RowHistoryTableMap::DATABASE_NAME)->getTable(RowHistoryTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(SalesHistoryTableMap::DATABASE_NAME)->getTable(SalesHistoryTableMap::TABLE_NAME);
     }
 
     /**
@@ -342,16 +343,16 @@ class RowHistoryTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(RowHistoryTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(RowHistoryTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new RowHistoryTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(SalesHistoryTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(SalesHistoryTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new SalesHistoryTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a RowHistory or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a SalesHistory or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or RowHistory object or primary key or array of primary keys
+     * @param mixed               $values Criteria or SalesHistory object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -362,27 +363,27 @@ class RowHistoryTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(RowHistoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(SalesHistoryTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \ORM\RowHistory) { // it's a model object
+        } elseif ($values instanceof \ORM\SalesHistory) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(RowHistoryTableMap::DATABASE_NAME);
-            $criteria->add(RowHistoryTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(SalesHistoryTableMap::DATABASE_NAME);
+            $criteria->add(SalesHistoryTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = RowHistoryQuery::create()->mergeWith($criteria);
+        $query = SalesHistoryQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            RowHistoryTableMap::clearInstancePool();
+            SalesHistoryTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                RowHistoryTableMap::removeInstanceFromPool($singleval);
+                SalesHistoryTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -390,20 +391,20 @@ class RowHistoryTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the row_history table.
+     * Deletes all rows from the sales_history table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return RowHistoryQuery::create()->doDeleteAll($con);
+        return SalesHistoryQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a RowHistory or Criteria object.
+     * Performs an INSERT on the database, given a SalesHistory or Criteria object.
      *
-     * @param mixed               $criteria Criteria or RowHistory object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or SalesHistory object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -412,22 +413,22 @@ class RowHistoryTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(RowHistoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(SalesHistoryTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from RowHistory object
+            $criteria = $criteria->buildCriteria(); // build Criteria from SalesHistory object
         }
 
-        if ($criteria->containsKey(RowHistoryTableMap::COL_ID) && $criteria->keyContainsValue(RowHistoryTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.RowHistoryTableMap::COL_ID.')');
+        if ($criteria->containsKey(SalesHistoryTableMap::COL_ID) && $criteria->keyContainsValue(SalesHistoryTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.SalesHistoryTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = RowHistoryQuery::create()->mergeWith($criteria);
+        $query = SalesHistoryQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -436,7 +437,7 @@ class RowHistoryTableMap extends TableMap
         });
     }
 
-} // RowHistoryTableMap
+} // SalesHistoryTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-RowHistoryTableMap::buildTableMap();
+SalesHistoryTableMap::buildTableMap();
