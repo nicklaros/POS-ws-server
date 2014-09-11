@@ -228,34 +228,6 @@ class Sale
         return $results;
     }
     
-    public static function viewDetail($params, $currentUser, $con)
-    {
-        // check role's permission
-        $permission = RolePermissionQuery::create()->select('read_sales')->findOneById($currentUser->role_id, $con);
-        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
-
-        $sales = Sale::seeker($params, $currentUser, $con);
-        
-        $logData['data'] = $sales['data'];
-        $logData['detail'] = $sales['detail'];
-        
-        // log history
-        $salesHistory = new SalesHistory();
-        $salesHistory
-            ->setUserId($currentUser->id)
-            ->setSalesId($params->id)
-            ->setTime(time())
-            ->setOperation('viewDetail')
-            ->setData(json_encode($logData))
-            ->save($con);
-        
-        $results['success'] = true;
-        $results['data'] = $sales['data'];
-        $results['detail'] = $sales['detail'];
-
-        return $results;
-    }
-
     public static function read($params, $currentUser, $con)
     {
         // check role's permission
@@ -419,6 +391,34 @@ class Sale
 
         $results['success'] = true;
         $results['id'] = $params->id;
+
+        return $results;
+    }
+
+    public static function viewDetail($params, $currentUser, $con)
+    {
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('read_sales')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        $sales = Sale::seeker($params, $currentUser, $con);
+        
+        $logData['data'] = $sales['data'];
+        $logData['detail'] = $sales['detail'];
+        
+        // log history
+        $salesHistory = new SalesHistory();
+        $salesHistory
+            ->setUserId($currentUser->id)
+            ->setSalesId($params->id)
+            ->setTime(time())
+            ->setOperation('viewDetail')
+            ->setData(json_encode($logData))
+            ->save($con);
+        
+        $results['success'] = true;
+        $results['data'] = $sales['data'];
+        $results['detail'] = $sales['detail'];
 
         return $results;
     }

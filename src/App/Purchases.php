@@ -202,10 +202,6 @@ class Purchases
         return $results;
     }
     
-    public static function viewDetail($params, $currentUser, $con)
-    {
-    }
-
     public static function read($params, $currentUser, $con)
     {
         // check role's permission
@@ -352,6 +348,34 @@ class Purchases
 
         $results['success'] = true;
         $results['id'] = $params->id;
+
+        return $results;
+    }
+
+    public static function viewDetail($params, $currentUser, $con)
+    {
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('read_sales')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        $purchase = Purchases::seeker($params, $currentUser, $con);
+        
+        $logData['data'] = $purchase['data'];
+        $logData['detail'] = $purchase['detail'];
+        
+        // log history
+        $purchaseHistory = new PurchaseHistory();
+        $purchaseHistory
+            ->setUserId($currentUser->id)
+            ->setPurchaseId($params->id)
+            ->setTime(time())
+            ->setOperation('viewDetail')
+            ->setData(json_encode($logData))
+            ->save($con);
+        
+        $results['success'] = true;
+        $results['data'] = $purchase['data'];
+        $results['detail'] = $purchase['detail'];
 
         return $results;
     }
