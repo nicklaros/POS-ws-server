@@ -112,6 +112,7 @@ class Combos
         $stocks = $stocks
             ->select(array(
                 'unit_id',
+                'amount',
                 'buy',
                 'sell_public',
                 'sell_distributor',

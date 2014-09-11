@@ -2,11 +2,6 @@
 
 namespace App;
 
-use App\Combos;
-use App\Sale;
-use App\Stocks;
-use App\Users;
-
 use ORM\RoleQuery;
 
 use Propel\Runtime\Propel;
@@ -98,7 +93,9 @@ class Mains implements MessageComponentInterface {
         // list of all module that can be requested
         $registeredModule = array(
             'combo',
+            'populate',
             'product',
+            'purchase',
             'sales',
             'stock',
             'user'
@@ -151,6 +148,26 @@ class Mains implements MessageComponentInterface {
 
         return $results;
     }
+
+    private function populate($from, $method, $params, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'stock'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Populate::$method($params, $currentUser, $con);
+
+        return $results;
+    }
     
     private function product($from, $method, $params, $con){
         $results = [];
@@ -172,6 +189,27 @@ class Mains implements MessageComponentInterface {
 
         // route to requested module and method
         $results = Products::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+
+    private function purchase($from, $method, $params, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create',
+            'read'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Purchases::$method($params, $currentUser, $con);
 
         return $results;
     }
@@ -206,6 +244,7 @@ class Mains implements MessageComponentInterface {
         
         // list of all method that can be called in current module
         $registeredMethod = array(
+            'addVariant',
             'create',
             'destroy',
             'loadFormEdit',

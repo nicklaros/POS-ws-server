@@ -13,6 +13,69 @@ use ORM\StockQuery;
 class Sale
 {
 
+    private static function seeker($params, $currentUser, $con)
+    {
+        $sales = SalesQuery::create()
+            ->leftJoin('Customer')
+            ->leftJoin('Cashier')
+            ->filterByStatus('Active')
+            ->filterById($params->id)
+            ->select(array(
+                'id',
+                'date',
+                'customer_id',
+                'buy_price',
+                'total_price',
+                'paid',
+                'cashier_id',
+                'note'
+            ))
+            ->withColumn('CAST(Sales.Paid AS SIGNED) - CAST(Sales.TotalPrice AS SIGNED)', 'balance')
+            ->withColumn('Customer.Name', 'customer_name')
+            ->withColumn('Cashier.Name', 'cashier_name')
+            ->findOne($con);
+
+        if(!$sales) throw new \Exception("Data tidak ditemukan");
+
+        $salesDetails = SalesDetailQuery::create()
+            ->leftJoin('Unit')
+            ->filterByStatus('Active')
+            ->filterBySalesId($params->id)
+            ->select(array(
+                'id',
+                'sales_id',
+                'type',
+                'stock_id',
+                'amount',
+                'unit_id',
+                'unit_price',
+                'discount',
+                'total_price',
+                'buy',
+                'sell_public',
+                'sell_distributor',
+                'sell_misc'
+            ))
+            ->useStockQuery()
+                ->leftJoin('Product')
+                ->withColumn('Product.Name', 'product_name')
+            ->endUse()
+            ->withColumn('Unit.Name', 'unit_name')
+            ->find($con);
+        
+        $detail = [];
+        foreach($salesDetails as $salesDetail) {
+            $salesDetail['total_buy_price'] = $salesDetail['buy'] * $salesDetail['amount'];
+            $salesDetail['total_price_wo_discount'] = $salesDetail['unit_price'] * $salesDetail['amount'];
+            $detail[] = $salesDetail;
+        }
+        
+        $results['data'] = $sales;
+        $results['detail'] = $detail;
+
+        return $results;
+    }
+
     public static function create($params, $currentUser, $con)
     {
         // check role's permission
@@ -355,69 +418,6 @@ class Sale
 
         $results['success'] = true;
         $results['id'] = $params->id;
-
-        return $results;
-    }
-
-    private static function seeker($params, $currentUser, $con)
-    {
-        $sales = SalesQuery::create()
-            ->leftJoin('Customer')
-            ->leftJoin('Cashier')
-            ->filterByStatus('Active')
-            ->filterById($params->id)
-            ->select(array(
-                'id',
-                'date',
-                'customer_id',
-                'buy_price',
-                'total_price',
-                'paid',
-                'cashier_id',
-                'note'
-            ))
-            ->withColumn('CAST(Sales.Paid AS SIGNED) - CAST(Sales.TotalPrice AS SIGNED)', 'balance')
-            ->withColumn('Customer.Name', 'customer_name')
-            ->withColumn('Cashier.Name', 'cashier_name')
-            ->findOne($con);
-
-        if(!$sales) throw new \Exception("Data tidak ditemukan");
-
-        $salesDetails = SalesDetailQuery::create()
-            ->leftJoin('Unit')
-            ->filterByStatus('Active')
-            ->filterBySalesId($params->id)
-            ->select(array(
-                'id',
-                'sales_id',
-                'type',
-                'stock_id',
-                'amount',
-                'unit_id',
-                'unit_price',
-                'discount',
-                'total_price',
-                'buy',
-                'sell_public',
-                'sell_distributor',
-                'sell_misc'
-            ))
-            ->useStockQuery()
-                ->leftJoin('Product')
-                ->withColumn('Product.Name', 'product_name')
-            ->endUse()
-            ->withColumn('Unit.Name', 'unit_name')
-            ->find($con);
-        
-        $detail = [];
-        foreach($salesDetails as $salesDetail) {
-            $salesDetail['total_buy_price'] = $salesDetail['buy'] * $salesDetail['amount'];
-            $salesDetail['total_price_wo_discount'] = $salesDetail['unit_price'] * $salesDetail['amount'];
-            $detail[] = $salesDetail;
-        }
-        
-        $results['data'] = $sales;
-        $results['detail'] = $detail;
 
         return $results;
     }

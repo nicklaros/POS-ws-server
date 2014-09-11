@@ -191,6 +191,7 @@ class StockTableMap extends TableMap
     {
         $this->addRelation('Product', '\\ORM\\Product', RelationMap::MANY_TO_ONE, array('product_id' => 'id', ), 'CASCADE', 'RESTRICT');
         $this->addRelation('Unit', '\\ORM\\Unit', RelationMap::MANY_TO_ONE, array('unit_id' => 'id', ), 'NO ACTION', 'RESTRICT');
+        $this->addRelation('Purchase', '\\ORM\\PurchaseDetail', RelationMap::ONE_TO_MANY, array('id' => 'stock_id', ), 'RESTRICT', 'RESTRICT', 'Purchases');
         $this->addRelation('Sales', '\\ORM\\SalesDetail', RelationMap::ONE_TO_MANY, array('id' => 'stock_id', ), 'RESTRICT', 'RESTRICT', 'Saless');
     } // buildRelations()
 

@@ -43,6 +43,48 @@
         <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Deleted')" />
     </table>
 
+    <table name="purchase" phpName="Purchase">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="date" phpName="Date" type="DATE" />
+        <column name="supplier_id" phpName="SupplierId" type="BIGINT" size="20" />
+        <column name="total_price" phpName="TotalPrice" type="INTEGER" size="10" />
+        <column name="note" phpName="Note" type="CHAR" size="32" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Canceled')" required="true" />
+        <foreign-key foreignTable="supplier" phpName="Supplier" refPhpName="Purchase" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference local="supplier_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="purchase_detail" phpName="PurchaseDetail">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="purchase_id" phpName="PurchaseId" type="BIGINT" size="20" />
+        <column name="stock_id" phpName="StockId" type="BIGINT" size="20" />
+        <column name="amount" phpName="Amount" type="TINYINT" size="3" />
+        <column name="total_price" phpName="TotalPrice" type="INTEGER" size="10" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Canceled')" required="true" />
+        <foreign-key foreignTable="purchase" phpName="Purchase" refPhpName="Detail" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference local="purchase_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="stock" phpName="Stock" refPhpName="Purchase" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference local="stock_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="purchase_history" phpName="PurchaseHistory">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true" required="true" />
+        <column name="user_id" phpName="UserID" type="BIGINT" size="20" />
+        <column name="purchase_id" phpName="PurchaseId" type="BIGINT" size="20" />
+        <column name="time" phpName="Time" type="TIMESTAMP" />
+        <column name="operation" phpName="Operation" type="VARCHAR" sqlType="ENUM('cancel', 'create', 'loadFormEdit', 'read', 'update', 'viewDetail')" />
+        <column name="data" phpName="Data" type="LONGVARCHAR" />
+        <foreign-key foreignTable="user_detail" phpName="UserDetail" refPhpName="PurchaseHistory" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="purchase" phpName="Purchase" refPhpName="History" onDelete="NO ACTION" onUpdate="RESTRICT">
+            <reference local="purchase_id" foreign="id" />
+        </foreign-key>
+    </table>
+
     <table name="role" phpName="Role">
         <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
         <column name="name" phpName="Name" type="CHAR" size="128" />
@@ -54,6 +96,10 @@
         <column name="read_product" phpName="ReadProduct" type="BOOLEAN" />
         <column name="update_product" phpName="UpdateProduct" type="BOOLEAN" />
         <column name="destroy_product" phpName="DestroyProduct" type="BOOLEAN" />
+        <column name="create_purchase" phpName="CreatePurchase" type="BOOLEAN" />
+        <column name="read_purchase" phpName="ReadPurchase" type="BOOLEAN" />
+        <column name="update_purchase" phpName="UpdatePurchase" type="BOOLEAN" />
+        <column name="destroy_purchase" phpName="DestroyPurchase" type="BOOLEAN" />
         <column name="create_sales" phpName="CreateSales" type="BOOLEAN" />
         <column name="read_sales" phpName="ReadSales" type="BOOLEAN" />
         <column name="update_sales" phpName="UpdateSales" type="BOOLEAN" />
@@ -94,10 +140,10 @@
         <column name="cashier_id" phpName="CashierId" type="BIGINT" size="20" />
         <column name="note" phpName="Note" type="CHAR" size="32" />
         <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Canceled')" required="true" />
-        <foreign-key foreignTable="customer" phpName="Customer" refPhpName="Sales" onDelete="NO ACTION" onUpdate="RESTRICT">
+        <foreign-key foreignTable="customer" phpName="Customer" refPhpName="Sales" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="customer_id" foreign="id" />
         </foreign-key>
-        <foreign-key foreignTable="user_detail" phpName="Cashier" refPhpName="Sales" onDelete="NO ACTION" onUpdate="RESTRICT">
+        <foreign-key foreignTable="user_detail" phpName="Cashier" refPhpName="Sales" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="cashier_id" foreign="id" />
         </foreign-key>
     </table>
@@ -138,7 +184,7 @@
         <foreign-key foreignTable="user_detail" phpName="UserDetail" refPhpName="SalesHistory" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="user_id" foreign="id" />
         </foreign-key>
-        <foreign-key foreignTable="sales" phpName="Sales" refPhpName="History" onDelete="RESTRICT" onUpdate="RESTRICT">
+        <foreign-key foreignTable="sales" phpName="Sales" refPhpName="History" onDelete="NO ACTION" onUpdate="RESTRICT">
             <reference local="sales_id" foreign="id" />
         </foreign-key>
     </table>
@@ -160,6 +206,14 @@
         <foreign-key foreignTable="unit" phpName="Unit" refPhpName="Stock" onDelete="NO ACTION" onUpdate="RESTRICT">
             <reference local="unit_id" foreign="id" />
         </foreign-key>
+    </table>
+
+    <table name="supplier" phpName="Supplier">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="name" phpName="Name" type="CHAR" size="128" />
+        <column name="address" phpName="Address" type="CHAR" size="128" />
+        <column name="phone" phpName="Phone" type="CHAR" size="20" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Deleted')" />
     </table>
 
     <table name="unit" phpName="Unit">

@@ -166,7 +166,7 @@ class SalesHistoryTableMap extends TableMap
     public function buildRelations()
     {
         $this->addRelation('UserDetail', '\\ORM\\UserDetail', RelationMap::MANY_TO_ONE, array('user_id' => 'id', ), 'RESTRICT', 'RESTRICT');
-        $this->addRelation('Sales', '\\ORM\\Sales', RelationMap::MANY_TO_ONE, array('sales_id' => 'id', ), 'RESTRICT', 'RESTRICT');
+        $this->addRelation('Sales', '\\ORM\\Sales', RelationMap::MANY_TO_ONE, array('sales_id' => 'id', ), 'NO ACTION', 'RESTRICT');
     } // buildRelations()
 
     /**

@@ -2,8 +2,8 @@
 
 namespace ORM\Map;
 
-use ORM\Sales;
-use ORM\SalesQuery;
+use ORM\Purchase;
+use ORM\PurchaseQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'sales' table.
+ * This class defines the structure of the 'purchase' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class SalesTableMap extends TableMap
+class PurchaseTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class SalesTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'ORM.Map.SalesTableMap';
+    const CLASS_NAME = 'ORM.Map.PurchaseTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class SalesTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'sales';
+    const TABLE_NAME = 'purchase';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\ORM\\Sales';
+    const OM_CLASS = '\\ORM\\Purchase';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'ORM.Sales';
+    const CLASS_DEFAULT = 'ORM.Purchase';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 9;
+    const NUM_COLUMNS = 6;
 
     /**
      * The number of lazy-loaded columns
@@ -69,52 +69,37 @@ class SalesTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 9;
+    const NUM_HYDRATE_COLUMNS = 6;
 
     /**
      * the column name for the ID field
      */
-    const COL_ID = 'sales.ID';
+    const COL_ID = 'purchase.ID';
 
     /**
      * the column name for the DATE field
      */
-    const COL_DATE = 'sales.DATE';
+    const COL_DATE = 'purchase.DATE';
 
     /**
-     * the column name for the CUSTOMER_ID field
+     * the column name for the SUPPLIER_ID field
      */
-    const COL_CUSTOMER_ID = 'sales.CUSTOMER_ID';
-
-    /**
-     * the column name for the BUY_PRICE field
-     */
-    const COL_BUY_PRICE = 'sales.BUY_PRICE';
+    const COL_SUPPLIER_ID = 'purchase.SUPPLIER_ID';
 
     /**
      * the column name for the TOTAL_PRICE field
      */
-    const COL_TOTAL_PRICE = 'sales.TOTAL_PRICE';
-
-    /**
-     * the column name for the PAID field
-     */
-    const COL_PAID = 'sales.PAID';
-
-    /**
-     * the column name for the CASHIER_ID field
-     */
-    const COL_CASHIER_ID = 'sales.CASHIER_ID';
+    const COL_TOTAL_PRICE = 'purchase.TOTAL_PRICE';
 
     /**
      * the column name for the NOTE field
      */
-    const COL_NOTE = 'sales.NOTE';
+    const COL_NOTE = 'purchase.NOTE';
 
     /**
      * the column name for the STATUS field
      */
-    const COL_STATUS = 'sales.STATUS';
+    const COL_STATUS = 'purchase.STATUS';
 
     /**
      * The default string format for model objects of the related table
@@ -128,12 +113,12 @@ class SalesTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Date', 'CustomerId', 'BuyPrice', 'TotalPrice', 'Paid', 'CashierId', 'Note', 'Status', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'date', 'customerId', 'buyPrice', 'totalPrice', 'paid', 'cashierId', 'note', 'status', ),
-        self::TYPE_COLNAME       => array(SalesTableMap::COL_ID, SalesTableMap::COL_DATE, SalesTableMap::COL_CUSTOMER_ID, SalesTableMap::COL_BUY_PRICE, SalesTableMap::COL_TOTAL_PRICE, SalesTableMap::COL_PAID, SalesTableMap::COL_CASHIER_ID, SalesTableMap::COL_NOTE, SalesTableMap::COL_STATUS, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_DATE', 'COL_CUSTOMER_ID', 'COL_BUY_PRICE', 'COL_TOTAL_PRICE', 'COL_PAID', 'COL_CASHIER_ID', 'COL_NOTE', 'COL_STATUS', ),
-        self::TYPE_FIELDNAME     => array('id', 'date', 'customer_id', 'buy_price', 'total_price', 'paid', 'cashier_id', 'note', 'status', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        self::TYPE_PHPNAME       => array('Id', 'Date', 'SupplierId', 'TotalPrice', 'Note', 'Status', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'date', 'supplierId', 'totalPrice', 'note', 'status', ),
+        self::TYPE_COLNAME       => array(PurchaseTableMap::COL_ID, PurchaseTableMap::COL_DATE, PurchaseTableMap::COL_SUPPLIER_ID, PurchaseTableMap::COL_TOTAL_PRICE, PurchaseTableMap::COL_NOTE, PurchaseTableMap::COL_STATUS, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_DATE', 'COL_SUPPLIER_ID', 'COL_TOTAL_PRICE', 'COL_NOTE', 'COL_STATUS', ),
+        self::TYPE_FIELDNAME     => array('id', 'date', 'supplier_id', 'total_price', 'note', 'status', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -143,12 +128,12 @@ class SalesTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Date' => 1, 'CustomerId' => 2, 'BuyPrice' => 3, 'TotalPrice' => 4, 'Paid' => 5, 'CashierId' => 6, 'Note' => 7, 'Status' => 8, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'date' => 1, 'customerId' => 2, 'buyPrice' => 3, 'totalPrice' => 4, 'paid' => 5, 'cashierId' => 6, 'note' => 7, 'status' => 8, ),
-        self::TYPE_COLNAME       => array(SalesTableMap::COL_ID => 0, SalesTableMap::COL_DATE => 1, SalesTableMap::COL_CUSTOMER_ID => 2, SalesTableMap::COL_BUY_PRICE => 3, SalesTableMap::COL_TOTAL_PRICE => 4, SalesTableMap::COL_PAID => 5, SalesTableMap::COL_CASHIER_ID => 6, SalesTableMap::COL_NOTE => 7, SalesTableMap::COL_STATUS => 8, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_DATE' => 1, 'COL_CUSTOMER_ID' => 2, 'COL_BUY_PRICE' => 3, 'COL_TOTAL_PRICE' => 4, 'COL_PAID' => 5, 'COL_CASHIER_ID' => 6, 'COL_NOTE' => 7, 'COL_STATUS' => 8, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'date' => 1, 'customer_id' => 2, 'buy_price' => 3, 'total_price' => 4, 'paid' => 5, 'cashier_id' => 6, 'note' => 7, 'status' => 8, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Date' => 1, 'SupplierId' => 2, 'TotalPrice' => 3, 'Note' => 4, 'Status' => 5, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'date' => 1, 'supplierId' => 2, 'totalPrice' => 3, 'note' => 4, 'status' => 5, ),
+        self::TYPE_COLNAME       => array(PurchaseTableMap::COL_ID => 0, PurchaseTableMap::COL_DATE => 1, PurchaseTableMap::COL_SUPPLIER_ID => 2, PurchaseTableMap::COL_TOTAL_PRICE => 3, PurchaseTableMap::COL_NOTE => 4, PurchaseTableMap::COL_STATUS => 5, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_DATE' => 1, 'COL_SUPPLIER_ID' => 2, 'COL_TOTAL_PRICE' => 3, 'COL_NOTE' => 4, 'COL_STATUS' => 5, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'date' => 1, 'supplier_id' => 2, 'total_price' => 3, 'note' => 4, 'status' => 5, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -161,19 +146,16 @@ class SalesTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('sales');
-        $this->setPhpName('Sales');
-        $this->setClassName('\\ORM\\Sales');
+        $this->setName('purchase');
+        $this->setPhpName('Purchase');
+        $this->setClassName('\\ORM\\Purchase');
         $this->setPackage('ORM');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('ID', 'Id', 'BIGINT', true, 20, null);
         $this->addColumn('DATE', 'Date', 'DATE', false, null, null);
-        $this->addForeignKey('CUSTOMER_ID', 'CustomerId', 'BIGINT', 'customer', 'ID', false, 20, null);
-        $this->addColumn('BUY_PRICE', 'BuyPrice', 'INTEGER', false, 10, null);
+        $this->addForeignKey('SUPPLIER_ID', 'SupplierId', 'BIGINT', 'supplier', 'ID', false, 20, null);
         $this->addColumn('TOTAL_PRICE', 'TotalPrice', 'INTEGER', false, 10, null);
-        $this->addColumn('PAID', 'Paid', 'INTEGER', false, 10, null);
-        $this->addForeignKey('CASHIER_ID', 'CashierId', 'BIGINT', 'user_detail', 'ID', false, 20, null);
         $this->addColumn('NOTE', 'Note', 'CHAR', false, 32, null);
         $this->addColumn('STATUS', 'Status', 'CHAR', true, null, null);
     } // initialize()
@@ -183,19 +165,18 @@ class SalesTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Customer', '\\ORM\\Customer', RelationMap::MANY_TO_ONE, array('customer_id' => 'id', ), 'RESTRICT', 'RESTRICT');
-        $this->addRelation('Cashier', '\\ORM\\UserDetail', RelationMap::MANY_TO_ONE, array('cashier_id' => 'id', ), 'RESTRICT', 'RESTRICT');
-        $this->addRelation('Detail', '\\ORM\\SalesDetail', RelationMap::ONE_TO_MANY, array('id' => 'sales_id', ), 'CASCADE', 'RESTRICT', 'Details');
-        $this->addRelation('History', '\\ORM\\SalesHistory', RelationMap::ONE_TO_MANY, array('id' => 'sales_id', ), 'NO ACTION', 'RESTRICT', 'Histories');
+        $this->addRelation('Supplier', '\\ORM\\Supplier', RelationMap::MANY_TO_ONE, array('supplier_id' => 'id', ), 'RESTRICT', 'RESTRICT');
+        $this->addRelation('Detail', '\\ORM\\PurchaseDetail', RelationMap::ONE_TO_MANY, array('id' => 'purchase_id', ), 'CASCADE', 'RESTRICT', 'Details');
+        $this->addRelation('History', '\\ORM\\PurchaseHistory', RelationMap::ONE_TO_MANY, array('id' => 'purchase_id', ), 'NO ACTION', 'RESTRICT', 'Histories');
     } // buildRelations()
     /**
-     * Method to invalidate the instance pool of all tables related to sales     * by a foreign key with ON DELETE CASCADE
+     * Method to invalidate the instance pool of all tables related to purchase     * by a foreign key with ON DELETE CASCADE
      */
     public static function clearRelatedInstancePool()
     {
         // Invalidate objects in related instance pools,
         // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
-        SalesDetailTableMap::clearInstancePool();
+        PurchaseDetailTableMap::clearInstancePool();
     }
 
     /**
@@ -255,7 +236,7 @@ class SalesTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? SalesTableMap::CLASS_DEFAULT : SalesTableMap::OM_CLASS;
+        return $withPrefix ? PurchaseTableMap::CLASS_DEFAULT : PurchaseTableMap::OM_CLASS;
     }
 
     /**
@@ -269,22 +250,22 @@ class SalesTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Sales object, last column rank)
+     * @return array           (Purchase object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = SalesTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = SalesTableMap::getInstanceFromPool($key))) {
+        $key = PurchaseTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = PurchaseTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + SalesTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + PurchaseTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = SalesTableMap::OM_CLASS;
-            /** @var Sales $obj */
+            $cls = PurchaseTableMap::OM_CLASS;
+            /** @var Purchase $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            SalesTableMap::addInstanceToPool($obj, $key);
+            PurchaseTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -307,18 +288,18 @@ class SalesTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = SalesTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = SalesTableMap::getInstanceFromPool($key))) {
+            $key = PurchaseTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = PurchaseTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Sales $obj */
+                /** @var Purchase $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                SalesTableMap::addInstanceToPool($obj, $key);
+                PurchaseTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -339,23 +320,17 @@ class SalesTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(SalesTableMap::COL_ID);
-            $criteria->addSelectColumn(SalesTableMap::COL_DATE);
-            $criteria->addSelectColumn(SalesTableMap::COL_CUSTOMER_ID);
-            $criteria->addSelectColumn(SalesTableMap::COL_BUY_PRICE);
-            $criteria->addSelectColumn(SalesTableMap::COL_TOTAL_PRICE);
-            $criteria->addSelectColumn(SalesTableMap::COL_PAID);
-            $criteria->addSelectColumn(SalesTableMap::COL_CASHIER_ID);
-            $criteria->addSelectColumn(SalesTableMap::COL_NOTE);
-            $criteria->addSelectColumn(SalesTableMap::COL_STATUS);
+            $criteria->addSelectColumn(PurchaseTableMap::COL_ID);
+            $criteria->addSelectColumn(PurchaseTableMap::COL_DATE);
+            $criteria->addSelectColumn(PurchaseTableMap::COL_SUPPLIER_ID);
+            $criteria->addSelectColumn(PurchaseTableMap::COL_TOTAL_PRICE);
+            $criteria->addSelectColumn(PurchaseTableMap::COL_NOTE);
+            $criteria->addSelectColumn(PurchaseTableMap::COL_STATUS);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
             $criteria->addSelectColumn($alias . '.DATE');
-            $criteria->addSelectColumn($alias . '.CUSTOMER_ID');
-            $criteria->addSelectColumn($alias . '.BUY_PRICE');
+            $criteria->addSelectColumn($alias . '.SUPPLIER_ID');
             $criteria->addSelectColumn($alias . '.TOTAL_PRICE');
-            $criteria->addSelectColumn($alias . '.PAID');
-            $criteria->addSelectColumn($alias . '.CASHIER_ID');
             $criteria->addSelectColumn($alias . '.NOTE');
             $criteria->addSelectColumn($alias . '.STATUS');
         }
@@ -370,7 +345,7 @@ class SalesTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(SalesTableMap::DATABASE_NAME)->getTable(SalesTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(PurchaseTableMap::DATABASE_NAME)->getTable(PurchaseTableMap::TABLE_NAME);
     }
 
     /**
@@ -378,16 +353,16 @@ class SalesTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(SalesTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(SalesTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new SalesTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(PurchaseTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(PurchaseTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new PurchaseTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Sales or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Purchase or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Sales object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Purchase object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -398,27 +373,27 @@ class SalesTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(SalesTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(PurchaseTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \ORM\Sales) { // it's a model object
+        } elseif ($values instanceof \ORM\Purchase) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(SalesTableMap::DATABASE_NAME);
-            $criteria->add(SalesTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(PurchaseTableMap::DATABASE_NAME);
+            $criteria->add(PurchaseTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = SalesQuery::create()->mergeWith($criteria);
+        $query = PurchaseQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            SalesTableMap::clearInstancePool();
+            PurchaseTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                SalesTableMap::removeInstanceFromPool($singleval);
+                PurchaseTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -426,20 +401,20 @@ class SalesTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the sales table.
+     * Deletes all rows from the purchase table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return SalesQuery::create()->doDeleteAll($con);
+        return PurchaseQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Sales or Criteria object.
+     * Performs an INSERT on the database, given a Purchase or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Sales object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Purchase object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -448,22 +423,22 @@ class SalesTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(SalesTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(PurchaseTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Sales object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Purchase object
         }
 
-        if ($criteria->containsKey(SalesTableMap::COL_ID) && $criteria->keyContainsValue(SalesTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.SalesTableMap::COL_ID.')');
+        if ($criteria->containsKey(PurchaseTableMap::COL_ID) && $criteria->keyContainsValue(PurchaseTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.PurchaseTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = SalesQuery::create()->mergeWith($criteria);
+        $query = PurchaseQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -472,7 +447,7 @@ class SalesTableMap extends TableMap
         });
     }
 
-} // SalesTableMap
+} // PurchaseTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-SalesTableMap::buildTableMap();
+PurchaseTableMap::buildTableMap();

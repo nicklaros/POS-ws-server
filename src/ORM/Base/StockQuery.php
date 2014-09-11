@@ -54,11 +54,15 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStockQuery rightJoinUnit($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Unit relation
  * @method     ChildStockQuery innerJoinUnit($relationAlias = null) Adds a INNER JOIN clause to the query using the Unit relation
  *
+ * @method     ChildStockQuery leftJoinPurchase($relationAlias = null) Adds a LEFT JOIN clause to the query using the Purchase relation
+ * @method     ChildStockQuery rightJoinPurchase($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Purchase relation
+ * @method     ChildStockQuery innerJoinPurchase($relationAlias = null) Adds a INNER JOIN clause to the query using the Purchase relation
+ *
  * @method     ChildStockQuery leftJoinSales($relationAlias = null) Adds a LEFT JOIN clause to the query using the Sales relation
  * @method     ChildStockQuery rightJoinSales($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Sales relation
  * @method     ChildStockQuery innerJoinSales($relationAlias = null) Adds a INNER JOIN clause to the query using the Sales relation
  *
- * @method     \ORM\ProductQuery|\ORM\UnitQuery|\ORM\SalesDetailQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \ORM\ProductQuery|\ORM\UnitQuery|\ORM\PurchaseDetailQuery|\ORM\SalesDetailQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildStock findOne(ConnectionInterface $con = null) Return the first ChildStock matching the query
  * @method     ChildStock findOneOrCreate(ConnectionInterface $con = null) Return the first ChildStock matching the query, or a new ChildStock object populated from the query conditions when no match is found
@@ -814,6 +818,79 @@ abstract class StockQuery extends ModelCriteria
         return $this
             ->joinUnit($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Unit', '\ORM\UnitQuery');
+    }
+
+    /**
+     * Filter the query by a related \ORM\PurchaseDetail object
+     *
+     * @param \ORM\PurchaseDetail|ObjectCollection $purchaseDetail  the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildStockQuery The current query, for fluid interface
+     */
+    public function filterByPurchase($purchaseDetail, $comparison = null)
+    {
+        if ($purchaseDetail instanceof \ORM\PurchaseDetail) {
+            return $this
+                ->addUsingAlias(StockTableMap::COL_ID, $purchaseDetail->getStockId(), $comparison);
+        } elseif ($purchaseDetail instanceof ObjectCollection) {
+            return $this
+                ->usePurchaseQuery()
+                ->filterByPrimaryKeys($purchaseDetail->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByPurchase() only accepts arguments of type \ORM\PurchaseDetail or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Purchase relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildStockQuery The current query, for fluid interface
+     */
+    public function joinPurchase($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Purchase');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Purchase');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Purchase relation PurchaseDetail object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \ORM\PurchaseDetailQuery A secondary query class using the current class as primary query
+     */
+    public function usePurchaseQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinPurchase($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Purchase', '\ORM\PurchaseDetailQuery');
     }
 
     /**

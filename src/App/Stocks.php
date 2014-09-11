@@ -11,6 +11,78 @@ use ORM\StockQuery;
 class Stocks
 {
 
+    private static function seeker($params, $currentUser, $con)
+    {
+        $stock = StockQuery::create()
+            ->leftJoin('Product')
+            ->leftJoin('Unit')
+            ->filterByStatus('Active')
+            ->select(array(
+                'id',
+                'product_id',
+                'amount',
+                'unit_id',
+                'buy',
+                'sell_public',
+                'sell_distributor',
+                'sell_misc',
+                'discount',
+            ))
+            ->withColumn('Product.Name', 'product_name')
+            ->withColumn('Unit.Name', 'unit_name')
+            ->findOneById($params->id);
+
+        if (!$stock) throw new \Exception('Data tidak ditemukan');
+
+        $results['data'] = $stock;
+
+        return $results;
+    }
+
+    public static function addVariant($params, $currentUser, $con)
+    {
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('create_stock')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        // check whether chosen product is still Active
+        $product = ProductQuery::create()->select('status')->findOneById($params->product_id, $con);
+        if (!$product || $product != 'Active') throw new \Exception('Produk tidak ditemukan. Mungkin Produk itu sudah dihapus.');
+        
+        // make sure there are no duplicate (same product and unit) variant in stock
+        $count = StockQuery::create()
+            ->filterByProductId($params->product_id)
+            ->filterByUnitId($params->unit_id)
+            ->count($con);
+        if ($count != 0) throw new \Exception('Gagal menyimpan karena variant sudah ada.');
+        
+        // create new stock
+        $stock = new Stock();
+        $stock
+            ->setProductId($params->product_id)
+            ->setUnitId($params->unit_id)
+            ->setStatus('Active')
+            ->save($con);
+
+        $params->id = $stock->getId();
+        
+        $stock = Stocks::seeker($params, $currentUser, $con);
+
+        // log history
+        $rowHistory = new RowHistory();
+        $rowHistory->setRowId($params->id)
+            ->setData('stock')
+            ->setTime(time())
+            ->setOperation('create')
+            ->setUserId($currentUser->id)
+            ->save($con);
+        
+        $results['success'] = true;
+        $results['data'] = $stock['data'];
+
+        return $results;
+    }
+
     public static function create($params, $currentUser, $con)
     {
         // check role's permission
@@ -20,6 +92,13 @@ class Stocks
         // check whether chosen product is still Active
         $product = ProductQuery::create()->select('status')->findOneById($params->product_id, $con);
         if (!$product || $product != 'Active') throw new \Exception('Produk tidak ditemukan. Mungkin Produk itu sudah dihapus.');
+        
+        // make sure there are no duplicate (same product and unit) variant in stock
+        $count = StockQuery::create()
+            ->filterByProductId($params->product_id)
+            ->filterByStockId($params->stock_id)
+            ->count($con);
+        if ($count != 0) throw new \Exception('Gagal menyimpan karena variant sudah ada.');
         
         // create new stock
         $stock = new Stock();
@@ -87,30 +166,11 @@ class Stocks
         $permission = RolePermissionQuery::create()->select('update_stock')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $stock = StockQuery::create()
-            ->filterByStatus('Active')
-            ->select(array(
-                'id',
-                'product_id',
-                'amount',
-                'unit_id',
-                'buy',
-                'sell_public',
-                'sell_distributor',
-                'sell_misc',
-                'discount',
-            ))
-            ->leftJoin('Product')
-            ->withColumn('Product.Name', 'product')
-            ->leftJoin('Unit')
-            ->withColumn('Unit.Name', 'unit')
-            ->findOneById($params->id);
-
-        if (!$stock) throw new \Exception('Data tidak ditemukan');
-
+        $stock = Stocks::seeker($params, $currentUser, $con);
+        
         $results['success'] = true;
-        $results['data'] = $stock;
-
+        $results['data'] = $stock['data'];
+        
         return $results;
     }
 

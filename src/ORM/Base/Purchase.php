@@ -2,21 +2,18 @@
 
 namespace ORM\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
+use ORM\Purchase as ChildPurchase;
+use ORM\PurchaseDetail as ChildPurchaseDetail;
+use ORM\PurchaseDetailQuery as ChildPurchaseDetailQuery;
 use ORM\PurchaseHistory as ChildPurchaseHistory;
 use ORM\PurchaseHistoryQuery as ChildPurchaseHistoryQuery;
-use ORM\RowHistory as ChildRowHistory;
-use ORM\RowHistoryQuery as ChildRowHistoryQuery;
-use ORM\Sales as ChildSales;
-use ORM\SalesHistory as ChildSalesHistory;
-use ORM\SalesHistoryQuery as ChildSalesHistoryQuery;
-use ORM\SalesQuery as ChildSalesQuery;
-use ORM\User as ChildUser;
-use ORM\UserDetail as ChildUserDetail;
-use ORM\UserDetailQuery as ChildUserDetailQuery;
-use ORM\UserQuery as ChildUserQuery;
-use ORM\Map\UserDetailTableMap;
+use ORM\PurchaseQuery as ChildPurchaseQuery;
+use ORM\Supplier as ChildSupplier;
+use ORM\SupplierQuery as ChildSupplierQuery;
+use ORM\Map\PurchaseTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -29,13 +26,14 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Util\PropelDateTime;
 
-abstract class UserDetail implements ActiveRecordInterface
+abstract class Purchase implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\ORM\\Map\\UserDetailTableMap';
+    const TABLE_MAP = '\\ORM\\Map\\PurchaseTableMap';
 
 
     /**
@@ -71,51 +69,51 @@ abstract class UserDetail implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the name field.
-     * @var        string
+     * The value for the date field.
+     * @var        \DateTime
      */
-    protected $name;
+    protected $date;
 
     /**
-     * The value for the address field.
+     * The value for the supplier_id field.
      * @var        string
      */
-    protected $address;
+    protected $supplier_id;
 
     /**
-     * The value for the phone field.
+     * The value for the total_price field.
+     * @var        int
+     */
+    protected $total_price;
+
+    /**
+     * The value for the note field.
      * @var        string
      */
-    protected $phone;
+    protected $note;
 
     /**
-     * @var        ChildUser
+     * The value for the status field.
+     * @var        string
      */
-    protected $aUser;
+    protected $status;
+
+    /**
+     * @var        ChildSupplier
+     */
+    protected $aSupplier;
+
+    /**
+     * @var        ObjectCollection|ChildPurchaseDetail[] Collection to store aggregation of ChildPurchaseDetail objects.
+     */
+    protected $collDetails;
+    protected $collDetailsPartial;
 
     /**
      * @var        ObjectCollection|ChildPurchaseHistory[] Collection to store aggregation of ChildPurchaseHistory objects.
      */
-    protected $collPurchaseHistories;
-    protected $collPurchaseHistoriesPartial;
-
-    /**
-     * @var        ObjectCollection|ChildRowHistory[] Collection to store aggregation of ChildRowHistory objects.
-     */
     protected $collHistories;
     protected $collHistoriesPartial;
-
-    /**
-     * @var        ObjectCollection|ChildSales[] Collection to store aggregation of ChildSales objects.
-     */
-    protected $collSaless;
-    protected $collSalessPartial;
-
-    /**
-     * @var        ObjectCollection|ChildSalesHistory[] Collection to store aggregation of ChildSalesHistory objects.
-     */
-    protected $collSalesHistories;
-    protected $collSalesHistoriesPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -127,30 +125,18 @@ abstract class UserDetail implements ActiveRecordInterface
 
     /**
      * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildPurchaseHistory[]
+     * @var ObjectCollection|ChildPurchaseDetail[]
      */
-    protected $purchaseHistoriesScheduledForDeletion = null;
+    protected $detailsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildRowHistory[]
+     * @var ObjectCollection|ChildPurchaseHistory[]
      */
     protected $historiesScheduledForDeletion = null;
 
     /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildSales[]
-     */
-    protected $salessScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildSalesHistory[]
-     */
-    protected $salesHistoriesScheduledForDeletion = null;
-
-    /**
-     * Initializes internal state of ORM\Base\UserDetail object.
+     * Initializes internal state of ORM\Base\Purchase object.
      */
     public function __construct()
     {
@@ -245,9 +231,9 @@ abstract class UserDetail implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>UserDetail</code> instance.  If
-     * <code>obj</code> is an instance of <code>UserDetail</code>, delegates to
-     * <code>equals(UserDetail)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>Purchase</code> instance.  If
+     * <code>obj</code> is an instance of <code>Purchase</code>, delegates to
+     * <code>equals(Purchase)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -313,7 +299,7 @@ abstract class UserDetail implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|UserDetail The current object, for fluid interface
+     * @return $this|Purchase The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -377,33 +363,63 @@ abstract class UserDetail implements ActiveRecordInterface
     }
 
     /**
-     * Get the [name] column value.
+     * Get the [optionally formatted] temporal [date] column value.
      *
-     * @return string
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw \DateTime object will be returned.
+     *
+     * @return string|\DateTime Formatted date/time value as string or \DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
      */
-    public function getName()
+    public function getDate($format = NULL)
     {
-        return $this->name;
+        if ($format === null) {
+            return $this->date;
+        } else {
+            return $this->date instanceof \DateTime ? $this->date->format($format) : null;
+        }
     }
 
     /**
-     * Get the [address] column value.
+     * Get the [supplier_id] column value.
      *
      * @return string
      */
-    public function getAddress()
+    public function getSupplierId()
     {
-        return $this->address;
+        return $this->supplier_id;
     }
 
     /**
-     * Get the [phone] column value.
+     * Get the [total_price] column value.
+     *
+     * @return int
+     */
+    public function getTotalPrice()
+    {
+        return $this->total_price;
+    }
+
+    /**
+     * Get the [note] column value.
      *
      * @return string
      */
-    public function getPhone()
+    public function getNote()
     {
-        return $this->phone;
+        return $this->note;
+    }
+
+    /**
+     * Get the [status] column value.
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 
     /**
@@ -442,17 +458,26 @@ abstract class UserDetail implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : UserDetailTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : PurchaseTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : UserDetailTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->name = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : PurchaseTableMap::translateFieldName('Date', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00') {
+                $col = null;
+            }
+            $this->date = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : UserDetailTableMap::translateFieldName('Address', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->address = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : PurchaseTableMap::translateFieldName('SupplierId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->supplier_id = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : UserDetailTableMap::translateFieldName('Phone', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->phone = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PurchaseTableMap::translateFieldName('TotalPrice', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->total_price = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PurchaseTableMap::translateFieldName('Note', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->note = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PurchaseTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->status = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -461,10 +486,10 @@ abstract class UserDetail implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 4; // 4 = UserDetailTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = PurchaseTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\ORM\\UserDetail'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\ORM\\Purchase'), 0, $e);
         }
     }
 
@@ -483,8 +508,8 @@ abstract class UserDetail implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aUser !== null && $this->id !== $this->aUser->getId()) {
-            $this->aUser = null;
+        if ($this->aSupplier !== null && $this->supplier_id !== $this->aSupplier->getId()) {
+            $this->aSupplier = null;
         }
     } // ensureConsistency
 
@@ -492,7 +517,7 @@ abstract class UserDetail implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param  string $v new value
-     * @return $this|\ORM\UserDetail The current object (for fluent API support)
+     * @return $this|\ORM\Purchase The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -502,75 +527,115 @@ abstract class UserDetail implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[UserDetailTableMap::COL_ID] = true;
-        }
-
-        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
-            $this->aUser = null;
+            $this->modifiedColumns[PurchaseTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
-     * Set the value of [name] column.
+     * Sets the value of [date] column to a normalized version of the date/time value specified.
      *
-     * @param  string $v new value
-     * @return $this|\ORM\UserDetail The current object (for fluent API support)
+     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\ORM\Purchase The current object (for fluent API support)
      */
-    public function setName($v)
+    public function setDate($v)
     {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->name !== $v) {
-            $this->name = $v;
-            $this->modifiedColumns[UserDetailTableMap::COL_NAME] = true;
-        }
+        $dt = PropelDateTime::newInstance($v, null, '\DateTime');
+        if ($this->date !== null || $dt !== null) {
+            if ($dt !== $this->date) {
+                $this->date = $dt;
+                $this->modifiedColumns[PurchaseTableMap::COL_DATE] = true;
+            }
+        } // if either are not null
 
         return $this;
-    } // setName()
+    } // setDate()
 
     /**
-     * Set the value of [address] column.
+     * Set the value of [supplier_id] column.
      *
      * @param  string $v new value
-     * @return $this|\ORM\UserDetail The current object (for fluent API support)
+     * @return $this|\ORM\Purchase The current object (for fluent API support)
      */
-    public function setAddress($v)
+    public function setSupplierId($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->address !== $v) {
-            $this->address = $v;
-            $this->modifiedColumns[UserDetailTableMap::COL_ADDRESS] = true;
+        if ($this->supplier_id !== $v) {
+            $this->supplier_id = $v;
+            $this->modifiedColumns[PurchaseTableMap::COL_SUPPLIER_ID] = true;
+        }
+
+        if ($this->aSupplier !== null && $this->aSupplier->getId() !== $v) {
+            $this->aSupplier = null;
         }
 
         return $this;
-    } // setAddress()
+    } // setSupplierId()
 
     /**
-     * Set the value of [phone] column.
+     * Set the value of [total_price] column.
+     *
+     * @param  int $v new value
+     * @return $this|\ORM\Purchase The current object (for fluent API support)
+     */
+    public function setTotalPrice($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->total_price !== $v) {
+            $this->total_price = $v;
+            $this->modifiedColumns[PurchaseTableMap::COL_TOTAL_PRICE] = true;
+        }
+
+        return $this;
+    } // setTotalPrice()
+
+    /**
+     * Set the value of [note] column.
      *
      * @param  string $v new value
-     * @return $this|\ORM\UserDetail The current object (for fluent API support)
+     * @return $this|\ORM\Purchase The current object (for fluent API support)
      */
-    public function setPhone($v)
+    public function setNote($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->phone !== $v) {
-            $this->phone = $v;
-            $this->modifiedColumns[UserDetailTableMap::COL_PHONE] = true;
+        if ($this->note !== $v) {
+            $this->note = $v;
+            $this->modifiedColumns[PurchaseTableMap::COL_NOTE] = true;
         }
 
         return $this;
-    } // setPhone()
+    } // setNote()
+
+    /**
+     * Set the value of [status] column.
+     *
+     * @param  string $v new value
+     * @return $this|\ORM\Purchase The current object (for fluent API support)
+     */
+    public function setStatus($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->status !== $v) {
+            $this->status = $v;
+            $this->modifiedColumns[PurchaseTableMap::COL_STATUS] = true;
+        }
+
+        return $this;
+    } // setStatus()
 
     /**
      * Reloads this object from datastore based on primary key and (optionally) resets all associated objects.
@@ -593,13 +658,13 @@ abstract class UserDetail implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(UserDetailTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(PurchaseTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildUserDetailQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildPurchaseQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -609,14 +674,10 @@ abstract class UserDetail implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aUser = null;
-            $this->collPurchaseHistories = null;
+            $this->aSupplier = null;
+            $this->collDetails = null;
 
             $this->collHistories = null;
-
-            $this->collSaless = null;
-
-            $this->collSalesHistories = null;
 
         } // if (deep)
     }
@@ -627,8 +688,8 @@ abstract class UserDetail implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see UserDetail::setDeleted()
-     * @see UserDetail::isDeleted()
+     * @see Purchase::setDeleted()
+     * @see Purchase::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -637,11 +698,11 @@ abstract class UserDetail implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserDetailTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(PurchaseTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildUserDetailQuery::create()
+            $deleteQuery = ChildPurchaseQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -672,7 +733,7 @@ abstract class UserDetail implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserDetailTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(PurchaseTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -691,7 +752,7 @@ abstract class UserDetail implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                UserDetailTableMap::addInstanceToPool($this);
+                PurchaseTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -722,11 +783,11 @@ abstract class UserDetail implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aUser !== null) {
-                if ($this->aUser->isModified() || $this->aUser->isNew()) {
-                    $affectedRows += $this->aUser->save($con);
+            if ($this->aSupplier !== null) {
+                if ($this->aSupplier->isModified() || $this->aSupplier->isNew()) {
+                    $affectedRows += $this->aSupplier->save($con);
                 }
-                $this->setUser($this->aUser);
+                $this->setSupplier($this->aSupplier);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -740,18 +801,17 @@ abstract class UserDetail implements ActiveRecordInterface
                 $this->resetModified();
             }
 
-            if ($this->purchaseHistoriesScheduledForDeletion !== null) {
-                if (!$this->purchaseHistoriesScheduledForDeletion->isEmpty()) {
-                    foreach ($this->purchaseHistoriesScheduledForDeletion as $purchaseHistory) {
-                        // need to save related object because we set the relation to null
-                        $purchaseHistory->save($con);
-                    }
-                    $this->purchaseHistoriesScheduledForDeletion = null;
+            if ($this->detailsScheduledForDeletion !== null) {
+                if (!$this->detailsScheduledForDeletion->isEmpty()) {
+                    \ORM\PurchaseDetailQuery::create()
+                        ->filterByPrimaryKeys($this->detailsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->detailsScheduledForDeletion = null;
                 }
             }
 
-            if ($this->collPurchaseHistories !== null) {
-                foreach ($this->collPurchaseHistories as $referrerFK) {
+            if ($this->collDetails !== null) {
+                foreach ($this->collDetails as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -770,42 +830,6 @@ abstract class UserDetail implements ActiveRecordInterface
 
             if ($this->collHistories !== null) {
                 foreach ($this->collHistories as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
-            if ($this->salessScheduledForDeletion !== null) {
-                if (!$this->salessScheduledForDeletion->isEmpty()) {
-                    foreach ($this->salessScheduledForDeletion as $sales) {
-                        // need to save related object because we set the relation to null
-                        $sales->save($con);
-                    }
-                    $this->salessScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collSaless !== null) {
-                foreach ($this->collSaless as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
-            if ($this->salesHistoriesScheduledForDeletion !== null) {
-                if (!$this->salesHistoriesScheduledForDeletion->isEmpty()) {
-                    foreach ($this->salesHistoriesScheduledForDeletion as $salesHistory) {
-                        // need to save related object because we set the relation to null
-                        $salesHistory->save($con);
-                    }
-                    $this->salesHistoriesScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collSalesHistories !== null) {
-                foreach ($this->collSalesHistories as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -832,23 +856,33 @@ abstract class UserDetail implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
+        $this->modifiedColumns[PurchaseTableMap::COL_ID] = true;
+        if (null !== $this->id) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . PurchaseTableMap::COL_ID . ')');
+        }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(UserDetailTableMap::COL_ID)) {
+        if ($this->isColumnModified(PurchaseTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'ID';
         }
-        if ($this->isColumnModified(UserDetailTableMap::COL_NAME)) {
-            $modifiedColumns[':p' . $index++]  = 'NAME';
+        if ($this->isColumnModified(PurchaseTableMap::COL_DATE)) {
+            $modifiedColumns[':p' . $index++]  = 'DATE';
         }
-        if ($this->isColumnModified(UserDetailTableMap::COL_ADDRESS)) {
-            $modifiedColumns[':p' . $index++]  = 'ADDRESS';
+        if ($this->isColumnModified(PurchaseTableMap::COL_SUPPLIER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'SUPPLIER_ID';
         }
-        if ($this->isColumnModified(UserDetailTableMap::COL_PHONE)) {
-            $modifiedColumns[':p' . $index++]  = 'PHONE';
+        if ($this->isColumnModified(PurchaseTableMap::COL_TOTAL_PRICE)) {
+            $modifiedColumns[':p' . $index++]  = 'TOTAL_PRICE';
+        }
+        if ($this->isColumnModified(PurchaseTableMap::COL_NOTE)) {
+            $modifiedColumns[':p' . $index++]  = 'NOTE';
+        }
+        if ($this->isColumnModified(PurchaseTableMap::COL_STATUS)) {
+            $modifiedColumns[':p' . $index++]  = 'STATUS';
         }
 
         $sql = sprintf(
-            'INSERT INTO user_detail (%s) VALUES (%s)',
+            'INSERT INTO purchase (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -860,14 +894,20 @@ abstract class UserDetail implements ActiveRecordInterface
                     case 'ID':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'NAME':
-                        $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
+                    case 'DATE':
+                        $stmt->bindValue($identifier, $this->date ? $this->date->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
-                    case 'ADDRESS':
-                        $stmt->bindValue($identifier, $this->address, PDO::PARAM_STR);
+                    case 'SUPPLIER_ID':
+                        $stmt->bindValue($identifier, $this->supplier_id, PDO::PARAM_INT);
                         break;
-                    case 'PHONE':
-                        $stmt->bindValue($identifier, $this->phone, PDO::PARAM_STR);
+                    case 'TOTAL_PRICE':
+                        $stmt->bindValue($identifier, $this->total_price, PDO::PARAM_INT);
+                        break;
+                    case 'NOTE':
+                        $stmt->bindValue($identifier, $this->note, PDO::PARAM_STR);
+                        break;
+                    case 'STATUS':
+                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -876,6 +916,13 @@ abstract class UserDetail implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
+
+        try {
+            $pk = $con->lastInsertId();
+        } catch (Exception $e) {
+            throw new PropelException('Unable to get autoincrement id.', 0, $e);
+        }
+        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -908,7 +955,7 @@ abstract class UserDetail implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = UserDetailTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = PurchaseTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -928,13 +975,19 @@ abstract class UserDetail implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getName();
+                return $this->getDate();
                 break;
             case 2:
-                return $this->getAddress();
+                return $this->getSupplierId();
                 break;
             case 3:
-                return $this->getPhone();
+                return $this->getTotalPrice();
+                break;
+            case 4:
+                return $this->getNote();
+                break;
+            case 5:
+                return $this->getStatus();
                 break;
             default:
                 return null;
@@ -959,16 +1012,18 @@ abstract class UserDetail implements ActiveRecordInterface
      */
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
-        if (isset($alreadyDumpedObjects['UserDetail'][$this->getPrimaryKey()])) {
+        if (isset($alreadyDumpedObjects['Purchase'][$this->getPrimaryKey()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['UserDetail'][$this->getPrimaryKey()] = true;
-        $keys = UserDetailTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['Purchase'][$this->getPrimaryKey()] = true;
+        $keys = PurchaseTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getName(),
-            $keys[2] => $this->getAddress(),
-            $keys[3] => $this->getPhone(),
+            $keys[1] => $this->getDate(),
+            $keys[2] => $this->getSupplierId(),
+            $keys[3] => $this->getTotalPrice(),
+            $keys[4] => $this->getNote(),
+            $keys[5] => $this->getStatus(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -976,20 +1031,14 @@ abstract class UserDetail implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aUser) {
-                $result['User'] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            if (null !== $this->aSupplier) {
+                $result['Supplier'] = $this->aSupplier->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
-            if (null !== $this->collPurchaseHistories) {
-                $result['PurchaseHistories'] = $this->collPurchaseHistories->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            if (null !== $this->collDetails) {
+                $result['Details'] = $this->collDetails->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collHistories) {
                 $result['Histories'] = $this->collHistories->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
-            if (null !== $this->collSaless) {
-                $result['Saless'] = $this->collSaless->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
-            if (null !== $this->collSalesHistories) {
-                $result['SalesHistories'] = $this->collSalesHistories->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1005,11 +1054,11 @@ abstract class UserDetail implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_STUDLYPHPNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\ORM\UserDetail
+     * @return $this|\ORM\Purchase
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = UserDetailTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = PurchaseTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1020,7 +1069,7 @@ abstract class UserDetail implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\ORM\UserDetail
+     * @return $this|\ORM\Purchase
      */
     public function setByPosition($pos, $value)
     {
@@ -1029,13 +1078,19 @@ abstract class UserDetail implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setName($value);
+                $this->setDate($value);
                 break;
             case 2:
-                $this->setAddress($value);
+                $this->setSupplierId($value);
                 break;
             case 3:
-                $this->setPhone($value);
+                $this->setTotalPrice($value);
+                break;
+            case 4:
+                $this->setNote($value);
+                break;
+            case 5:
+                $this->setStatus($value);
                 break;
         } // switch()
 
@@ -1061,19 +1116,25 @@ abstract class UserDetail implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = UserDetailTableMap::getFieldNames($keyType);
+        $keys = PurchaseTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setName($arr[$keys[1]]);
+            $this->setDate($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setAddress($arr[$keys[2]]);
+            $this->setSupplierId($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setPhone($arr[$keys[3]]);
+            $this->setTotalPrice($arr[$keys[3]]);
+        }
+        if (array_key_exists($keys[4], $arr)) {
+            $this->setNote($arr[$keys[4]]);
+        }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setStatus($arr[$keys[5]]);
         }
     }
 
@@ -1088,7 +1149,7 @@ abstract class UserDetail implements ActiveRecordInterface
      *                       or a format name ('XML', 'YAML', 'JSON', 'CSV')
      * @param string $data The source data to import from
      *
-     * @return $this|\ORM\UserDetail The current object, for fluid interface
+     * @return $this|\ORM\Purchase The current object, for fluid interface
      */
     public function importFrom($parser, $data)
     {
@@ -1108,19 +1169,25 @@ abstract class UserDetail implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(UserDetailTableMap::DATABASE_NAME);
+        $criteria = new Criteria(PurchaseTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(UserDetailTableMap::COL_ID)) {
-            $criteria->add(UserDetailTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(PurchaseTableMap::COL_ID)) {
+            $criteria->add(PurchaseTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(UserDetailTableMap::COL_NAME)) {
-            $criteria->add(UserDetailTableMap::COL_NAME, $this->name);
+        if ($this->isColumnModified(PurchaseTableMap::COL_DATE)) {
+            $criteria->add(PurchaseTableMap::COL_DATE, $this->date);
         }
-        if ($this->isColumnModified(UserDetailTableMap::COL_ADDRESS)) {
-            $criteria->add(UserDetailTableMap::COL_ADDRESS, $this->address);
+        if ($this->isColumnModified(PurchaseTableMap::COL_SUPPLIER_ID)) {
+            $criteria->add(PurchaseTableMap::COL_SUPPLIER_ID, $this->supplier_id);
         }
-        if ($this->isColumnModified(UserDetailTableMap::COL_PHONE)) {
-            $criteria->add(UserDetailTableMap::COL_PHONE, $this->phone);
+        if ($this->isColumnModified(PurchaseTableMap::COL_TOTAL_PRICE)) {
+            $criteria->add(PurchaseTableMap::COL_TOTAL_PRICE, $this->total_price);
+        }
+        if ($this->isColumnModified(PurchaseTableMap::COL_NOTE)) {
+            $criteria->add(PurchaseTableMap::COL_NOTE, $this->note);
+        }
+        if ($this->isColumnModified(PurchaseTableMap::COL_STATUS)) {
+            $criteria->add(PurchaseTableMap::COL_STATUS, $this->status);
         }
 
         return $criteria;
@@ -1138,8 +1205,8 @@ abstract class UserDetail implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = new Criteria(UserDetailTableMap::DATABASE_NAME);
-        $criteria->add(UserDetailTableMap::COL_ID, $this->id);
+        $criteria = new Criteria(PurchaseTableMap::DATABASE_NAME);
+        $criteria->add(PurchaseTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1154,15 +1221,8 @@ abstract class UserDetail implements ActiveRecordInterface
     {
         $validPk = null !== $this->getId();
 
-        $validPrimaryKeyFKs = 1;
+        $validPrimaryKeyFKs = 0;
         $primaryKeyFKs = [];
-
-        //relation user_detail_fk_ffc53a to table user
-        if ($this->aUser && $hash = spl_object_hash($this->aUser)) {
-            $primaryKeyFKs[] = $hash;
-        } else {
-            $validPrimaryKeyFKs = false;
-        }
 
         if ($validPk) {
             return crc32(json_encode($this->getPrimaryKey(), JSON_UNESCAPED_UNICODE));
@@ -1208,26 +1268,27 @@ abstract class UserDetail implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \ORM\UserDetail (or compatible) type.
+     * @param      object $copyObj An object of \ORM\Purchase (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setId($this->getId());
-        $copyObj->setName($this->getName());
-        $copyObj->setAddress($this->getAddress());
-        $copyObj->setPhone($this->getPhone());
+        $copyObj->setDate($this->getDate());
+        $copyObj->setSupplierId($this->getSupplierId());
+        $copyObj->setTotalPrice($this->getTotalPrice());
+        $copyObj->setNote($this->getNote());
+        $copyObj->setStatus($this->getStatus());
 
         if ($deepCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
-            foreach ($this->getPurchaseHistories() as $relObj) {
+            foreach ($this->getDetails() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addPurchaseHistory($relObj->copy($deepCopy));
+                    $copyObj->addDetail($relObj->copy($deepCopy));
                 }
             }
 
@@ -1237,22 +1298,11 @@ abstract class UserDetail implements ActiveRecordInterface
                 }
             }
 
-            foreach ($this->getSaless() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addSales($relObj->copy($deepCopy));
-                }
-            }
-
-            foreach ($this->getSalesHistories() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addSalesHistory($relObj->copy($deepCopy));
-                }
-            }
-
         } // if ($deepCopy)
 
         if ($makeNew) {
             $copyObj->setNew(true);
+            $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
         }
     }
 
@@ -1265,7 +1315,7 @@ abstract class UserDetail implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \ORM\UserDetail Clone of current object.
+     * @return \ORM\Purchase Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1279,25 +1329,26 @@ abstract class UserDetail implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildUser object.
+     * Declares an association between this object and a ChildSupplier object.
      *
-     * @param  ChildUser $v
-     * @return $this|\ORM\UserDetail The current object (for fluent API support)
+     * @param  ChildSupplier $v
+     * @return $this|\ORM\Purchase The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setUser(ChildUser $v = null)
+    public function setSupplier(ChildSupplier $v = null)
     {
         if ($v === null) {
-            $this->setId(NULL);
+            $this->setSupplierId(NULL);
         } else {
-            $this->setId($v->getId());
+            $this->setSupplierId($v->getId());
         }
 
-        $this->aUser = $v;
+        $this->aSupplier = $v;
 
-        // Add binding for other direction of this 1:1 relationship.
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildSupplier object, it will not be re-added.
         if ($v !== null) {
-            $v->setDetail($this);
+            $v->addPurchase($this);
         }
 
 
@@ -1306,21 +1357,26 @@ abstract class UserDetail implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildUser object
+     * Get the associated ChildSupplier object
      *
      * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildUser The associated ChildUser object.
+     * @return ChildSupplier The associated ChildSupplier object.
      * @throws PropelException
      */
-    public function getUser(ConnectionInterface $con = null)
+    public function getSupplier(ConnectionInterface $con = null)
     {
-        if ($this->aUser === null && (($this->id !== "" && $this->id !== null))) {
-            $this->aUser = ChildUserQuery::create()->findPk($this->id, $con);
-            // Because this foreign key represents a one-to-one relationship, we will create a bi-directional association.
-            $this->aUser->setDetail($this);
+        if ($this->aSupplier === null && (($this->supplier_id !== "" && $this->supplier_id !== null))) {
+            $this->aSupplier = ChildSupplierQuery::create()->findPk($this->supplier_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aSupplier->addPurchases($this);
+             */
         }
 
-        return $this->aUser;
+        return $this->aSupplier;
     }
 
 
@@ -1334,46 +1390,40 @@ abstract class UserDetail implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
-        if ('PurchaseHistory' == $relationName) {
-            return $this->initPurchaseHistories();
+        if ('Detail' == $relationName) {
+            return $this->initDetails();
         }
         if ('History' == $relationName) {
             return $this->initHistories();
         }
-        if ('Sales' == $relationName) {
-            return $this->initSaless();
-        }
-        if ('SalesHistory' == $relationName) {
-            return $this->initSalesHistories();
-        }
     }
 
     /**
-     * Clears out the collPurchaseHistories collection
+     * Clears out the collDetails collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
      * them to be refetched by subsequent calls to accessor method.
      *
      * @return void
-     * @see        addPurchaseHistories()
+     * @see        addDetails()
      */
-    public function clearPurchaseHistories()
+    public function clearDetails()
     {
-        $this->collPurchaseHistories = null; // important to set this to NULL since that means it is uninitialized
+        $this->collDetails = null; // important to set this to NULL since that means it is uninitialized
     }
 
     /**
-     * Reset is the collPurchaseHistories collection loaded partially.
+     * Reset is the collDetails collection loaded partially.
      */
-    public function resetPartialPurchaseHistories($v = true)
+    public function resetPartialDetails($v = true)
     {
-        $this->collPurchaseHistoriesPartial = $v;
+        $this->collDetailsPartial = $v;
     }
 
     /**
-     * Initializes the collPurchaseHistories collection.
+     * Initializes the collDetails collection.
      *
-     * By default this just sets the collPurchaseHistories collection to an empty array (like clearcollPurchaseHistories());
+     * By default this just sets the collDetails collection to an empty array (like clearcollDetails());
      * however, you may wish to override this method in your stub class to provide setting appropriate
      * to your application -- for example, setting the initial array to the values stored in database.
      *
@@ -1382,185 +1432,185 @@ abstract class UserDetail implements ActiveRecordInterface
      *
      * @return void
      */
-    public function initPurchaseHistories($overrideExisting = true)
+    public function initDetails($overrideExisting = true)
     {
-        if (null !== $this->collPurchaseHistories && !$overrideExisting) {
+        if (null !== $this->collDetails && !$overrideExisting) {
             return;
         }
-        $this->collPurchaseHistories = new ObjectCollection();
-        $this->collPurchaseHistories->setModel('\ORM\PurchaseHistory');
+        $this->collDetails = new ObjectCollection();
+        $this->collDetails->setModel('\ORM\PurchaseDetail');
     }
 
     /**
-     * Gets an array of ChildPurchaseHistory objects which contain a foreign key that references this object.
+     * Gets an array of ChildPurchaseDetail objects which contain a foreign key that references this object.
      *
      * If the $criteria is not null, it is used to always fetch the results from the database.
      * Otherwise the results are fetched from the database the first time, then cached.
      * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildUserDetail is new, it will return
+     * If this ChildPurchase is new, it will return
      * an empty collection or the current collection; the criteria is ignored on a new object.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildPurchaseHistory[] List of ChildPurchaseHistory objects
+     * @return ObjectCollection|ChildPurchaseDetail[] List of ChildPurchaseDetail objects
      * @throws PropelException
      */
-    public function getPurchaseHistories(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function getDetails(Criteria $criteria = null, ConnectionInterface $con = null)
     {
-        $partial = $this->collPurchaseHistoriesPartial && !$this->isNew();
-        if (null === $this->collPurchaseHistories || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collPurchaseHistories) {
+        $partial = $this->collDetailsPartial && !$this->isNew();
+        if (null === $this->collDetails || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collDetails) {
                 // return empty collection
-                $this->initPurchaseHistories();
+                $this->initDetails();
             } else {
-                $collPurchaseHistories = ChildPurchaseHistoryQuery::create(null, $criteria)
-                    ->filterByUserDetail($this)
+                $collDetails = ChildPurchaseDetailQuery::create(null, $criteria)
+                    ->filterByPurchase($this)
                     ->find($con);
 
                 if (null !== $criteria) {
-                    if (false !== $this->collPurchaseHistoriesPartial && count($collPurchaseHistories)) {
-                        $this->initPurchaseHistories(false);
+                    if (false !== $this->collDetailsPartial && count($collDetails)) {
+                        $this->initDetails(false);
 
-                        foreach ($collPurchaseHistories as $obj) {
-                            if (false == $this->collPurchaseHistories->contains($obj)) {
-                                $this->collPurchaseHistories->append($obj);
+                        foreach ($collDetails as $obj) {
+                            if (false == $this->collDetails->contains($obj)) {
+                                $this->collDetails->append($obj);
                             }
                         }
 
-                        $this->collPurchaseHistoriesPartial = true;
+                        $this->collDetailsPartial = true;
                     }
 
-                    return $collPurchaseHistories;
+                    return $collDetails;
                 }
 
-                if ($partial && $this->collPurchaseHistories) {
-                    foreach ($this->collPurchaseHistories as $obj) {
+                if ($partial && $this->collDetails) {
+                    foreach ($this->collDetails as $obj) {
                         if ($obj->isNew()) {
-                            $collPurchaseHistories[] = $obj;
+                            $collDetails[] = $obj;
                         }
                     }
                 }
 
-                $this->collPurchaseHistories = $collPurchaseHistories;
-                $this->collPurchaseHistoriesPartial = false;
+                $this->collDetails = $collDetails;
+                $this->collDetailsPartial = false;
             }
         }
 
-        return $this->collPurchaseHistories;
+        return $this->collDetails;
     }
 
     /**
-     * Sets a collection of ChildPurchaseHistory objects related by a one-to-many relationship
+     * Sets a collection of ChildPurchaseDetail objects related by a one-to-many relationship
      * to the current object.
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
-     * @param      Collection $purchaseHistories A Propel collection.
+     * @param      Collection $details A Propel collection.
      * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildUserDetail The current object (for fluent API support)
+     * @return $this|ChildPurchase The current object (for fluent API support)
      */
-    public function setPurchaseHistories(Collection $purchaseHistories, ConnectionInterface $con = null)
+    public function setDetails(Collection $details, ConnectionInterface $con = null)
     {
-        /** @var ChildPurchaseHistory[] $purchaseHistoriesToDelete */
-        $purchaseHistoriesToDelete = $this->getPurchaseHistories(new Criteria(), $con)->diff($purchaseHistories);
+        /** @var ChildPurchaseDetail[] $detailsToDelete */
+        $detailsToDelete = $this->getDetails(new Criteria(), $con)->diff($details);
 
 
-        $this->purchaseHistoriesScheduledForDeletion = $purchaseHistoriesToDelete;
+        $this->detailsScheduledForDeletion = $detailsToDelete;
 
-        foreach ($purchaseHistoriesToDelete as $purchaseHistoryRemoved) {
-            $purchaseHistoryRemoved->setUserDetail(null);
+        foreach ($detailsToDelete as $detailRemoved) {
+            $detailRemoved->setPurchase(null);
         }
 
-        $this->collPurchaseHistories = null;
-        foreach ($purchaseHistories as $purchaseHistory) {
-            $this->addPurchaseHistory($purchaseHistory);
+        $this->collDetails = null;
+        foreach ($details as $detail) {
+            $this->addDetail($detail);
         }
 
-        $this->collPurchaseHistories = $purchaseHistories;
-        $this->collPurchaseHistoriesPartial = false;
+        $this->collDetails = $details;
+        $this->collDetailsPartial = false;
 
         return $this;
     }
 
     /**
-     * Returns the number of related PurchaseHistory objects.
+     * Returns the number of related PurchaseDetail objects.
      *
      * @param      Criteria $criteria
      * @param      boolean $distinct
      * @param      ConnectionInterface $con
-     * @return int             Count of related PurchaseHistory objects.
+     * @return int             Count of related PurchaseDetail objects.
      * @throws PropelException
      */
-    public function countPurchaseHistories(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function countDetails(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
     {
-        $partial = $this->collPurchaseHistoriesPartial && !$this->isNew();
-        if (null === $this->collPurchaseHistories || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collPurchaseHistories) {
+        $partial = $this->collDetailsPartial && !$this->isNew();
+        if (null === $this->collDetails || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collDetails) {
                 return 0;
             }
 
             if ($partial && !$criteria) {
-                return count($this->getPurchaseHistories());
+                return count($this->getDetails());
             }
 
-            $query = ChildPurchaseHistoryQuery::create(null, $criteria);
+            $query = ChildPurchaseDetailQuery::create(null, $criteria);
             if ($distinct) {
                 $query->distinct();
             }
 
             return $query
-                ->filterByUserDetail($this)
+                ->filterByPurchase($this)
                 ->count($con);
         }
 
-        return count($this->collPurchaseHistories);
+        return count($this->collDetails);
     }
 
     /**
-     * Method called to associate a ChildPurchaseHistory object to this object
-     * through the ChildPurchaseHistory foreign key attribute.
+     * Method called to associate a ChildPurchaseDetail object to this object
+     * through the ChildPurchaseDetail foreign key attribute.
      *
-     * @param  ChildPurchaseHistory $l ChildPurchaseHistory
-     * @return $this|\ORM\UserDetail The current object (for fluent API support)
+     * @param  ChildPurchaseDetail $l ChildPurchaseDetail
+     * @return $this|\ORM\Purchase The current object (for fluent API support)
      */
-    public function addPurchaseHistory(ChildPurchaseHistory $l)
+    public function addDetail(ChildPurchaseDetail $l)
     {
-        if ($this->collPurchaseHistories === null) {
-            $this->initPurchaseHistories();
-            $this->collPurchaseHistoriesPartial = true;
+        if ($this->collDetails === null) {
+            $this->initDetails();
+            $this->collDetailsPartial = true;
         }
 
-        if (!$this->collPurchaseHistories->contains($l)) {
-            $this->doAddPurchaseHistory($l);
+        if (!$this->collDetails->contains($l)) {
+            $this->doAddDetail($l);
         }
 
         return $this;
     }
 
     /**
-     * @param ChildPurchaseHistory $purchaseHistory The ChildPurchaseHistory object to add.
+     * @param ChildPurchaseDetail $detail The ChildPurchaseDetail object to add.
      */
-    protected function doAddPurchaseHistory(ChildPurchaseHistory $purchaseHistory)
+    protected function doAddDetail(ChildPurchaseDetail $detail)
     {
-        $this->collPurchaseHistories[]= $purchaseHistory;
-        $purchaseHistory->setUserDetail($this);
+        $this->collDetails[]= $detail;
+        $detail->setPurchase($this);
     }
 
     /**
-     * @param  ChildPurchaseHistory $purchaseHistory The ChildPurchaseHistory object to remove.
-     * @return $this|ChildUserDetail The current object (for fluent API support)
+     * @param  ChildPurchaseDetail $detail The ChildPurchaseDetail object to remove.
+     * @return $this|ChildPurchase The current object (for fluent API support)
      */
-    public function removePurchaseHistory(ChildPurchaseHistory $purchaseHistory)
+    public function removeDetail(ChildPurchaseDetail $detail)
     {
-        if ($this->getPurchaseHistories()->contains($purchaseHistory)) {
-            $pos = $this->collPurchaseHistories->search($purchaseHistory);
-            $this->collPurchaseHistories->remove($pos);
-            if (null === $this->purchaseHistoriesScheduledForDeletion) {
-                $this->purchaseHistoriesScheduledForDeletion = clone $this->collPurchaseHistories;
-                $this->purchaseHistoriesScheduledForDeletion->clear();
+        if ($this->getDetails()->contains($detail)) {
+            $pos = $this->collDetails->search($detail);
+            $this->collDetails->remove($pos);
+            if (null === $this->detailsScheduledForDeletion) {
+                $this->detailsScheduledForDeletion = clone $this->collDetails;
+                $this->detailsScheduledForDeletion->clear();
             }
-            $this->purchaseHistoriesScheduledForDeletion[]= $purchaseHistory;
-            $purchaseHistory->setUserDetail(null);
+            $this->detailsScheduledForDeletion[]= $detail;
+            $detail->setPurchase(null);
         }
 
         return $this;
@@ -1570,25 +1620,25 @@ abstract class UserDetail implements ActiveRecordInterface
     /**
      * If this collection has already been initialized with
      * an identical criteria, it returns the collection.
-     * Otherwise if this UserDetail is new, it will return
-     * an empty collection; or if this UserDetail has previously
-     * been saved, it will retrieve related PurchaseHistories from storage.
+     * Otherwise if this Purchase is new, it will return
+     * an empty collection; or if this Purchase has previously
+     * been saved, it will retrieve related Details from storage.
      *
      * This method is protected by default in order to keep the public
      * api reasonable.  You can provide public methods for those you
-     * actually need in UserDetail.
+     * actually need in Purchase.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildPurchaseHistory[] List of ChildPurchaseHistory objects
+     * @return ObjectCollection|ChildPurchaseDetail[] List of ChildPurchaseDetail objects
      */
-    public function getPurchaseHistoriesJoinPurchase(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getDetailsJoinStock(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
-        $query = ChildPurchaseHistoryQuery::create(null, $criteria);
-        $query->joinWith('Purchase', $joinBehavior);
+        $query = ChildPurchaseDetailQuery::create(null, $criteria);
+        $query->joinWith('Stock', $joinBehavior);
 
-        return $this->getPurchaseHistories($query, $con);
+        return $this->getDetails($query, $con);
     }
 
     /**
@@ -1631,21 +1681,21 @@ abstract class UserDetail implements ActiveRecordInterface
             return;
         }
         $this->collHistories = new ObjectCollection();
-        $this->collHistories->setModel('\ORM\RowHistory');
+        $this->collHistories->setModel('\ORM\PurchaseHistory');
     }
 
     /**
-     * Gets an array of ChildRowHistory objects which contain a foreign key that references this object.
+     * Gets an array of ChildPurchaseHistory objects which contain a foreign key that references this object.
      *
      * If the $criteria is not null, it is used to always fetch the results from the database.
      * Otherwise the results are fetched from the database the first time, then cached.
      * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildUserDetail is new, it will return
+     * If this ChildPurchase is new, it will return
      * an empty collection or the current collection; the criteria is ignored on a new object.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildRowHistory[] List of ChildRowHistory objects
+     * @return ObjectCollection|ChildPurchaseHistory[] List of ChildPurchaseHistory objects
      * @throws PropelException
      */
     public function getHistories(Criteria $criteria = null, ConnectionInterface $con = null)
@@ -1656,8 +1706,8 @@ abstract class UserDetail implements ActiveRecordInterface
                 // return empty collection
                 $this->initHistories();
             } else {
-                $collHistories = ChildRowHistoryQuery::create(null, $criteria)
-                    ->filterByUserDetail($this)
+                $collHistories = ChildPurchaseHistoryQuery::create(null, $criteria)
+                    ->filterByPurchase($this)
                     ->find($con);
 
                 if (null !== $criteria) {
@@ -1693,25 +1743,25 @@ abstract class UserDetail implements ActiveRecordInterface
     }
 
     /**
-     * Sets a collection of ChildRowHistory objects related by a one-to-many relationship
+     * Sets a collection of ChildPurchaseHistory objects related by a one-to-many relationship
      * to the current object.
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
      * @param      Collection $histories A Propel collection.
      * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildUserDetail The current object (for fluent API support)
+     * @return $this|ChildPurchase The current object (for fluent API support)
      */
     public function setHistories(Collection $histories, ConnectionInterface $con = null)
     {
-        /** @var ChildRowHistory[] $historiesToDelete */
+        /** @var ChildPurchaseHistory[] $historiesToDelete */
         $historiesToDelete = $this->getHistories(new Criteria(), $con)->diff($histories);
 
 
         $this->historiesScheduledForDeletion = $historiesToDelete;
 
         foreach ($historiesToDelete as $historyRemoved) {
-            $historyRemoved->setUserDetail(null);
+            $historyRemoved->setPurchase(null);
         }
 
         $this->collHistories = null;
@@ -1726,12 +1776,12 @@ abstract class UserDetail implements ActiveRecordInterface
     }
 
     /**
-     * Returns the number of related RowHistory objects.
+     * Returns the number of related PurchaseHistory objects.
      *
      * @param      Criteria $criteria
      * @param      boolean $distinct
      * @param      ConnectionInterface $con
-     * @return int             Count of related RowHistory objects.
+     * @return int             Count of related PurchaseHistory objects.
      * @throws PropelException
      */
     public function countHistories(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
@@ -1746,13 +1796,13 @@ abstract class UserDetail implements ActiveRecordInterface
                 return count($this->getHistories());
             }
 
-            $query = ChildRowHistoryQuery::create(null, $criteria);
+            $query = ChildPurchaseHistoryQuery::create(null, $criteria);
             if ($distinct) {
                 $query->distinct();
             }
 
             return $query
-                ->filterByUserDetail($this)
+                ->filterByPurchase($this)
                 ->count($con);
         }
 
@@ -1760,13 +1810,13 @@ abstract class UserDetail implements ActiveRecordInterface
     }
 
     /**
-     * Method called to associate a ChildRowHistory object to this object
-     * through the ChildRowHistory foreign key attribute.
+     * Method called to associate a ChildPurchaseHistory object to this object
+     * through the ChildPurchaseHistory foreign key attribute.
      *
-     * @param  ChildRowHistory $l ChildRowHistory
-     * @return $this|\ORM\UserDetail The current object (for fluent API support)
+     * @param  ChildPurchaseHistory $l ChildPurchaseHistory
+     * @return $this|\ORM\Purchase The current object (for fluent API support)
      */
-    public function addHistory(ChildRowHistory $l)
+    public function addHistory(ChildPurchaseHistory $l)
     {
         if ($this->collHistories === null) {
             $this->initHistories();
@@ -1781,19 +1831,19 @@ abstract class UserDetail implements ActiveRecordInterface
     }
 
     /**
-     * @param ChildRowHistory $history The ChildRowHistory object to add.
+     * @param ChildPurchaseHistory $history The ChildPurchaseHistory object to add.
      */
-    protected function doAddHistory(ChildRowHistory $history)
+    protected function doAddHistory(ChildPurchaseHistory $history)
     {
         $this->collHistories[]= $history;
-        $history->setUserDetail($this);
+        $history->setPurchase($this);
     }
 
     /**
-     * @param  ChildRowHistory $history The ChildRowHistory object to remove.
-     * @return $this|ChildUserDetail The current object (for fluent API support)
+     * @param  ChildPurchaseHistory $history The ChildPurchaseHistory object to remove.
+     * @return $this|ChildPurchase The current object (for fluent API support)
      */
-    public function removeHistory(ChildRowHistory $history)
+    public function removeHistory(ChildPurchaseHistory $history)
     {
         if ($this->getHistories()->contains($history)) {
             $pos = $this->collHistories->search($history);
@@ -1803,225 +1853,7 @@ abstract class UserDetail implements ActiveRecordInterface
                 $this->historiesScheduledForDeletion->clear();
             }
             $this->historiesScheduledForDeletion[]= $history;
-            $history->setUserDetail(null);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Clears out the collSaless collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addSaless()
-     */
-    public function clearSaless()
-    {
-        $this->collSaless = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collSaless collection loaded partially.
-     */
-    public function resetPartialSaless($v = true)
-    {
-        $this->collSalessPartial = $v;
-    }
-
-    /**
-     * Initializes the collSaless collection.
-     *
-     * By default this just sets the collSaless collection to an empty array (like clearcollSaless());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initSaless($overrideExisting = true)
-    {
-        if (null !== $this->collSaless && !$overrideExisting) {
-            return;
-        }
-        $this->collSaless = new ObjectCollection();
-        $this->collSaless->setModel('\ORM\Sales');
-    }
-
-    /**
-     * Gets an array of ChildSales objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildUserDetail is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildSales[] List of ChildSales objects
-     * @throws PropelException
-     */
-    public function getSaless(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collSalessPartial && !$this->isNew();
-        if (null === $this->collSaless || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collSaless) {
-                // return empty collection
-                $this->initSaless();
-            } else {
-                $collSaless = ChildSalesQuery::create(null, $criteria)
-                    ->filterByCashier($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collSalessPartial && count($collSaless)) {
-                        $this->initSaless(false);
-
-                        foreach ($collSaless as $obj) {
-                            if (false == $this->collSaless->contains($obj)) {
-                                $this->collSaless->append($obj);
-                            }
-                        }
-
-                        $this->collSalessPartial = true;
-                    }
-
-                    return $collSaless;
-                }
-
-                if ($partial && $this->collSaless) {
-                    foreach ($this->collSaless as $obj) {
-                        if ($obj->isNew()) {
-                            $collSaless[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collSaless = $collSaless;
-                $this->collSalessPartial = false;
-            }
-        }
-
-        return $this->collSaless;
-    }
-
-    /**
-     * Sets a collection of ChildSales objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $saless A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildUserDetail The current object (for fluent API support)
-     */
-    public function setSaless(Collection $saless, ConnectionInterface $con = null)
-    {
-        /** @var ChildSales[] $salessToDelete */
-        $salessToDelete = $this->getSaless(new Criteria(), $con)->diff($saless);
-
-
-        $this->salessScheduledForDeletion = $salessToDelete;
-
-        foreach ($salessToDelete as $salesRemoved) {
-            $salesRemoved->setCashier(null);
-        }
-
-        $this->collSaless = null;
-        foreach ($saless as $sales) {
-            $this->addSales($sales);
-        }
-
-        $this->collSaless = $saless;
-        $this->collSalessPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related Sales objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related Sales objects.
-     * @throws PropelException
-     */
-    public function countSaless(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collSalessPartial && !$this->isNew();
-        if (null === $this->collSaless || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collSaless) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getSaless());
-            }
-
-            $query = ChildSalesQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByCashier($this)
-                ->count($con);
-        }
-
-        return count($this->collSaless);
-    }
-
-    /**
-     * Method called to associate a ChildSales object to this object
-     * through the ChildSales foreign key attribute.
-     *
-     * @param  ChildSales $l ChildSales
-     * @return $this|\ORM\UserDetail The current object (for fluent API support)
-     */
-    public function addSales(ChildSales $l)
-    {
-        if ($this->collSaless === null) {
-            $this->initSaless();
-            $this->collSalessPartial = true;
-        }
-
-        if (!$this->collSaless->contains($l)) {
-            $this->doAddSales($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildSales $sales The ChildSales object to add.
-     */
-    protected function doAddSales(ChildSales $sales)
-    {
-        $this->collSaless[]= $sales;
-        $sales->setCashier($this);
-    }
-
-    /**
-     * @param  ChildSales $sales The ChildSales object to remove.
-     * @return $this|ChildUserDetail The current object (for fluent API support)
-     */
-    public function removeSales(ChildSales $sales)
-    {
-        if ($this->getSaless()->contains($sales)) {
-            $pos = $this->collSaless->search($sales);
-            $this->collSaless->remove($pos);
-            if (null === $this->salessScheduledForDeletion) {
-                $this->salessScheduledForDeletion = clone $this->collSaless;
-                $this->salessScheduledForDeletion->clear();
-            }
-            $this->salessScheduledForDeletion[]= $sales;
-            $sales->setCashier(null);
+            $history->setPurchase(null);
         }
 
         return $this;
@@ -2031,268 +1863,25 @@ abstract class UserDetail implements ActiveRecordInterface
     /**
      * If this collection has already been initialized with
      * an identical criteria, it returns the collection.
-     * Otherwise if this UserDetail is new, it will return
-     * an empty collection; or if this UserDetail has previously
-     * been saved, it will retrieve related Saless from storage.
+     * Otherwise if this Purchase is new, it will return
+     * an empty collection; or if this Purchase has previously
+     * been saved, it will retrieve related Histories from storage.
      *
      * This method is protected by default in order to keep the public
      * api reasonable.  You can provide public methods for those you
-     * actually need in UserDetail.
+     * actually need in Purchase.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildSales[] List of ChildSales objects
+     * @return ObjectCollection|ChildPurchaseHistory[] List of ChildPurchaseHistory objects
      */
-    public function getSalessJoinCustomer(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getHistoriesJoinUserDetail(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
-        $query = ChildSalesQuery::create(null, $criteria);
-        $query->joinWith('Customer', $joinBehavior);
+        $query = ChildPurchaseHistoryQuery::create(null, $criteria);
+        $query->joinWith('UserDetail', $joinBehavior);
 
-        return $this->getSaless($query, $con);
-    }
-
-    /**
-     * Clears out the collSalesHistories collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addSalesHistories()
-     */
-    public function clearSalesHistories()
-    {
-        $this->collSalesHistories = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collSalesHistories collection loaded partially.
-     */
-    public function resetPartialSalesHistories($v = true)
-    {
-        $this->collSalesHistoriesPartial = $v;
-    }
-
-    /**
-     * Initializes the collSalesHistories collection.
-     *
-     * By default this just sets the collSalesHistories collection to an empty array (like clearcollSalesHistories());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initSalesHistories($overrideExisting = true)
-    {
-        if (null !== $this->collSalesHistories && !$overrideExisting) {
-            return;
-        }
-        $this->collSalesHistories = new ObjectCollection();
-        $this->collSalesHistories->setModel('\ORM\SalesHistory');
-    }
-
-    /**
-     * Gets an array of ChildSalesHistory objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildUserDetail is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildSalesHistory[] List of ChildSalesHistory objects
-     * @throws PropelException
-     */
-    public function getSalesHistories(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collSalesHistoriesPartial && !$this->isNew();
-        if (null === $this->collSalesHistories || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collSalesHistories) {
-                // return empty collection
-                $this->initSalesHistories();
-            } else {
-                $collSalesHistories = ChildSalesHistoryQuery::create(null, $criteria)
-                    ->filterByUserDetail($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collSalesHistoriesPartial && count($collSalesHistories)) {
-                        $this->initSalesHistories(false);
-
-                        foreach ($collSalesHistories as $obj) {
-                            if (false == $this->collSalesHistories->contains($obj)) {
-                                $this->collSalesHistories->append($obj);
-                            }
-                        }
-
-                        $this->collSalesHistoriesPartial = true;
-                    }
-
-                    return $collSalesHistories;
-                }
-
-                if ($partial && $this->collSalesHistories) {
-                    foreach ($this->collSalesHistories as $obj) {
-                        if ($obj->isNew()) {
-                            $collSalesHistories[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collSalesHistories = $collSalesHistories;
-                $this->collSalesHistoriesPartial = false;
-            }
-        }
-
-        return $this->collSalesHistories;
-    }
-
-    /**
-     * Sets a collection of ChildSalesHistory objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $salesHistories A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildUserDetail The current object (for fluent API support)
-     */
-    public function setSalesHistories(Collection $salesHistories, ConnectionInterface $con = null)
-    {
-        /** @var ChildSalesHistory[] $salesHistoriesToDelete */
-        $salesHistoriesToDelete = $this->getSalesHistories(new Criteria(), $con)->diff($salesHistories);
-
-
-        $this->salesHistoriesScheduledForDeletion = $salesHistoriesToDelete;
-
-        foreach ($salesHistoriesToDelete as $salesHistoryRemoved) {
-            $salesHistoryRemoved->setUserDetail(null);
-        }
-
-        $this->collSalesHistories = null;
-        foreach ($salesHistories as $salesHistory) {
-            $this->addSalesHistory($salesHistory);
-        }
-
-        $this->collSalesHistories = $salesHistories;
-        $this->collSalesHistoriesPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related SalesHistory objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related SalesHistory objects.
-     * @throws PropelException
-     */
-    public function countSalesHistories(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collSalesHistoriesPartial && !$this->isNew();
-        if (null === $this->collSalesHistories || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collSalesHistories) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getSalesHistories());
-            }
-
-            $query = ChildSalesHistoryQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByUserDetail($this)
-                ->count($con);
-        }
-
-        return count($this->collSalesHistories);
-    }
-
-    /**
-     * Method called to associate a ChildSalesHistory object to this object
-     * through the ChildSalesHistory foreign key attribute.
-     *
-     * @param  ChildSalesHistory $l ChildSalesHistory
-     * @return $this|\ORM\UserDetail The current object (for fluent API support)
-     */
-    public function addSalesHistory(ChildSalesHistory $l)
-    {
-        if ($this->collSalesHistories === null) {
-            $this->initSalesHistories();
-            $this->collSalesHistoriesPartial = true;
-        }
-
-        if (!$this->collSalesHistories->contains($l)) {
-            $this->doAddSalesHistory($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildSalesHistory $salesHistory The ChildSalesHistory object to add.
-     */
-    protected function doAddSalesHistory(ChildSalesHistory $salesHistory)
-    {
-        $this->collSalesHistories[]= $salesHistory;
-        $salesHistory->setUserDetail($this);
-    }
-
-    /**
-     * @param  ChildSalesHistory $salesHistory The ChildSalesHistory object to remove.
-     * @return $this|ChildUserDetail The current object (for fluent API support)
-     */
-    public function removeSalesHistory(ChildSalesHistory $salesHistory)
-    {
-        if ($this->getSalesHistories()->contains($salesHistory)) {
-            $pos = $this->collSalesHistories->search($salesHistory);
-            $this->collSalesHistories->remove($pos);
-            if (null === $this->salesHistoriesScheduledForDeletion) {
-                $this->salesHistoriesScheduledForDeletion = clone $this->collSalesHistories;
-                $this->salesHistoriesScheduledForDeletion->clear();
-            }
-            $this->salesHistoriesScheduledForDeletion[]= $salesHistory;
-            $salesHistory->setUserDetail(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this UserDetail is new, it will return
-     * an empty collection; or if this UserDetail has previously
-     * been saved, it will retrieve related SalesHistories from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in UserDetail.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildSalesHistory[] List of ChildSalesHistory objects
-     */
-    public function getSalesHistoriesJoinSales(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildSalesHistoryQuery::create(null, $criteria);
-        $query->joinWith('Sales', $joinBehavior);
-
-        return $this->getSalesHistories($query, $con);
+        return $this->getHistories($query, $con);
     }
 
     /**
@@ -2302,13 +1891,15 @@ abstract class UserDetail implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->aUser) {
-            $this->aUser->removeDetail($this);
+        if (null !== $this->aSupplier) {
+            $this->aSupplier->removePurchase($this);
         }
         $this->id = null;
-        $this->name = null;
-        $this->address = null;
-        $this->phone = null;
+        $this->date = null;
+        $this->supplier_id = null;
+        $this->total_price = null;
+        $this->note = null;
+        $this->status = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -2327,8 +1918,8 @@ abstract class UserDetail implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collPurchaseHistories) {
-                foreach ($this->collPurchaseHistories as $o) {
+            if ($this->collDetails) {
+                foreach ($this->collDetails as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
@@ -2337,23 +1928,11 @@ abstract class UserDetail implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collSaless) {
-                foreach ($this->collSaless as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->collSalesHistories) {
-                foreach ($this->collSalesHistories as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
-        $this->collPurchaseHistories = null;
+        $this->collDetails = null;
         $this->collHistories = null;
-        $this->collSaless = null;
-        $this->collSalesHistories = null;
-        $this->aUser = null;
+        $this->aSupplier = null;
     }
 
     /**
@@ -2363,7 +1942,7 @@ abstract class UserDetail implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(UserDetailTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(PurchaseTableMap::DEFAULT_STRING_FORMAT);
     }
 
     /**
