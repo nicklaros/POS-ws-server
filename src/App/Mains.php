@@ -199,7 +199,10 @@ class Mains implements MessageComponentInterface {
         // list of all method that can be called in current module
         $registeredMethod = array(
             'create',
-            'read'
+            'destroy',
+            'loadFormEdit',
+            'read',
+            'update'
         );
 
         // if called method is not registered then deny access
@@ -247,6 +250,7 @@ class Mains implements MessageComponentInterface {
             'addVariant',
             'create',
             'destroy',
+            'getOne',
             'loadFormEdit',
             'read',
             'update'

@@ -160,6 +160,20 @@ class Stocks
         return $results;
     }
 
+    public static function getOne($params, $currentUser, $con)
+    {
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('read_stock')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        $stock = Stocks::seeker($params, $currentUser, $con);
+        
+        $results['success'] = true;
+        $results['data'] = $stock['data'];
+        
+        return $results;
+    }
+
     public static function loadFormEdit($params, $currentUser, $con)
     {
         // check role's permission

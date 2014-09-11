@@ -382,6 +382,7 @@ class Sale
                     ->setAmount($stock->getAmount() - $product->amount)
                     ->save($con);
             } else {
+                // need further checking whether updated stock is the same old one or not
                 $stock
                     ->setAmount($stock->getAmount() + $old->getAmount() - $product->amount)
                     ->save($con);
@@ -400,7 +401,7 @@ class Sale
                 ->save($con);
                 
             $removed
-                ->setStatus("Deleted")
+                ->setStatus('Deleted')
                 ->save($con);
         }
         
