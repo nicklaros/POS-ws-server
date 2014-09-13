@@ -2,6 +2,10 @@
 
 namespace App;
 
+use ORM\Notification;
+use ORM\NotificationOnUser;
+use ORM\NotificationOnUserQuery;
+use ORM\NotificationOptionQuery;
 use ORM\RolePermissionQuery;
 use ORM\Purchase;
 use ORM\PurchaseQuery;
@@ -9,9 +13,103 @@ use ORM\PurchaseDetail;
 use ORM\PurchaseDetailQuery;
 use ORM\PurchaseHistory;
 use ORM\StockQuery;
+use ORM\UserQuery;
 
 class Purchases
 {
+
+    private static function newPriceNotification($stock, $purchaseDetail, $con)
+    {
+        
+        // check price change
+        $priceDifference = $stock->getBuy() - ( $purchaseDetail->getTotalPrice() / $purchaseDetail->getAmount() );
+        if ( $priceDifference == 0 ) {
+            $priceStatus = 'stagnant';
+        } elseif ( $priceDifference < 0 ) {
+            $priceStatus = 'up';
+        } elseif ( $priceDifference > 0 ) {
+            $priceStatus = 'down';
+        }
+        
+        // if price is not stagnant then make new notification
+        if ( $priceStatus != 'stagnant' ) 
+        {
+            // build up notification data
+            $notificationData = new \stdClass();
+            $notificationData->stock_id = $stock->getId();
+            $notificationData->status = $priceStatus;
+            $notificationData->difference = abs($priceDifference);
+            
+            // check whether price notification for this purchase detail is already there
+            $oldNotification = $purchaseDetail->getNotification();
+            if ($oldNotification) {
+                // if yes, assign the old one
+                $isNew = false;
+                $notification = $oldNotification;
+            } else {
+                // if not, create new notification
+                $isNew = true;
+                $notification = new Notification();
+            }
+            
+            $notification
+                ->setTime(time())
+                ->setType('price')
+                ->setData(json_encode($notificationData))
+                ->save($con);
+            
+            // if notification is new, then give notification to user
+            // if not, then update notification's status to unread
+            if ($isNew == true) {
+                // find which role to send notification
+                $roles = NotificationOptionQuery::create()
+                    ->filterByType('price')
+                    ->find($con);
+                
+                // iterate through each role to find users assigned to it
+                foreach ($roles as $role) 
+                {
+                    $users = UserQuery::create()
+                        ->filterByStatus('Active')
+                        ->filterByRoleId($role->getRoleId())
+                        ->find($con);
+                    
+                    // iterate through each user to give notification
+                    foreach ($users as $user) 
+                    {
+                        $notifyUser = new NotificationOnUser();
+                        $notifyUser
+                            ->setUserId($user->getId())
+                            ->setNotificationId($notification->getId())
+                            ->save($con);
+                    }
+                }
+            } else {
+                $notifyUsers = NotificationOnUserQuery::create()
+                    ->filterByNotificationId($notification->getId())
+                    ->find($con);
+                
+                foreach ($notifyUsers as $notifyUser) 
+                {
+                    $notifyUser
+                        ->setStatus('Unread')
+                        ->save($con);
+                }
+            }
+            
+            $notificationId = $notification->getId();
+            
+        } else {
+            $oldNotification = $purchaseDetail->getNotification();
+            if ($oldNotification) {
+                $oldNotification->delete($con);
+            }
+            
+            $notificationId = 0;
+        }
+        
+        return $notificationId;
+    }
 
     private static function seeker($params, $currentUser, $con)
     {
@@ -94,11 +192,17 @@ class Purchases
 
             // add stock amount
             $stock = StockQuery::create()->findOneById($product->stock_id, $con);
-            if ($stock) {
+            if ($stock->getUnlimited() == false) {
                 $stock
                     ->setAmount($stock->getAmount() + $product->amount)
                     ->save($con);
             }
+            
+            $notificationId = Purchases::newPriceNotification($stock, $purchaseDetail, $con);
+            
+            $purchaseDetail
+                ->setNotificationId($notificationId)
+                ->save($con);
         }        
 
         $logData['params'] = $params;
@@ -144,9 +248,16 @@ class Purchases
                 $purchaseDetail
                     ->setStatus('Canceled')
                     ->save($con);
+                
+                $notification = $purchaseDetail->getNotification();
+                if ($notification){
+                    $notification
+                        ->setStatus('Not Active')
+                        ->save();
+                }
                     
                 $stock = StockQuery::create()->findOneById($purchaseDetail->getStockId(), $con);
-                if ($stock) {
+                if ($stock->getUnlimited() == false) {
                     $stock
                         ->setAmount($stock->getAmount() - $purchaseDetail->getAmount())
                         ->save($con);
@@ -284,19 +395,19 @@ class Purchases
         
         $products = json_decode($params->products);
         
-        foreach ($products as $product){
-            $purchaseDetail = PurchaseDetailQuery::create()->findOneById($product->id);
-
+        foreach ($products as $product)
+        {
             // check whether current detail iteration is brand new or just updating the old one
-            if (!$purchaseDetail) {
-                $new = true;
-                $purchaseDetail = new PurchaseDetail();
+            $newDetail = PurchaseDetailQuery::create()->findOneById($product->id);
+            if (!$newDetail) {
+                $isNew = true;
+                $newDetail = new PurchaseDetail();
             } else {
-                $new = false;
-                $old = $purchaseDetail->copy();
+                $isNew = false;
+                $oldDetail = $newDetail->copy();
             }
             
-            $purchaseDetail
+            $newDetail
                 ->setPurchaseId($purchase->getId())
                 ->setStockId($product->stock_id)
                 ->setAmount($product->amount)
@@ -305,17 +416,50 @@ class Purchases
                 ->save($con);
 
             // make stock dance ^_^
-            $stock = StockQuery::create()->findOneById($product->stock_id, $con);
-            if ($new) {
-                $stock
-                    ->setAmount($stock->getAmount() + $product->amount)
-                    ->save($con);
+            if ($isNew) {
+                $stock = StockQuery::create()->findOneById($newDetail->getStockId(), $con);
+                if ($stock->getUnlimited() == false) {
+                    $stock
+                        ->setAmount($stock->getAmount() + $product->amount)
+                        ->save($con);
+                }
             } else {
-                // need further checking whether updated stock is the same old one or not
-                $stock
-                    ->setAmount($stock->getAmount() - $old->getAmount() + $product->amount)
-                    ->save($con);
+                // check whether updated detail stock is the same old one or not
+                if ($newDetail->getStockId() == $oldDetail->getStockId()) 
+                {
+                    // and if actually the same, then set stock amount like this
+                    // amount = currentAmount - oldTransAmount + newTransAmount
+                    $stock = StockQuery::create()->findOneById($newDetail->getStockId(), $con);
+                    if ($stock->getUnlimited() == false) {
+                        $stock
+                            ->setAmount($stock->getAmount() - $oldDetail->getAmount() + $newDetail->getAmount())
+                            ->save($con);
+                    }
+                } else {
+                    // but if two stocks is not the same,
+                    // then take back oldTransAmount from old-stock, and give newTransAmount to new-stock
+                    $stock = StockQuery::create()->findOneById($oldDetail->getStockId(), $con);
+                    if ($stock->getUnlimited() == false) {
+                        $stock
+                            ->setAmount($stock->getAmount() - $oldDetail->getAmount())
+                            ->save($con);
+                    }
+                        
+                    $stock = StockQuery::create()->findOneById($newDetail->getStockId(), $con);
+                    if ($stock->getUnlimited() == false) {
+                        $stock
+                            ->setAmount($stock->getAmount() + $newDetail->getAmount())
+                            ->save($con);
+                    }
+                }
             }
+            
+            $notificationId = Purchases::newPriceNotification($stock, $newDetail, $con);
+            
+            $newDetail
+                ->setNotificationId($notificationId)
+                ->save($con);
+            
         }
 
         // if there are any sales detail removed then make sure the stocks give back something they own... 'give back amount'
@@ -325,13 +469,20 @@ class Purchases
 
         foreach($removeds as $removed){
             $stock = StockQuery::create()->findOneById($removed->getStockId(), $con);
-            $stock
-                ->setAmount($stock->getAmount() - $removed->getAmount()) // sorry I take back my amount.. :p
-                ->save($con);
-                
+            if ($stock->getUnlimited() == false) {
+                $stock
+                    ->setAmount($stock->getAmount() - $removed->getAmount()) // sorry I take back my amount.. :p
+                    ->save($con);
+            }
+            
             $removed
                 ->setStatus('Deleted')
                 ->save($con);
+                
+            $notification = $removed->getNotification();
+            if ($notification){
+                $notification->delete($con);
+            }
         }
         
         $logData['params'] = $params;

@@ -2,8 +2,8 @@
 
 namespace ORM\Map;
 
-use ORM\PurchaseHistory;
-use ORM\PurchaseHistoryQuery;
+use ORM\NotificationOnUser;
+use ORM\NotificationOnUserQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'purchase_history' table.
+ * This class defines the structure of the 'notification_on_user' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class PurchaseHistoryTableMap extends TableMap
+class NotificationOnUserTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class PurchaseHistoryTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'ORM.Map.PurchaseHistoryTableMap';
+    const CLASS_NAME = 'ORM.Map.NotificationOnUserTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class PurchaseHistoryTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'purchase_history';
+    const TABLE_NAME = 'notification_on_user';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\ORM\\PurchaseHistory';
+    const OM_CLASS = '\\ORM\\NotificationOnUser';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'ORM.PurchaseHistory';
+    const CLASS_DEFAULT = 'ORM.NotificationOnUser';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 4;
 
     /**
      * The number of lazy-loaded columns
@@ -69,37 +69,27 @@ class PurchaseHistoryTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 4;
 
     /**
      * the column name for the ID field
      */
-    const COL_ID = 'purchase_history.ID';
+    const COL_ID = 'notification_on_user.ID';
 
     /**
      * the column name for the USER_ID field
      */
-    const COL_USER_ID = 'purchase_history.USER_ID';
+    const COL_USER_ID = 'notification_on_user.USER_ID';
 
     /**
-     * the column name for the PURCHASE_ID field
+     * the column name for the NOTIFICATION_ID field
      */
-    const COL_PURCHASE_ID = 'purchase_history.PURCHASE_ID';
+    const COL_NOTIFICATION_ID = 'notification_on_user.NOTIFICATION_ID';
 
     /**
-     * the column name for the TIME field
+     * the column name for the STATUS field
      */
-    const COL_TIME = 'purchase_history.TIME';
-
-    /**
-     * the column name for the OPERATION field
-     */
-    const COL_OPERATION = 'purchase_history.OPERATION';
-
-    /**
-     * the column name for the DATA field
-     */
-    const COL_DATA = 'purchase_history.DATA';
+    const COL_STATUS = 'notification_on_user.STATUS';
 
     /**
      * The default string format for model objects of the related table
@@ -113,12 +103,12 @@ class PurchaseHistoryTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'UserID', 'PurchaseId', 'Time', 'Operation', 'Data', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'userID', 'purchaseId', 'time', 'operation', 'data', ),
-        self::TYPE_COLNAME       => array(PurchaseHistoryTableMap::COL_ID, PurchaseHistoryTableMap::COL_USER_ID, PurchaseHistoryTableMap::COL_PURCHASE_ID, PurchaseHistoryTableMap::COL_TIME, PurchaseHistoryTableMap::COL_OPERATION, PurchaseHistoryTableMap::COL_DATA, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_USER_ID', 'COL_PURCHASE_ID', 'COL_TIME', 'COL_OPERATION', 'COL_DATA', ),
-        self::TYPE_FIELDNAME     => array('id', 'user_id', 'purchase_id', 'time', 'operation', 'data', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'UserId', 'NotificationId', 'Status', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'userId', 'notificationId', 'status', ),
+        self::TYPE_COLNAME       => array(NotificationOnUserTableMap::COL_ID, NotificationOnUserTableMap::COL_USER_ID, NotificationOnUserTableMap::COL_NOTIFICATION_ID, NotificationOnUserTableMap::COL_STATUS, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_USER_ID', 'COL_NOTIFICATION_ID', 'COL_STATUS', ),
+        self::TYPE_FIELDNAME     => array('id', 'user_id', 'notification_id', 'status', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
     /**
@@ -128,12 +118,12 @@ class PurchaseHistoryTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'UserID' => 1, 'PurchaseId' => 2, 'Time' => 3, 'Operation' => 4, 'Data' => 5, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'userID' => 1, 'purchaseId' => 2, 'time' => 3, 'operation' => 4, 'data' => 5, ),
-        self::TYPE_COLNAME       => array(PurchaseHistoryTableMap::COL_ID => 0, PurchaseHistoryTableMap::COL_USER_ID => 1, PurchaseHistoryTableMap::COL_PURCHASE_ID => 2, PurchaseHistoryTableMap::COL_TIME => 3, PurchaseHistoryTableMap::COL_OPERATION => 4, PurchaseHistoryTableMap::COL_DATA => 5, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_USER_ID' => 1, 'COL_PURCHASE_ID' => 2, 'COL_TIME' => 3, 'COL_OPERATION' => 4, 'COL_DATA' => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'user_id' => 1, 'purchase_id' => 2, 'time' => 3, 'operation' => 4, 'data' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'UserId' => 1, 'NotificationId' => 2, 'Status' => 3, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'userId' => 1, 'notificationId' => 2, 'status' => 3, ),
+        self::TYPE_COLNAME       => array(NotificationOnUserTableMap::COL_ID => 0, NotificationOnUserTableMap::COL_USER_ID => 1, NotificationOnUserTableMap::COL_NOTIFICATION_ID => 2, NotificationOnUserTableMap::COL_STATUS => 3, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_USER_ID' => 1, 'COL_NOTIFICATION_ID' => 2, 'COL_STATUS' => 3, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'user_id' => 1, 'notification_id' => 2, 'status' => 3, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
     /**
@@ -146,18 +136,16 @@ class PurchaseHistoryTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('purchase_history');
-        $this->setPhpName('PurchaseHistory');
-        $this->setClassName('\\ORM\\PurchaseHistory');
+        $this->setName('notification_on_user');
+        $this->setPhpName('NotificationOnUser');
+        $this->setClassName('\\ORM\\NotificationOnUser');
         $this->setPackage('ORM');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('ID', 'Id', 'BIGINT', true, 20, null);
-        $this->addForeignKey('USER_ID', 'UserID', 'BIGINT', 'user_detail', 'ID', false, 20, null);
-        $this->addForeignKey('PURCHASE_ID', 'PurchaseId', 'BIGINT', 'purchase', 'ID', false, 20, null);
-        $this->addColumn('TIME', 'Time', 'TIMESTAMP', false, null, null);
-        $this->addColumn('OPERATION', 'Operation', 'CHAR', false, null, null);
-        $this->addColumn('DATA', 'Data', 'LONGVARCHAR', false, null, null);
+        $this->addForeignKey('USER_ID', 'UserId', 'BIGINT', 'user', 'ID', false, 20, null);
+        $this->addForeignKey('NOTIFICATION_ID', 'NotificationId', 'BIGINT', 'notification', 'ID', false, 20, null);
+        $this->addColumn('STATUS', 'Status', 'CHAR', false, null, null);
     } // initialize()
 
     /**
@@ -165,8 +153,8 @@ class PurchaseHistoryTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('UserDetail', '\\ORM\\UserDetail', RelationMap::MANY_TO_ONE, array('user_id' => 'id', ), 'RESTRICT', 'RESTRICT');
-        $this->addRelation('Purchase', '\\ORM\\Purchase', RelationMap::MANY_TO_ONE, array('purchase_id' => 'id', ), 'NO ACTION', 'RESTRICT');
+        $this->addRelation('User', '\\ORM\\User', RelationMap::MANY_TO_ONE, array('user_id' => 'id', ), 'CASCADE', 'RESTRICT');
+        $this->addRelation('Notification', '\\ORM\\Notification', RelationMap::MANY_TO_ONE, array('notification_id' => 'id', ), 'CASCADE', 'RESTRICT');
     } // buildRelations()
 
     /**
@@ -226,7 +214,7 @@ class PurchaseHistoryTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? PurchaseHistoryTableMap::CLASS_DEFAULT : PurchaseHistoryTableMap::OM_CLASS;
+        return $withPrefix ? NotificationOnUserTableMap::CLASS_DEFAULT : NotificationOnUserTableMap::OM_CLASS;
     }
 
     /**
@@ -240,22 +228,22 @@ class PurchaseHistoryTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (PurchaseHistory object, last column rank)
+     * @return array           (NotificationOnUser object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = PurchaseHistoryTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = PurchaseHistoryTableMap::getInstanceFromPool($key))) {
+        $key = NotificationOnUserTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = NotificationOnUserTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + PurchaseHistoryTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + NotificationOnUserTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = PurchaseHistoryTableMap::OM_CLASS;
-            /** @var PurchaseHistory $obj */
+            $cls = NotificationOnUserTableMap::OM_CLASS;
+            /** @var NotificationOnUser $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            PurchaseHistoryTableMap::addInstanceToPool($obj, $key);
+            NotificationOnUserTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -278,18 +266,18 @@ class PurchaseHistoryTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = PurchaseHistoryTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = PurchaseHistoryTableMap::getInstanceFromPool($key))) {
+            $key = NotificationOnUserTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = NotificationOnUserTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var PurchaseHistory $obj */
+                /** @var NotificationOnUser $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                PurchaseHistoryTableMap::addInstanceToPool($obj, $key);
+                NotificationOnUserTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -310,19 +298,15 @@ class PurchaseHistoryTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(PurchaseHistoryTableMap::COL_ID);
-            $criteria->addSelectColumn(PurchaseHistoryTableMap::COL_USER_ID);
-            $criteria->addSelectColumn(PurchaseHistoryTableMap::COL_PURCHASE_ID);
-            $criteria->addSelectColumn(PurchaseHistoryTableMap::COL_TIME);
-            $criteria->addSelectColumn(PurchaseHistoryTableMap::COL_OPERATION);
-            $criteria->addSelectColumn(PurchaseHistoryTableMap::COL_DATA);
+            $criteria->addSelectColumn(NotificationOnUserTableMap::COL_ID);
+            $criteria->addSelectColumn(NotificationOnUserTableMap::COL_USER_ID);
+            $criteria->addSelectColumn(NotificationOnUserTableMap::COL_NOTIFICATION_ID);
+            $criteria->addSelectColumn(NotificationOnUserTableMap::COL_STATUS);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
             $criteria->addSelectColumn($alias . '.USER_ID');
-            $criteria->addSelectColumn($alias . '.PURCHASE_ID');
-            $criteria->addSelectColumn($alias . '.TIME');
-            $criteria->addSelectColumn($alias . '.OPERATION');
-            $criteria->addSelectColumn($alias . '.DATA');
+            $criteria->addSelectColumn($alias . '.NOTIFICATION_ID');
+            $criteria->addSelectColumn($alias . '.STATUS');
         }
     }
 
@@ -335,7 +319,7 @@ class PurchaseHistoryTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(PurchaseHistoryTableMap::DATABASE_NAME)->getTable(PurchaseHistoryTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(NotificationOnUserTableMap::DATABASE_NAME)->getTable(NotificationOnUserTableMap::TABLE_NAME);
     }
 
     /**
@@ -343,16 +327,16 @@ class PurchaseHistoryTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(PurchaseHistoryTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(PurchaseHistoryTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new PurchaseHistoryTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(NotificationOnUserTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(NotificationOnUserTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new NotificationOnUserTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a PurchaseHistory or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a NotificationOnUser or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or PurchaseHistory object or primary key or array of primary keys
+     * @param mixed               $values Criteria or NotificationOnUser object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -363,27 +347,27 @@ class PurchaseHistoryTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(PurchaseHistoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(NotificationOnUserTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \ORM\PurchaseHistory) { // it's a model object
+        } elseif ($values instanceof \ORM\NotificationOnUser) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(PurchaseHistoryTableMap::DATABASE_NAME);
-            $criteria->add(PurchaseHistoryTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(NotificationOnUserTableMap::DATABASE_NAME);
+            $criteria->add(NotificationOnUserTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = PurchaseHistoryQuery::create()->mergeWith($criteria);
+        $query = NotificationOnUserQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            PurchaseHistoryTableMap::clearInstancePool();
+            NotificationOnUserTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                PurchaseHistoryTableMap::removeInstanceFromPool($singleval);
+                NotificationOnUserTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -391,20 +375,20 @@ class PurchaseHistoryTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the purchase_history table.
+     * Deletes all rows from the notification_on_user table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return PurchaseHistoryQuery::create()->doDeleteAll($con);
+        return NotificationOnUserQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a PurchaseHistory or Criteria object.
+     * Performs an INSERT on the database, given a NotificationOnUser or Criteria object.
      *
-     * @param mixed               $criteria Criteria or PurchaseHistory object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or NotificationOnUser object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -413,22 +397,22 @@ class PurchaseHistoryTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(PurchaseHistoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(NotificationOnUserTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from PurchaseHistory object
+            $criteria = $criteria->buildCriteria(); // build Criteria from NotificationOnUser object
         }
 
-        if ($criteria->containsKey(PurchaseHistoryTableMap::COL_ID) && $criteria->keyContainsValue(PurchaseHistoryTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.PurchaseHistoryTableMap::COL_ID.')');
+        if ($criteria->containsKey(NotificationOnUserTableMap::COL_ID) && $criteria->keyContainsValue(NotificationOnUserTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.NotificationOnUserTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = PurchaseHistoryQuery::create()->mergeWith($criteria);
+        $query = NotificationOnUserQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -437,7 +421,7 @@ class PurchaseHistoryTableMap extends TableMap
         });
     }
 
-} // PurchaseHistoryTableMap
+} // NotificationOnUserTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-PurchaseHistoryTableMap::buildTableMap();
+NotificationOnUserTableMap::buildTableMap();

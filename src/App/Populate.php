@@ -28,6 +28,7 @@ class Populate
                 'sell_distributor',
                 'sell_misc',
                 'discount',
+                'unlimited'
             ))
             ->withColumn('Stock.Id', 'stock_id')
             ->withColumn('Product.Code', 'product_code')

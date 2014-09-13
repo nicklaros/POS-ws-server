@@ -27,6 +27,7 @@ class Stocks
                 'sell_distributor',
                 'sell_misc',
                 'discount',
+                'unlimited'
             ))
             ->withColumn('Product.Name', 'product_name')
             ->withColumn('Unit.Name', 'unit_name')
@@ -50,17 +51,26 @@ class Stocks
         if (!$product || $product != 'Active') throw new \Exception('Produk tidak ditemukan. Mungkin Produk itu sudah dihapus.');
         
         // make sure there are no duplicate (same product and unit) variant in stock
-        $count = StockQuery::create()
+        $stock = StockQuery::create()
+            ->leftJoin('Product')
+            ->leftJoin('Unit')
             ->filterByProductId($params->product_id)
             ->filterByUnitId($params->unit_id)
-            ->count($con);
-        if ($count != 0) throw new \Exception('Gagal menyimpan karena variant sudah ada.');
+            ->withColumn('Product.Name', 'product_name')
+            ->withColumn('Unit.Name', 'unit_name')
+            ->select(array(
+                'product_name',
+                'unit_name',
+            ))
+            ->findOne($con);
+        if ($stock) throw new \Exception('Gagal menyimpan karena variant ' . $stock['product_name'] . ' <strong>' . $stock['unit_name'] . '</strong> sudah ada.');
         
         // create new stock
         $stock = new Stock();
         $stock
             ->setProductId($params->product_id)
             ->setUnitId($params->unit_id)
+            ->setUnlimited(isset($params->unlimited) ? $params->unlimited : 0)
             ->setStatus('Active')
             ->save($con);
 
@@ -94,23 +104,32 @@ class Stocks
         if (!$product || $product != 'Active') throw new \Exception('Produk tidak ditemukan. Mungkin Produk itu sudah dihapus.');
         
         // make sure there are no duplicate (same product and unit) variant in stock
-        $count = StockQuery::create()
+        $stock = StockQuery::create()
+            ->leftJoin('Product')
+            ->leftJoin('Unit')
             ->filterByProductId($params->product_id)
-            ->filterByStockId($params->stock_id)
-            ->count($con);
-        if ($count != 0) throw new \Exception('Gagal menyimpan karena variant sudah ada.');
+            ->filterByUnitId($params->unit_id)
+            ->withColumn('Product.Name', 'product_name')
+            ->withColumn('Unit.Name', 'unit_name')
+            ->select(array(
+                'product_name',
+                'unit_name',
+            ))
+            ->findOne($con);
+        if ($stock) throw new \Exception('Gagal menyimpan karena variant ' . $stock['product_name'] . ' <strong>' . $stock['unit_name'] . '</strong> sudah ada.');
         
         // create new stock
         $stock = new Stock();
         $stock
             ->setProductId($params->product_id)
-            ->setAmount($params->amount)
             ->setUnitId($params->unit_id)
+            ->setAmount(isset($params->amount) ? $params->amount : 0)
             ->setBuy($params->buy)
             ->setSellPublic($params->sell_public)
             ->setSellDistributor($params->sell_distributor)
             ->setSellMisc($params->sell_misc)
             ->setDiscount($params->discount)
+            ->setUnlimited(isset($params->unlimited) ? $params->unlimited : 0)
             ->setStatus('Active')
             ->save($con);
 
@@ -216,6 +235,7 @@ class Stocks
                 'sell_distributor',
                 'sell_misc',
                 'discount',
+                'unlimited'
             ))
             ->leftJoin('Product')
             ->withColumn('Product.Code', 'code')
@@ -265,6 +285,7 @@ class Stocks
             ->setSellDistributor($params->sell_distributor)
             ->setSellMisc($params->sell_misc)
             ->setDiscount($params->discount)
+            ->setUnlimited(isset($params->unlimited) ? $params->unlimited : 0)
             ->save($con);
 
         $rowHistory = new RowHistory();

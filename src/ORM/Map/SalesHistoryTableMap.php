@@ -156,7 +156,7 @@ class SalesHistoryTableMap extends TableMap
         $this->addForeignKey('USER_ID', 'UserID', 'BIGINT', 'user_detail', 'ID', false, 20, null);
         $this->addForeignKey('SALES_ID', 'SalesId', 'BIGINT', 'sales', 'ID', false, 20, null);
         $this->addColumn('TIME', 'Time', 'TIMESTAMP', false, null, null);
-        $this->addColumn('OPERATION', 'Operation', 'VARCHAR', false, null, null);
+        $this->addColumn('OPERATION', 'Operation', 'CHAR', false, null, null);
         $this->addColumn('DATA', 'Data', 'LONGVARCHAR', false, null, null);
     } // initialize()
 

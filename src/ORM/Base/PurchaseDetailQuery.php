@@ -26,6 +26,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPurchaseDetailQuery orderByAmount($order = Criteria::ASC) Order by the amount column
  * @method     ChildPurchaseDetailQuery orderByTotalPrice($order = Criteria::ASC) Order by the total_price column
  * @method     ChildPurchaseDetailQuery orderByStatus($order = Criteria::ASC) Order by the status column
+ * @method     ChildPurchaseDetailQuery orderByNotificationId($order = Criteria::ASC) Order by the notification_id column
  *
  * @method     ChildPurchaseDetailQuery groupById() Group by the id column
  * @method     ChildPurchaseDetailQuery groupByPurchaseId() Group by the purchase_id column
@@ -33,6 +34,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPurchaseDetailQuery groupByAmount() Group by the amount column
  * @method     ChildPurchaseDetailQuery groupByTotalPrice() Group by the total_price column
  * @method     ChildPurchaseDetailQuery groupByStatus() Group by the status column
+ * @method     ChildPurchaseDetailQuery groupByNotificationId() Group by the notification_id column
  *
  * @method     ChildPurchaseDetailQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildPurchaseDetailQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -46,7 +48,11 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPurchaseDetailQuery rightJoinStock($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Stock relation
  * @method     ChildPurchaseDetailQuery innerJoinStock($relationAlias = null) Adds a INNER JOIN clause to the query using the Stock relation
  *
- * @method     \ORM\PurchaseQuery|\ORM\StockQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildPurchaseDetailQuery leftJoinNotification($relationAlias = null) Adds a LEFT JOIN clause to the query using the Notification relation
+ * @method     ChildPurchaseDetailQuery rightJoinNotification($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Notification relation
+ * @method     ChildPurchaseDetailQuery innerJoinNotification($relationAlias = null) Adds a INNER JOIN clause to the query using the Notification relation
+ *
+ * @method     \ORM\PurchaseQuery|\ORM\StockQuery|\ORM\NotificationQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildPurchaseDetail findOne(ConnectionInterface $con = null) Return the first ChildPurchaseDetail matching the query
  * @method     ChildPurchaseDetail findOneOrCreate(ConnectionInterface $con = null) Return the first ChildPurchaseDetail matching the query, or a new ChildPurchaseDetail object populated from the query conditions when no match is found
@@ -57,6 +63,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPurchaseDetail findOneByAmount(int $amount) Return the first ChildPurchaseDetail filtered by the amount column
  * @method     ChildPurchaseDetail findOneByTotalPrice(int $total_price) Return the first ChildPurchaseDetail filtered by the total_price column
  * @method     ChildPurchaseDetail findOneByStatus(string $status) Return the first ChildPurchaseDetail filtered by the status column
+ * @method     ChildPurchaseDetail findOneByNotificationId(string $notification_id) Return the first ChildPurchaseDetail filtered by the notification_id column
  *
  * @method     ChildPurchaseDetail[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildPurchaseDetail objects based on current ModelCriteria
  * @method     ChildPurchaseDetail[]|ObjectCollection findById(string $id) Return ChildPurchaseDetail objects filtered by the id column
@@ -65,6 +72,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPurchaseDetail[]|ObjectCollection findByAmount(int $amount) Return ChildPurchaseDetail objects filtered by the amount column
  * @method     ChildPurchaseDetail[]|ObjectCollection findByTotalPrice(int $total_price) Return ChildPurchaseDetail objects filtered by the total_price column
  * @method     ChildPurchaseDetail[]|ObjectCollection findByStatus(string $status) Return ChildPurchaseDetail objects filtered by the status column
+ * @method     ChildPurchaseDetail[]|ObjectCollection findByNotificationId(string $notification_id) Return ChildPurchaseDetail objects filtered by the notification_id column
  * @method     ChildPurchaseDetail[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -154,7 +162,7 @@ abstract class PurchaseDetailQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT ID, PURCHASE_ID, STOCK_ID, AMOUNT, TOTAL_PRICE, STATUS FROM purchase_detail WHERE ID = :p0';
+        $sql = 'SELECT ID, PURCHASE_ID, STOCK_ID, AMOUNT, TOTAL_PRICE, STATUS, NOTIFICATION_ID FROM purchase_detail WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -483,6 +491,49 @@ abstract class PurchaseDetailQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the notification_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByNotificationId(1234); // WHERE notification_id = 1234
+     * $query->filterByNotificationId(array(12, 34)); // WHERE notification_id IN (12, 34)
+     * $query->filterByNotificationId(array('min' => 12)); // WHERE notification_id > 12
+     * </code>
+     *
+     * @see       filterByNotification()
+     *
+     * @param     mixed $notificationId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPurchaseDetailQuery The current query, for fluid interface
+     */
+    public function filterByNotificationId($notificationId = null, $comparison = null)
+    {
+        if (is_array($notificationId)) {
+            $useMinMax = false;
+            if (isset($notificationId['min'])) {
+                $this->addUsingAlias(PurchaseDetailTableMap::COL_NOTIFICATION_ID, $notificationId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($notificationId['max'])) {
+                $this->addUsingAlias(PurchaseDetailTableMap::COL_NOTIFICATION_ID, $notificationId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PurchaseDetailTableMap::COL_NOTIFICATION_ID, $notificationId, $comparison);
+    }
+
+    /**
      * Filter the query by a related \ORM\Purchase object
      *
      * @param \ORM\Purchase|ObjectCollection $purchase The related object(s) to use as filter
@@ -630,6 +681,81 @@ abstract class PurchaseDetailQuery extends ModelCriteria
         return $this
             ->joinStock($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Stock', '\ORM\StockQuery');
+    }
+
+    /**
+     * Filter the query by a related \ORM\Notification object
+     *
+     * @param \ORM\Notification|ObjectCollection $notification The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildPurchaseDetailQuery The current query, for fluid interface
+     */
+    public function filterByNotification($notification, $comparison = null)
+    {
+        if ($notification instanceof \ORM\Notification) {
+            return $this
+                ->addUsingAlias(PurchaseDetailTableMap::COL_NOTIFICATION_ID, $notification->getId(), $comparison);
+        } elseif ($notification instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(PurchaseDetailTableMap::COL_NOTIFICATION_ID, $notification->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByNotification() only accepts arguments of type \ORM\Notification or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Notification relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildPurchaseDetailQuery The current query, for fluid interface
+     */
+    public function joinNotification($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Notification');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Notification');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Notification relation Notification object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \ORM\NotificationQuery A secondary query class using the current class as primary query
+     */
+    public function useNotificationQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinNotification($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Notification', '\ORM\NotificationQuery');
     }
 
     /**

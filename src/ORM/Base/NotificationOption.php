@@ -4,14 +4,10 @@ namespace ORM\Base;
 
 use \Exception;
 use \PDO;
-use ORM\Notification as ChildNotification;
-use ORM\NotificationQuery as ChildNotificationQuery;
-use ORM\Purchase as ChildPurchase;
-use ORM\PurchaseDetailQuery as ChildPurchaseDetailQuery;
-use ORM\PurchaseQuery as ChildPurchaseQuery;
-use ORM\Stock as ChildStock;
-use ORM\StockQuery as ChildStockQuery;
-use ORM\Map\PurchaseDetailTableMap;
+use ORM\NotificationOptionQuery as ChildNotificationOptionQuery;
+use ORM\Role as ChildRole;
+use ORM\RoleQuery as ChildRoleQuery;
+use ORM\Map\NotificationOptionTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -24,12 +20,12 @@ use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
 
-abstract class PurchaseDetail implements ActiveRecordInterface
+abstract class NotificationOption implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\ORM\\Map\\PurchaseDetailTableMap';
+    const TABLE_MAP = '\\ORM\\Map\\NotificationOptionTableMap';
 
 
     /**
@@ -65,55 +61,21 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the purchase_id field.
+     * The value for the type field.
      * @var        string
      */
-    protected $purchase_id;
+    protected $type;
 
     /**
-     * The value for the stock_id field.
+     * The value for the role_id field.
      * @var        string
      */
-    protected $stock_id;
+    protected $role_id;
 
     /**
-     * The value for the amount field.
-     * @var        int
+     * @var        ChildRole
      */
-    protected $amount;
-
-    /**
-     * The value for the total_price field.
-     * @var        int
-     */
-    protected $total_price;
-
-    /**
-     * The value for the status field.
-     * @var        string
-     */
-    protected $status;
-
-    /**
-     * The value for the notification_id field.
-     * @var        string
-     */
-    protected $notification_id;
-
-    /**
-     * @var        ChildPurchase
-     */
-    protected $aPurchase;
-
-    /**
-     * @var        ChildStock
-     */
-    protected $aStock;
-
-    /**
-     * @var        ChildNotification
-     */
-    protected $aNotification;
+    protected $aRole;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -124,7 +86,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of ORM\Base\PurchaseDetail object.
+     * Initializes internal state of ORM\Base\NotificationOption object.
      */
     public function __construct()
     {
@@ -219,9 +181,9 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>PurchaseDetail</code> instance.  If
-     * <code>obj</code> is an instance of <code>PurchaseDetail</code>, delegates to
-     * <code>equals(PurchaseDetail)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>NotificationOption</code> instance.  If
+     * <code>obj</code> is an instance of <code>NotificationOption</code>, delegates to
+     * <code>equals(NotificationOption)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -287,7 +249,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|PurchaseDetail The current object, for fluid interface
+     * @return $this|NotificationOption The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -351,63 +313,23 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     }
 
     /**
-     * Get the [purchase_id] column value.
+     * Get the [type] column value.
      *
      * @return string
      */
-    public function getPurchaseId()
+    public function getType()
     {
-        return $this->purchase_id;
+        return $this->type;
     }
 
     /**
-     * Get the [stock_id] column value.
+     * Get the [role_id] column value.
      *
      * @return string
      */
-    public function getStockId()
+    public function getRoleId()
     {
-        return $this->stock_id;
-    }
-
-    /**
-     * Get the [amount] column value.
-     *
-     * @return int
-     */
-    public function getAmount()
-    {
-        return $this->amount;
-    }
-
-    /**
-     * Get the [total_price] column value.
-     *
-     * @return int
-     */
-    public function getTotalPrice()
-    {
-        return $this->total_price;
-    }
-
-    /**
-     * Get the [status] column value.
-     *
-     * @return string
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * Get the [notification_id] column value.
-     *
-     * @return string
-     */
-    public function getNotificationId()
-    {
-        return $this->notification_id;
+        return $this->role_id;
     }
 
     /**
@@ -446,26 +368,14 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : PurchaseDetailTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : NotificationOptionTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : PurchaseDetailTableMap::translateFieldName('PurchaseId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->purchase_id = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : NotificationOptionTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->type = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : PurchaseDetailTableMap::translateFieldName('StockId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->stock_id = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PurchaseDetailTableMap::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->amount = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PurchaseDetailTableMap::translateFieldName('TotalPrice', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->total_price = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PurchaseDetailTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->status = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PurchaseDetailTableMap::translateFieldName('NotificationId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->notification_id = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : NotificationOptionTableMap::translateFieldName('RoleId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->role_id = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -474,10 +384,10 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 7; // 7 = PurchaseDetailTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 3; // 3 = NotificationOptionTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\ORM\\PurchaseDetail'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\ORM\\NotificationOption'), 0, $e);
         }
     }
 
@@ -496,14 +406,8 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aPurchase !== null && $this->purchase_id !== $this->aPurchase->getId()) {
-            $this->aPurchase = null;
-        }
-        if ($this->aStock !== null && $this->stock_id !== $this->aStock->getId()) {
-            $this->aStock = null;
-        }
-        if ($this->aNotification !== null && $this->notification_id !== $this->aNotification->getId()) {
-            $this->aNotification = null;
+        if ($this->aRole !== null && $this->role_id !== $this->aRole->getId()) {
+            $this->aRole = null;
         }
     } // ensureConsistency
 
@@ -511,7 +415,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param  string $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
+     * @return $this|\ORM\NotificationOption The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -521,143 +425,55 @@ abstract class PurchaseDetail implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_ID] = true;
+            $this->modifiedColumns[NotificationOptionTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
-     * Set the value of [purchase_id] column.
+     * Set the value of [type] column.
      *
      * @param  string $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
+     * @return $this|\ORM\NotificationOption The current object (for fluent API support)
      */
-    public function setPurchaseId($v)
+    public function setType($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->purchase_id !== $v) {
-            $this->purchase_id = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_PURCHASE_ID] = true;
-        }
-
-        if ($this->aPurchase !== null && $this->aPurchase->getId() !== $v) {
-            $this->aPurchase = null;
+        if ($this->type !== $v) {
+            $this->type = $v;
+            $this->modifiedColumns[NotificationOptionTableMap::COL_TYPE] = true;
         }
 
         return $this;
-    } // setPurchaseId()
+    } // setType()
 
     /**
-     * Set the value of [stock_id] column.
+     * Set the value of [role_id] column.
      *
      * @param  string $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
+     * @return $this|\ORM\NotificationOption The current object (for fluent API support)
      */
-    public function setStockId($v)
+    public function setRoleId($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->stock_id !== $v) {
-            $this->stock_id = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_STOCK_ID] = true;
+        if ($this->role_id !== $v) {
+            $this->role_id = $v;
+            $this->modifiedColumns[NotificationOptionTableMap::COL_ROLE_ID] = true;
         }
 
-        if ($this->aStock !== null && $this->aStock->getId() !== $v) {
-            $this->aStock = null;
-        }
-
-        return $this;
-    } // setStockId()
-
-    /**
-     * Set the value of [amount] column.
-     *
-     * @param  int $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
-     */
-    public function setAmount($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->amount !== $v) {
-            $this->amount = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_AMOUNT] = true;
+        if ($this->aRole !== null && $this->aRole->getId() !== $v) {
+            $this->aRole = null;
         }
 
         return $this;
-    } // setAmount()
-
-    /**
-     * Set the value of [total_price] column.
-     *
-     * @param  int $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
-     */
-    public function setTotalPrice($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->total_price !== $v) {
-            $this->total_price = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_TOTAL_PRICE] = true;
-        }
-
-        return $this;
-    } // setTotalPrice()
-
-    /**
-     * Set the value of [status] column.
-     *
-     * @param  string $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
-     */
-    public function setStatus($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->status !== $v) {
-            $this->status = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_STATUS] = true;
-        }
-
-        return $this;
-    } // setStatus()
-
-    /**
-     * Set the value of [notification_id] column.
-     *
-     * @param  string $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
-     */
-    public function setNotificationId($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->notification_id !== $v) {
-            $this->notification_id = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_NOTIFICATION_ID] = true;
-        }
-
-        if ($this->aNotification !== null && $this->aNotification->getId() !== $v) {
-            $this->aNotification = null;
-        }
-
-        return $this;
-    } // setNotificationId()
+    } // setRoleId()
 
     /**
      * Reloads this object from datastore based on primary key and (optionally) resets all associated objects.
@@ -680,13 +496,13 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(PurchaseDetailTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(NotificationOptionTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildPurchaseDetailQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildNotificationOptionQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -696,9 +512,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aPurchase = null;
-            $this->aStock = null;
-            $this->aNotification = null;
+            $this->aRole = null;
         } // if (deep)
     }
 
@@ -708,8 +522,8 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see PurchaseDetail::setDeleted()
-     * @see PurchaseDetail::isDeleted()
+     * @see NotificationOption::setDeleted()
+     * @see NotificationOption::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -718,11 +532,11 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(PurchaseDetailTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(NotificationOptionTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildPurchaseDetailQuery::create()
+            $deleteQuery = ChildNotificationOptionQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -753,7 +567,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(PurchaseDetailTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(NotificationOptionTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -772,7 +586,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                PurchaseDetailTableMap::addInstanceToPool($this);
+                NotificationOptionTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -803,25 +617,11 @@ abstract class PurchaseDetail implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aPurchase !== null) {
-                if ($this->aPurchase->isModified() || $this->aPurchase->isNew()) {
-                    $affectedRows += $this->aPurchase->save($con);
+            if ($this->aRole !== null) {
+                if ($this->aRole->isModified() || $this->aRole->isNew()) {
+                    $affectedRows += $this->aRole->save($con);
                 }
-                $this->setPurchase($this->aPurchase);
-            }
-
-            if ($this->aStock !== null) {
-                if ($this->aStock->isModified() || $this->aStock->isNew()) {
-                    $affectedRows += $this->aStock->save($con);
-                }
-                $this->setStock($this->aStock);
-            }
-
-            if ($this->aNotification !== null) {
-                if ($this->aNotification->isModified() || $this->aNotification->isNew()) {
-                    $affectedRows += $this->aNotification->save($con);
-                }
-                $this->setNotification($this->aNotification);
+                $this->setRole($this->aRole);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -855,36 +655,24 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[PurchaseDetailTableMap::COL_ID] = true;
+        $this->modifiedColumns[NotificationOptionTableMap::COL_ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . PurchaseDetailTableMap::COL_ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . NotificationOptionTableMap::COL_ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_ID)) {
+        if ($this->isColumnModified(NotificationOptionTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'ID';
         }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_PURCHASE_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'PURCHASE_ID';
+        if ($this->isColumnModified(NotificationOptionTableMap::COL_TYPE)) {
+            $modifiedColumns[':p' . $index++]  = 'TYPE';
         }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_STOCK_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'STOCK_ID';
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_AMOUNT)) {
-            $modifiedColumns[':p' . $index++]  = 'AMOUNT';
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_TOTAL_PRICE)) {
-            $modifiedColumns[':p' . $index++]  = 'TOTAL_PRICE';
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_STATUS)) {
-            $modifiedColumns[':p' . $index++]  = 'STATUS';
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_NOTIFICATION_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'NOTIFICATION_ID';
+        if ($this->isColumnModified(NotificationOptionTableMap::COL_ROLE_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'ROLE_ID';
         }
 
         $sql = sprintf(
-            'INSERT INTO purchase_detail (%s) VALUES (%s)',
+            'INSERT INTO notification_option (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -896,23 +684,11 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                     case 'ID':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'PURCHASE_ID':
-                        $stmt->bindValue($identifier, $this->purchase_id, PDO::PARAM_INT);
+                    case 'TYPE':
+                        $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
                         break;
-                    case 'STOCK_ID':
-                        $stmt->bindValue($identifier, $this->stock_id, PDO::PARAM_INT);
-                        break;
-                    case 'AMOUNT':
-                        $stmt->bindValue($identifier, $this->amount, PDO::PARAM_INT);
-                        break;
-                    case 'TOTAL_PRICE':
-                        $stmt->bindValue($identifier, $this->total_price, PDO::PARAM_INT);
-                        break;
-                    case 'STATUS':
-                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
-                        break;
-                    case 'NOTIFICATION_ID':
-                        $stmt->bindValue($identifier, $this->notification_id, PDO::PARAM_INT);
+                    case 'ROLE_ID':
+                        $stmt->bindValue($identifier, $this->role_id, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -960,7 +736,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = PurchaseDetailTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = NotificationOptionTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -980,22 +756,10 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getPurchaseId();
+                return $this->getType();
                 break;
             case 2:
-                return $this->getStockId();
-                break;
-            case 3:
-                return $this->getAmount();
-                break;
-            case 4:
-                return $this->getTotalPrice();
-                break;
-            case 5:
-                return $this->getStatus();
-                break;
-            case 6:
-                return $this->getNotificationId();
+                return $this->getRoleId();
                 break;
             default:
                 return null;
@@ -1020,19 +784,15 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
-        if (isset($alreadyDumpedObjects['PurchaseDetail'][$this->getPrimaryKey()])) {
+        if (isset($alreadyDumpedObjects['NotificationOption'][$this->getPrimaryKey()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['PurchaseDetail'][$this->getPrimaryKey()] = true;
-        $keys = PurchaseDetailTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['NotificationOption'][$this->getPrimaryKey()] = true;
+        $keys = NotificationOptionTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getPurchaseId(),
-            $keys[2] => $this->getStockId(),
-            $keys[3] => $this->getAmount(),
-            $keys[4] => $this->getTotalPrice(),
-            $keys[5] => $this->getStatus(),
-            $keys[6] => $this->getNotificationId(),
+            $keys[1] => $this->getType(),
+            $keys[2] => $this->getRoleId(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1040,14 +800,8 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aPurchase) {
-                $result['Purchase'] = $this->aPurchase->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->aStock) {
-                $result['Stock'] = $this->aStock->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->aNotification) {
-                $result['Notification'] = $this->aNotification->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            if (null !== $this->aRole) {
+                $result['Role'] = $this->aRole->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1063,11 +817,11 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_STUDLYPHPNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\ORM\PurchaseDetail
+     * @return $this|\ORM\NotificationOption
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = PurchaseDetailTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = NotificationOptionTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1078,7 +832,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\ORM\PurchaseDetail
+     * @return $this|\ORM\NotificationOption
      */
     public function setByPosition($pos, $value)
     {
@@ -1087,22 +841,10 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setPurchaseId($value);
+                $this->setType($value);
                 break;
             case 2:
-                $this->setStockId($value);
-                break;
-            case 3:
-                $this->setAmount($value);
-                break;
-            case 4:
-                $this->setTotalPrice($value);
-                break;
-            case 5:
-                $this->setStatus($value);
-                break;
-            case 6:
-                $this->setNotificationId($value);
+                $this->setRoleId($value);
                 break;
         } // switch()
 
@@ -1128,28 +870,16 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = PurchaseDetailTableMap::getFieldNames($keyType);
+        $keys = NotificationOptionTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setPurchaseId($arr[$keys[1]]);
+            $this->setType($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setStockId($arr[$keys[2]]);
-        }
-        if (array_key_exists($keys[3], $arr)) {
-            $this->setAmount($arr[$keys[3]]);
-        }
-        if (array_key_exists($keys[4], $arr)) {
-            $this->setTotalPrice($arr[$keys[4]]);
-        }
-        if (array_key_exists($keys[5], $arr)) {
-            $this->setStatus($arr[$keys[5]]);
-        }
-        if (array_key_exists($keys[6], $arr)) {
-            $this->setNotificationId($arr[$keys[6]]);
+            $this->setRoleId($arr[$keys[2]]);
         }
     }
 
@@ -1164,7 +894,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      *                       or a format name ('XML', 'YAML', 'JSON', 'CSV')
      * @param string $data The source data to import from
      *
-     * @return $this|\ORM\PurchaseDetail The current object, for fluid interface
+     * @return $this|\ORM\NotificationOption The current object, for fluid interface
      */
     public function importFrom($parser, $data)
     {
@@ -1184,28 +914,16 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(PurchaseDetailTableMap::DATABASE_NAME);
+        $criteria = new Criteria(NotificationOptionTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_ID)) {
-            $criteria->add(PurchaseDetailTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(NotificationOptionTableMap::COL_ID)) {
+            $criteria->add(NotificationOptionTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_PURCHASE_ID)) {
-            $criteria->add(PurchaseDetailTableMap::COL_PURCHASE_ID, $this->purchase_id);
+        if ($this->isColumnModified(NotificationOptionTableMap::COL_TYPE)) {
+            $criteria->add(NotificationOptionTableMap::COL_TYPE, $this->type);
         }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_STOCK_ID)) {
-            $criteria->add(PurchaseDetailTableMap::COL_STOCK_ID, $this->stock_id);
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_AMOUNT)) {
-            $criteria->add(PurchaseDetailTableMap::COL_AMOUNT, $this->amount);
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_TOTAL_PRICE)) {
-            $criteria->add(PurchaseDetailTableMap::COL_TOTAL_PRICE, $this->total_price);
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_STATUS)) {
-            $criteria->add(PurchaseDetailTableMap::COL_STATUS, $this->status);
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_NOTIFICATION_ID)) {
-            $criteria->add(PurchaseDetailTableMap::COL_NOTIFICATION_ID, $this->notification_id);
+        if ($this->isColumnModified(NotificationOptionTableMap::COL_ROLE_ID)) {
+            $criteria->add(NotificationOptionTableMap::COL_ROLE_ID, $this->role_id);
         }
 
         return $criteria;
@@ -1223,8 +941,8 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = new Criteria(PurchaseDetailTableMap::DATABASE_NAME);
-        $criteria->add(PurchaseDetailTableMap::COL_ID, $this->id);
+        $criteria = new Criteria(NotificationOptionTableMap::DATABASE_NAME);
+        $criteria->add(NotificationOptionTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1286,19 +1004,15 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \ORM\PurchaseDetail (or compatible) type.
+     * @param      object $copyObj An object of \ORM\NotificationOption (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setPurchaseId($this->getPurchaseId());
-        $copyObj->setStockId($this->getStockId());
-        $copyObj->setAmount($this->getAmount());
-        $copyObj->setTotalPrice($this->getTotalPrice());
-        $copyObj->setStatus($this->getStatus());
-        $copyObj->setNotificationId($this->getNotificationId());
+        $copyObj->setType($this->getType());
+        $copyObj->setRoleId($this->getRoleId());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1314,7 +1028,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \ORM\PurchaseDetail Clone of current object.
+     * @return \ORM\NotificationOption Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1328,26 +1042,26 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildPurchase object.
+     * Declares an association between this object and a ChildRole object.
      *
-     * @param  ChildPurchase $v
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
+     * @param  ChildRole $v
+     * @return $this|\ORM\NotificationOption The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setPurchase(ChildPurchase $v = null)
+    public function setRole(ChildRole $v = null)
     {
         if ($v === null) {
-            $this->setPurchaseId(NULL);
+            $this->setRoleId(NULL);
         } else {
-            $this->setPurchaseId($v->getId());
+            $this->setRoleId($v->getId());
         }
 
-        $this->aPurchase = $v;
+        $this->aRole = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildPurchase object, it will not be re-added.
+        // If this object has already been added to the ChildRole object, it will not be re-added.
         if ($v !== null) {
-            $v->addDetail($this);
+            $v->addNotificationOption($this);
         }
 
 
@@ -1356,128 +1070,26 @@ abstract class PurchaseDetail implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildPurchase object
+     * Get the associated ChildRole object
      *
      * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildPurchase The associated ChildPurchase object.
+     * @return ChildRole The associated ChildRole object.
      * @throws PropelException
      */
-    public function getPurchase(ConnectionInterface $con = null)
+    public function getRole(ConnectionInterface $con = null)
     {
-        if ($this->aPurchase === null && (($this->purchase_id !== "" && $this->purchase_id !== null))) {
-            $this->aPurchase = ChildPurchaseQuery::create()->findPk($this->purchase_id, $con);
+        if ($this->aRole === null && (($this->role_id !== "" && $this->role_id !== null))) {
+            $this->aRole = ChildRoleQuery::create()->findPk($this->role_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aPurchase->addDetails($this);
+                $this->aRole->addNotificationOptions($this);
              */
         }
 
-        return $this->aPurchase;
-    }
-
-    /**
-     * Declares an association between this object and a ChildStock object.
-     *
-     * @param  ChildStock $v
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setStock(ChildStock $v = null)
-    {
-        if ($v === null) {
-            $this->setStockId(NULL);
-        } else {
-            $this->setStockId($v->getId());
-        }
-
-        $this->aStock = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildStock object, it will not be re-added.
-        if ($v !== null) {
-            $v->addPurchase($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildStock object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildStock The associated ChildStock object.
-     * @throws PropelException
-     */
-    public function getStock(ConnectionInterface $con = null)
-    {
-        if ($this->aStock === null && (($this->stock_id !== "" && $this->stock_id !== null))) {
-            $this->aStock = ChildStockQuery::create()->findPk($this->stock_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aStock->addPurchases($this);
-             */
-        }
-
-        return $this->aStock;
-    }
-
-    /**
-     * Declares an association between this object and a ChildNotification object.
-     *
-     * @param  ChildNotification $v
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setNotification(ChildNotification $v = null)
-    {
-        if ($v === null) {
-            $this->setNotificationId(NULL);
-        } else {
-            $this->setNotificationId($v->getId());
-        }
-
-        $this->aNotification = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildNotification object, it will not be re-added.
-        if ($v !== null) {
-            $v->addPurchaseDetail($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildNotification object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildNotification The associated ChildNotification object.
-     * @throws PropelException
-     */
-    public function getNotification(ConnectionInterface $con = null)
-    {
-        if ($this->aNotification === null && (($this->notification_id !== "" && $this->notification_id !== null))) {
-            $this->aNotification = ChildNotificationQuery::create()->findPk($this->notification_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aNotification->addPurchaseDetails($this);
-             */
-        }
-
-        return $this->aNotification;
+        return $this->aRole;
     }
 
     /**
@@ -1487,22 +1099,12 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->aPurchase) {
-            $this->aPurchase->removeDetail($this);
-        }
-        if (null !== $this->aStock) {
-            $this->aStock->removePurchase($this);
-        }
-        if (null !== $this->aNotification) {
-            $this->aNotification->removePurchaseDetail($this);
+        if (null !== $this->aRole) {
+            $this->aRole->removeNotificationOption($this);
         }
         $this->id = null;
-        $this->purchase_id = null;
-        $this->stock_id = null;
-        $this->amount = null;
-        $this->total_price = null;
-        $this->status = null;
-        $this->notification_id = null;
+        $this->type = null;
+        $this->role_id = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1523,9 +1125,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aPurchase = null;
-        $this->aStock = null;
-        $this->aNotification = null;
+        $this->aRole = null;
     }
 
     /**
@@ -1535,7 +1135,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(PurchaseDetailTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(NotificationOptionTableMap::DEFAULT_STRING_FORMAT);
     }
 
     /**

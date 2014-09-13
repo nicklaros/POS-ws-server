@@ -29,6 +29,36 @@
         <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Deleted')" />
     </table>
 
+    <table name="notification" phpName="Notification">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true" required="true"/>
+        <column name="time" phpName="Time" type="TIMESTAMP" />
+        <column name="type" phpName="Type" type="CHAR" sqlType="ENUM('price')" />
+        <column name="data" phpName="Data" type="LONGVARCHAR" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Active', 'Not Active')" />
+    </table>
+
+    <table name="notification_on_user" phpName="NotificationOnUser">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true" required="true"/>
+        <column name="user_id" phpName="UserId" type="BIGINT" size="20" />
+        <column name="notification_id" phpName="NotificationId" type="BIGINT" size="20" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Deleted', 'Ignored', 'Read', 'Unread')" />
+        <foreign-key foreignTable="user" phpName="User" refPhpName="Notification" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="notification" phpName="Notification" refPhpName="OnUser" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference local="notification_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="notification_option" phpName="NotificationOption">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true" required="true"/>
+        <column name="type" phpName="Type" type="CHAR" sqlType="ENUM('price')" />
+        <column name="role_id" phpName="RoleId" type="BIGINT" size="20" />
+        <foreign-key foreignTable="role" phpName="Role" refPhpName="NotificationOption" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference local="role_id" foreign="id" />
+        </foreign-key>
+    </table>
+
     <table name="option" phpName="Option">
         <column name="id" phpName="Id" type="BIGINT" size="20" primaryKey="true" required="true"/>
         <column name="user_id" phpName="UserId" type="BIGINT" size="20" required="true" />
@@ -61,12 +91,16 @@
         <column name="stock_id" phpName="StockId" type="BIGINT" size="20" />
         <column name="amount" phpName="Amount" type="TINYINT" size="3" />
         <column name="total_price" phpName="TotalPrice" type="INTEGER" size="10" />
-        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Canceled')" required="true" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending', 'Active', 'Not Active', 'Canceled', 'Deleted')" required="true" />
+        <column name="notification_id" phpName="NotificationId" type="BIGINT" size="20" />
         <foreign-key foreignTable="purchase" phpName="Purchase" refPhpName="Detail" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="purchase_id" foreign="id" />
         </foreign-key>
         <foreign-key foreignTable="stock" phpName="Stock" refPhpName="Purchase" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="stock_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="notification" phpName="Notification" refPhpName="PurchaseDetail" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference local="notification_id" foreign="id" />
         </foreign-key>
     </table>
 
@@ -75,7 +109,7 @@
         <column name="user_id" phpName="UserID" type="BIGINT" size="20" />
         <column name="purchase_id" phpName="PurchaseId" type="BIGINT" size="20" />
         <column name="time" phpName="Time" type="TIMESTAMP" />
-        <column name="operation" phpName="Operation" type="VARCHAR" sqlType="ENUM('cancel', 'create', 'loadFormEdit', 'read', 'update', 'viewDetail')" />
+        <column name="operation" phpName="Operation" type="CHAR" sqlType="ENUM('cancel', 'create', 'loadFormEdit', 'read', 'update', 'viewDetail')" />
         <column name="data" phpName="Data" type="LONGVARCHAR" />
         <foreign-key foreignTable="user_detail" phpName="UserDetail" refPhpName="PurchaseHistory" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="user_id" foreign="id" />
@@ -162,7 +196,7 @@
         <column name="sell_public" phpName="SellPublic" type="INTEGER" size="10" />
         <column name="sell_distributor" phpName="SellDistributor" type="INTEGER" size="10" />
         <column name="sell_misc" phpName="SellMisc" type="INTEGER" size="10" />
-        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Canceled')" required="true" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending', 'Active', 'Not Active', 'Canceled', 'Deleted')" required="true" />
         <foreign-key foreignTable="sales" phpName="Sales" refPhpName="Detail" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="sales_id" foreign="id" />
         </foreign-key>
@@ -179,7 +213,7 @@
         <column name="user_id" phpName="UserID" type="BIGINT" size="20" />
         <column name="sales_id" phpName="SalesId" type="BIGINT" size="20" />
         <column name="time" phpName="Time" type="TIMESTAMP" />
-        <column name="operation" phpName="Operation" type="VARCHAR" sqlType="ENUM('cancel', 'create', 'loadFormEdit', 'read', 'update', 'viewDetail')" />
+        <column name="operation" phpName="Operation" type="CHAR" sqlType="ENUM('cancel', 'create', 'loadFormEdit', 'read', 'update', 'viewDetail')" />
         <column name="data" phpName="Data" type="LONGVARCHAR" />
         <foreign-key foreignTable="user_detail" phpName="UserDetail" refPhpName="SalesHistory" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="user_id" foreign="id" />
@@ -199,6 +233,7 @@
         <column name="sell_distributor" phpName="SellDistributor" type="INTEGER" size="10" />
         <column name="sell_misc" phpName="SellMisc" type="INTEGER" size="10" />
         <column name="discount" phpName="Discount" type="TINYINT" size="3" />
+        <column name="unlimited" phpName="Unlimited" type="BOOLEAN" />
         <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Deleted')" required="true" />
         <foreign-key foreignTable="product" phpName="Product" refPhpName="Stock" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="product_id" foreign="id" />

@@ -59,7 +59,7 @@ class PurchaseDetailTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 7;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class PurchaseDetailTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 7;
 
     /**
      * the column name for the ID field
@@ -102,6 +102,11 @@ class PurchaseDetailTableMap extends TableMap
     const COL_STATUS = 'purchase_detail.STATUS';
 
     /**
+     * the column name for the NOTIFICATION_ID field
+     */
+    const COL_NOTIFICATION_ID = 'purchase_detail.NOTIFICATION_ID';
+
+    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -113,12 +118,12 @@ class PurchaseDetailTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'PurchaseId', 'StockId', 'Amount', 'TotalPrice', 'Status', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'purchaseId', 'stockId', 'amount', 'totalPrice', 'status', ),
-        self::TYPE_COLNAME       => array(PurchaseDetailTableMap::COL_ID, PurchaseDetailTableMap::COL_PURCHASE_ID, PurchaseDetailTableMap::COL_STOCK_ID, PurchaseDetailTableMap::COL_AMOUNT, PurchaseDetailTableMap::COL_TOTAL_PRICE, PurchaseDetailTableMap::COL_STATUS, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_PURCHASE_ID', 'COL_STOCK_ID', 'COL_AMOUNT', 'COL_TOTAL_PRICE', 'COL_STATUS', ),
-        self::TYPE_FIELDNAME     => array('id', 'purchase_id', 'stock_id', 'amount', 'total_price', 'status', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'PurchaseId', 'StockId', 'Amount', 'TotalPrice', 'Status', 'NotificationId', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'purchaseId', 'stockId', 'amount', 'totalPrice', 'status', 'notificationId', ),
+        self::TYPE_COLNAME       => array(PurchaseDetailTableMap::COL_ID, PurchaseDetailTableMap::COL_PURCHASE_ID, PurchaseDetailTableMap::COL_STOCK_ID, PurchaseDetailTableMap::COL_AMOUNT, PurchaseDetailTableMap::COL_TOTAL_PRICE, PurchaseDetailTableMap::COL_STATUS, PurchaseDetailTableMap::COL_NOTIFICATION_ID, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_PURCHASE_ID', 'COL_STOCK_ID', 'COL_AMOUNT', 'COL_TOTAL_PRICE', 'COL_STATUS', 'COL_NOTIFICATION_ID', ),
+        self::TYPE_FIELDNAME     => array('id', 'purchase_id', 'stock_id', 'amount', 'total_price', 'status', 'notification_id', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -128,12 +133,12 @@ class PurchaseDetailTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'PurchaseId' => 1, 'StockId' => 2, 'Amount' => 3, 'TotalPrice' => 4, 'Status' => 5, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'purchaseId' => 1, 'stockId' => 2, 'amount' => 3, 'totalPrice' => 4, 'status' => 5, ),
-        self::TYPE_COLNAME       => array(PurchaseDetailTableMap::COL_ID => 0, PurchaseDetailTableMap::COL_PURCHASE_ID => 1, PurchaseDetailTableMap::COL_STOCK_ID => 2, PurchaseDetailTableMap::COL_AMOUNT => 3, PurchaseDetailTableMap::COL_TOTAL_PRICE => 4, PurchaseDetailTableMap::COL_STATUS => 5, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_PURCHASE_ID' => 1, 'COL_STOCK_ID' => 2, 'COL_AMOUNT' => 3, 'COL_TOTAL_PRICE' => 4, 'COL_STATUS' => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'purchase_id' => 1, 'stock_id' => 2, 'amount' => 3, 'total_price' => 4, 'status' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'PurchaseId' => 1, 'StockId' => 2, 'Amount' => 3, 'TotalPrice' => 4, 'Status' => 5, 'NotificationId' => 6, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'purchaseId' => 1, 'stockId' => 2, 'amount' => 3, 'totalPrice' => 4, 'status' => 5, 'notificationId' => 6, ),
+        self::TYPE_COLNAME       => array(PurchaseDetailTableMap::COL_ID => 0, PurchaseDetailTableMap::COL_PURCHASE_ID => 1, PurchaseDetailTableMap::COL_STOCK_ID => 2, PurchaseDetailTableMap::COL_AMOUNT => 3, PurchaseDetailTableMap::COL_TOTAL_PRICE => 4, PurchaseDetailTableMap::COL_STATUS => 5, PurchaseDetailTableMap::COL_NOTIFICATION_ID => 6, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_PURCHASE_ID' => 1, 'COL_STOCK_ID' => 2, 'COL_AMOUNT' => 3, 'COL_TOTAL_PRICE' => 4, 'COL_STATUS' => 5, 'COL_NOTIFICATION_ID' => 6, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'purchase_id' => 1, 'stock_id' => 2, 'amount' => 3, 'total_price' => 4, 'status' => 5, 'notification_id' => 6, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -158,6 +163,7 @@ class PurchaseDetailTableMap extends TableMap
         $this->addColumn('AMOUNT', 'Amount', 'TINYINT', false, 3, null);
         $this->addColumn('TOTAL_PRICE', 'TotalPrice', 'INTEGER', false, 10, null);
         $this->addColumn('STATUS', 'Status', 'CHAR', true, null, null);
+        $this->addForeignKey('NOTIFICATION_ID', 'NotificationId', 'BIGINT', 'notification', 'ID', false, 20, null);
     } // initialize()
 
     /**
@@ -167,6 +173,7 @@ class PurchaseDetailTableMap extends TableMap
     {
         $this->addRelation('Purchase', '\\ORM\\Purchase', RelationMap::MANY_TO_ONE, array('purchase_id' => 'id', ), 'CASCADE', 'RESTRICT');
         $this->addRelation('Stock', '\\ORM\\Stock', RelationMap::MANY_TO_ONE, array('stock_id' => 'id', ), 'RESTRICT', 'RESTRICT');
+        $this->addRelation('Notification', '\\ORM\\Notification', RelationMap::MANY_TO_ONE, array('notification_id' => 'id', ), 'RESTRICT', 'RESTRICT');
     } // buildRelations()
 
     /**
@@ -316,6 +323,7 @@ class PurchaseDetailTableMap extends TableMap
             $criteria->addSelectColumn(PurchaseDetailTableMap::COL_AMOUNT);
             $criteria->addSelectColumn(PurchaseDetailTableMap::COL_TOTAL_PRICE);
             $criteria->addSelectColumn(PurchaseDetailTableMap::COL_STATUS);
+            $criteria->addSelectColumn(PurchaseDetailTableMap::COL_NOTIFICATION_ID);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
             $criteria->addSelectColumn($alias . '.PURCHASE_ID');
@@ -323,6 +331,7 @@ class PurchaseDetailTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.AMOUNT');
             $criteria->addSelectColumn($alias . '.TOTAL_PRICE');
             $criteria->addSelectColumn($alias . '.STATUS');
+            $criteria->addSelectColumn($alias . '.NOTIFICATION_ID');
         }
     }
 

@@ -119,7 +119,7 @@ class Sale
 
             // substract stock 
             $stock = StockQuery::create()->findOneById($product->stock_id, $con);
-            if ($stock) {
+            if ($stock->getUnlimited() == false) {
                 $stock
                     ->setAmount($stock->getAmount() - $product->amount)
                     ->save($con);
@@ -172,7 +172,7 @@ class Sale
                     ->save($con);
                     
                 $stock = StockQuery::create()->findOneById($salesDetail->getStockId(), $con);
-                if ($stock) {
+                if ($stock->getUnlimited() == false) {
                     $stock
                         ->setAmount($stock->getAmount() + $salesDetail->getAmount())
                         ->save($con);
@@ -319,19 +319,20 @@ class Sale
         
         $products = json_decode($params->products);
         
+        // iterate through every product on this sales operation
         foreach ($products as $product){
-            $salesDetail = SalesDetailQuery::create()->findOneById($product->id);
+            $newDetail = SalesDetailQuery::create()->findOneById($product->id);
 
             // check whether current detail iteration is brand new or just updating the old one
-            if (!$salesDetail) {
-                $new = true;
-                $salesDetail = new SalesDetail();
+            if (!$newDetail) {
+                $isNew = true;
+                $newDetail = new SalesDetail();
             } else {
-                $new = false;
-                $old = $salesDetail->copy();
+                $isNew = false;
+                $oldDetail = $newDetail->copy();
             }
             
-            $salesDetail
+            $newDetail
                 ->setSalesId($sales->getId())
                 ->setType($product->type)
                 ->setStockId($product->stock_id)
@@ -348,16 +349,44 @@ class Sale
                 ->save($con);
 
             // make stock dance ^_^
-            $stock = StockQuery::create()->findOneById($product->stock_id, $con);
-            if ($new) {
-                $stock
-                    ->setAmount($stock->getAmount() - $product->amount)
-                    ->save($con);
+            if ($isNew) {
+                $stock = StockQuery::create()->findOneById($newDetail->getStockId(), $con);
+                if ($stock->getUnlimited() == false) {
+                    $stock
+                        ->setAmount($stock->getAmount() - $newDetail->getAmount())
+                        ->save($con);
+                } 
+                    
             } else {
-                // need further checking whether updated stock is the same old one or not
-                $stock
-                    ->setAmount($stock->getAmount() + $old->getAmount() - $product->amount)
-                    ->save($con);
+                // check whether updated detail stock is the same old one or not
+                if ($newDetail->getStockId() == $oldDetail->getStockId()) {
+                
+                    // and if actually the same, then set stock amount like this
+                    // amount = currentAmount + oldTransAmount - newTransAmount
+                    $stock = StockQuery::create()->findOneById($newDetail->getStockId(), $con);
+                    if ($stock->getUnlimited() == false) {
+                        $stock
+                            ->setAmount($stock->getAmount() + $oldDetail->getAmount() - $newDetail->getAmount())
+                            ->save($con);
+                    }
+                        
+                } else {
+                    // but if two stocks is not the same,
+                    // then give back oldTransAmount to old-stock, and take newTransAmount from new-stock
+                    $stock = StockQuery::create()->findOneById($oldDetail->getStockId(), $con);
+                    if ($stock->getUnlimited() == false) {
+                        $stock
+                            ->setAmount($stock->getAmount() + $oldDetail->getAmount())
+                            ->save($con);
+                    }
+                    
+                    $stock = StockQuery::create()->findOneById($newDetail->getStockId(), $con);
+                    if ($stock->getUnlimited() == false) {
+                        $stock
+                            ->setAmount($stock->getAmount() - $newDetail->getAmount())
+                            ->save($con);
+                    }
+                }
             }
         }
 
@@ -368,9 +397,11 @@ class Sale
 
         foreach($removeds as $removed){
             $stock = StockQuery::create()->findOneById($removed->getStockId(), $con);
-            $stock
-                ->setAmount($stock->getAmount() + $removed->getAmount()) // there you got your amount.. happy now?
-                ->save($con);
+            if ($stock->getUnlimited() == false) {
+                $stock
+                    ->setAmount($stock->getAmount() + $removed->getAmount()) // there you got your amount.. happy now?
+                    ->save($con);
+            }
                 
             $removed
                 ->setStatus('Deleted')

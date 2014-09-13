@@ -29,6 +29,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStockQuery orderBySellDistributor($order = Criteria::ASC) Order by the sell_distributor column
  * @method     ChildStockQuery orderBySellMisc($order = Criteria::ASC) Order by the sell_misc column
  * @method     ChildStockQuery orderByDiscount($order = Criteria::ASC) Order by the discount column
+ * @method     ChildStockQuery orderByUnlimited($order = Criteria::ASC) Order by the unlimited column
  * @method     ChildStockQuery orderByStatus($order = Criteria::ASC) Order by the status column
  *
  * @method     ChildStockQuery groupById() Group by the id column
@@ -40,6 +41,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStockQuery groupBySellDistributor() Group by the sell_distributor column
  * @method     ChildStockQuery groupBySellMisc() Group by the sell_misc column
  * @method     ChildStockQuery groupByDiscount() Group by the discount column
+ * @method     ChildStockQuery groupByUnlimited() Group by the unlimited column
  * @method     ChildStockQuery groupByStatus() Group by the status column
  *
  * @method     ChildStockQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -76,6 +78,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStock findOneBySellDistributor(int $sell_distributor) Return the first ChildStock filtered by the sell_distributor column
  * @method     ChildStock findOneBySellMisc(int $sell_misc) Return the first ChildStock filtered by the sell_misc column
  * @method     ChildStock findOneByDiscount(int $discount) Return the first ChildStock filtered by the discount column
+ * @method     ChildStock findOneByUnlimited(boolean $unlimited) Return the first ChildStock filtered by the unlimited column
  * @method     ChildStock findOneByStatus(string $status) Return the first ChildStock filtered by the status column
  *
  * @method     ChildStock[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildStock objects based on current ModelCriteria
@@ -88,6 +91,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStock[]|ObjectCollection findBySellDistributor(int $sell_distributor) Return ChildStock objects filtered by the sell_distributor column
  * @method     ChildStock[]|ObjectCollection findBySellMisc(int $sell_misc) Return ChildStock objects filtered by the sell_misc column
  * @method     ChildStock[]|ObjectCollection findByDiscount(int $discount) Return ChildStock objects filtered by the discount column
+ * @method     ChildStock[]|ObjectCollection findByUnlimited(boolean $unlimited) Return ChildStock objects filtered by the unlimited column
  * @method     ChildStock[]|ObjectCollection findByStatus(string $status) Return ChildStock objects filtered by the status column
  * @method     ChildStock[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
@@ -178,7 +182,7 @@ abstract class StockQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT ID, PRODUCT_ID, AMOUNT, UNIT_ID, BUY, SELL_PUBLIC, SELL_DISTRIBUTOR, SELL_MISC, DISCOUNT, STATUS FROM stock WHERE ID = :p0';
+        $sql = 'SELECT ID, PRODUCT_ID, AMOUNT, UNIT_ID, BUY, SELL_PUBLIC, SELL_DISTRIBUTOR, SELL_MISC, DISCOUNT, UNLIMITED, STATUS FROM stock WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -639,6 +643,33 @@ abstract class StockQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(StockTableMap::COL_DISCOUNT, $discount, $comparison);
+    }
+
+    /**
+     * Filter the query on the unlimited column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUnlimited(true); // WHERE unlimited = true
+     * $query->filterByUnlimited('yes'); // WHERE unlimited = true
+     * </code>
+     *
+     * @param     boolean|string $unlimited The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildStockQuery The current query, for fluid interface
+     */
+    public function filterByUnlimited($unlimited = null, $comparison = null)
+    {
+        if (is_string($unlimited)) {
+            $unlimited = in_array(strtolower($unlimited), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(StockTableMap::COL_UNLIMITED, $unlimited, $comparison);
     }
 
     /**

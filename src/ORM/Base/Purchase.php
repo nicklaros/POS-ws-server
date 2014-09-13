@@ -1641,6 +1641,31 @@ abstract class Purchase implements ActiveRecordInterface
         return $this->getDetails($query, $con);
     }
 
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Purchase is new, it will return
+     * an empty collection; or if this Purchase has previously
+     * been saved, it will retrieve related Details from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Purchase.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildPurchaseDetail[] List of ChildPurchaseDetail objects
+     */
+    public function getDetailsJoinNotification(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildPurchaseDetailQuery::create(null, $criteria);
+        $query->joinWith('Notification', $joinBehavior);
+
+        return $this->getDetails($query, $con);
+    }
+
     /**
      * Clears out the collHistories collection
      *
