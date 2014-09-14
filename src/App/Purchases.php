@@ -39,6 +39,10 @@ class Purchases
             $notificationData->stock_id = $stock->getId();
             $notificationData->status = $priceStatus;
             $notificationData->difference = abs($priceDifference);
+            $notificationData->to_price = $stock->getBuy() - $priceDifference;
+            
+            // update stock buy price
+            $stock->setBuy($notificationData->to_price)->save($con)
             
             // check whether price notification for this purchase detail is already there
             $oldNotification = $purchaseDetail->getNotification();
@@ -198,10 +202,10 @@ class Purchases
                     ->save($con);
             }
             
-            $notificationId = Purchases::newPriceNotification($stock, $purchaseDetail, $con);
+            $notification = Purchases::newPriceNotification($stock, $purchaseDetail, $con);
             
             $purchaseDetail
-                ->setNotificationId($notificationId)
+                ->setNotificationId($notification)
                 ->save($con);
         }        
 

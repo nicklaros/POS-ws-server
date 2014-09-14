@@ -223,6 +223,7 @@ class Stocks
 
         if(isset($params->code)) $stock->useProductQuery()->filterByCode("%$params->code%")->endUse();
         if(isset($params->product)) $stock->useProductQuery()->filterByName("%$params->product%")->endUse();
+        if(isset($params->product_id)) $stock->useProductQuery()->filterById($params->product_id)->endUse();
 
         $stock = $stock
             ->select(array(
