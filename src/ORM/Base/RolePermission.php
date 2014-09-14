@@ -85,6 +85,30 @@ abstract class RolePermission implements ActiveRecordInterface
     protected $destroy_product;
 
     /**
+     * The value for the create_purchase field.
+     * @var        boolean
+     */
+    protected $create_purchase;
+
+    /**
+     * The value for the read_purchase field.
+     * @var        boolean
+     */
+    protected $read_purchase;
+
+    /**
+     * The value for the update_purchase field.
+     * @var        boolean
+     */
+    protected $update_purchase;
+
+    /**
+     * The value for the destroy_purchase field.
+     * @var        boolean
+     */
+    protected $destroy_purchase;
+
+    /**
      * The value for the create_sales field.
      * @var        boolean
      */
@@ -483,6 +507,86 @@ abstract class RolePermission implements ActiveRecordInterface
     }
 
     /**
+     * Get the [create_purchase] column value.
+     *
+     * @return boolean
+     */
+    public function getCreatePurchase()
+    {
+        return $this->create_purchase;
+    }
+
+    /**
+     * Get the [create_purchase] column value.
+     *
+     * @return boolean
+     */
+    public function isCreatePurchase()
+    {
+        return $this->getCreatePurchase();
+    }
+
+    /**
+     * Get the [read_purchase] column value.
+     *
+     * @return boolean
+     */
+    public function getReadPurchase()
+    {
+        return $this->read_purchase;
+    }
+
+    /**
+     * Get the [read_purchase] column value.
+     *
+     * @return boolean
+     */
+    public function isReadPurchase()
+    {
+        return $this->getReadPurchase();
+    }
+
+    /**
+     * Get the [update_purchase] column value.
+     *
+     * @return boolean
+     */
+    public function getUpdatePurchase()
+    {
+        return $this->update_purchase;
+    }
+
+    /**
+     * Get the [update_purchase] column value.
+     *
+     * @return boolean
+     */
+    public function isUpdatePurchase()
+    {
+        return $this->getUpdatePurchase();
+    }
+
+    /**
+     * Get the [destroy_purchase] column value.
+     *
+     * @return boolean
+     */
+    public function getDestroyPurchase()
+    {
+        return $this->destroy_purchase;
+    }
+
+    /**
+     * Get the [destroy_purchase] column value.
+     *
+     * @return boolean
+     */
+    public function isDestroyPurchase()
+    {
+        return $this->getDestroyPurchase();
+    }
+
+    /**
      * Get the [create_sales] column value.
      *
      * @return boolean
@@ -793,43 +897,55 @@ abstract class RolePermission implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : RolePermissionTableMap::translateFieldName('DestroyProduct', TableMap::TYPE_PHPNAME, $indexType)];
             $this->destroy_product = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : RolePermissionTableMap::translateFieldName('CreateSales', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : RolePermissionTableMap::translateFieldName('CreatePurchase', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->create_purchase = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : RolePermissionTableMap::translateFieldName('ReadPurchase', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->read_purchase = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : RolePermissionTableMap::translateFieldName('UpdatePurchase', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->update_purchase = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : RolePermissionTableMap::translateFieldName('DestroyPurchase', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->destroy_purchase = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : RolePermissionTableMap::translateFieldName('CreateSales', TableMap::TYPE_PHPNAME, $indexType)];
             $this->create_sales = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : RolePermissionTableMap::translateFieldName('ReadSales', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : RolePermissionTableMap::translateFieldName('ReadSales', TableMap::TYPE_PHPNAME, $indexType)];
             $this->read_sales = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : RolePermissionTableMap::translateFieldName('UpdateSales', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : RolePermissionTableMap::translateFieldName('UpdateSales', TableMap::TYPE_PHPNAME, $indexType)];
             $this->update_sales = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : RolePermissionTableMap::translateFieldName('DestroySales', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : RolePermissionTableMap::translateFieldName('DestroySales', TableMap::TYPE_PHPNAME, $indexType)];
             $this->destroy_sales = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : RolePermissionTableMap::translateFieldName('CreateStock', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : RolePermissionTableMap::translateFieldName('CreateStock', TableMap::TYPE_PHPNAME, $indexType)];
             $this->create_stock = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : RolePermissionTableMap::translateFieldName('ReadStock', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 14 + $startcol : RolePermissionTableMap::translateFieldName('ReadStock', TableMap::TYPE_PHPNAME, $indexType)];
             $this->read_stock = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : RolePermissionTableMap::translateFieldName('UpdateStock', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 15 + $startcol : RolePermissionTableMap::translateFieldName('UpdateStock', TableMap::TYPE_PHPNAME, $indexType)];
             $this->update_stock = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : RolePermissionTableMap::translateFieldName('DestroyStock', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 16 + $startcol : RolePermissionTableMap::translateFieldName('DestroyStock', TableMap::TYPE_PHPNAME, $indexType)];
             $this->destroy_stock = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : RolePermissionTableMap::translateFieldName('CreateUser', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 17 + $startcol : RolePermissionTableMap::translateFieldName('CreateUser', TableMap::TYPE_PHPNAME, $indexType)];
             $this->create_user = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 14 + $startcol : RolePermissionTableMap::translateFieldName('ReadUser', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 18 + $startcol : RolePermissionTableMap::translateFieldName('ReadUser', TableMap::TYPE_PHPNAME, $indexType)];
             $this->read_user = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 15 + $startcol : RolePermissionTableMap::translateFieldName('UpdateUser', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 19 + $startcol : RolePermissionTableMap::translateFieldName('UpdateUser', TableMap::TYPE_PHPNAME, $indexType)];
             $this->update_user = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 16 + $startcol : RolePermissionTableMap::translateFieldName('DestroyUser', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 20 + $startcol : RolePermissionTableMap::translateFieldName('DestroyUser', TableMap::TYPE_PHPNAME, $indexType)];
             $this->destroy_user = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 17 + $startcol : RolePermissionTableMap::translateFieldName('ResetPassUser', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 21 + $startcol : RolePermissionTableMap::translateFieldName('ResetPassUser', TableMap::TYPE_PHPNAME, $indexType)];
             $this->reset_pass_user = (null !== $col) ? (boolean) $col : null;
             $this->resetModified();
 
@@ -839,7 +955,7 @@ abstract class RolePermission implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 18; // 18 = RolePermissionTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 22; // 22 = RolePermissionTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\ORM\\RolePermission'), 0, $e);
@@ -1001,6 +1117,118 @@ abstract class RolePermission implements ActiveRecordInterface
 
         return $this;
     } // setDestroyProduct()
+
+    /**
+     * Sets the value of the [create_purchase] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setCreatePurchase($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->create_purchase !== $v) {
+            $this->create_purchase = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_CREATE_PURCHASE] = true;
+        }
+
+        return $this;
+    } // setCreatePurchase()
+
+    /**
+     * Sets the value of the [read_purchase] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setReadPurchase($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->read_purchase !== $v) {
+            $this->read_purchase = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_READ_PURCHASE] = true;
+        }
+
+        return $this;
+    } // setReadPurchase()
+
+    /**
+     * Sets the value of the [update_purchase] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setUpdatePurchase($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->update_purchase !== $v) {
+            $this->update_purchase = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_UPDATE_PURCHASE] = true;
+        }
+
+        return $this;
+    } // setUpdatePurchase()
+
+    /**
+     * Sets the value of the [destroy_purchase] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setDestroyPurchase($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->destroy_purchase !== $v) {
+            $this->destroy_purchase = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_DESTROY_PURCHASE] = true;
+        }
+
+        return $this;
+    } // setDestroyPurchase()
 
     /**
      * Sets the value of the [create_sales] column.
@@ -1563,6 +1791,18 @@ abstract class RolePermission implements ActiveRecordInterface
         if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_PRODUCT)) {
             $modifiedColumns[':p' . $index++]  = 'DESTROY_PRODUCT';
         }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_PURCHASE)) {
+            $modifiedColumns[':p' . $index++]  = 'CREATE_PURCHASE';
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_PURCHASE)) {
+            $modifiedColumns[':p' . $index++]  = 'READ_PURCHASE';
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_UPDATE_PURCHASE)) {
+            $modifiedColumns[':p' . $index++]  = 'UPDATE_PURCHASE';
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_PURCHASE)) {
+            $modifiedColumns[':p' . $index++]  = 'DESTROY_PURCHASE';
+        }
         if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_SALES)) {
             $modifiedColumns[':p' . $index++]  = 'CREATE_SALES';
         }
@@ -1627,6 +1867,18 @@ abstract class RolePermission implements ActiveRecordInterface
                         break;
                     case 'DESTROY_PRODUCT':
                         $stmt->bindValue($identifier, (int) $this->destroy_product, PDO::PARAM_INT);
+                        break;
+                    case 'CREATE_PURCHASE':
+                        $stmt->bindValue($identifier, (int) $this->create_purchase, PDO::PARAM_INT);
+                        break;
+                    case 'READ_PURCHASE':
+                        $stmt->bindValue($identifier, (int) $this->read_purchase, PDO::PARAM_INT);
+                        break;
+                    case 'UPDATE_PURCHASE':
+                        $stmt->bindValue($identifier, (int) $this->update_purchase, PDO::PARAM_INT);
+                        break;
+                    case 'DESTROY_PURCHASE':
+                        $stmt->bindValue($identifier, (int) $this->destroy_purchase, PDO::PARAM_INT);
                         break;
                     case 'CREATE_SALES':
                         $stmt->bindValue($identifier, (int) $this->create_sales, PDO::PARAM_INT);
@@ -1738,42 +1990,54 @@ abstract class RolePermission implements ActiveRecordInterface
                 return $this->getDestroyProduct();
                 break;
             case 5:
-                return $this->getCreateSales();
+                return $this->getCreatePurchase();
                 break;
             case 6:
-                return $this->getReadSales();
+                return $this->getReadPurchase();
                 break;
             case 7:
-                return $this->getUpdateSales();
+                return $this->getUpdatePurchase();
                 break;
             case 8:
-                return $this->getDestroySales();
+                return $this->getDestroyPurchase();
                 break;
             case 9:
-                return $this->getCreateStock();
+                return $this->getCreateSales();
                 break;
             case 10:
-                return $this->getReadStock();
+                return $this->getReadSales();
                 break;
             case 11:
-                return $this->getUpdateStock();
+                return $this->getUpdateSales();
                 break;
             case 12:
-                return $this->getDestroyStock();
+                return $this->getDestroySales();
                 break;
             case 13:
-                return $this->getCreateUser();
+                return $this->getCreateStock();
                 break;
             case 14:
-                return $this->getReadUser();
+                return $this->getReadStock();
                 break;
             case 15:
-                return $this->getUpdateUser();
+                return $this->getUpdateStock();
                 break;
             case 16:
-                return $this->getDestroyUser();
+                return $this->getDestroyStock();
                 break;
             case 17:
+                return $this->getCreateUser();
+                break;
+            case 18:
+                return $this->getReadUser();
+                break;
+            case 19:
+                return $this->getUpdateUser();
+                break;
+            case 20:
+                return $this->getDestroyUser();
+                break;
+            case 21:
                 return $this->getResetPassUser();
                 break;
             default:
@@ -1810,19 +2074,23 @@ abstract class RolePermission implements ActiveRecordInterface
             $keys[2] => $this->getReadProduct(),
             $keys[3] => $this->getUpdateProduct(),
             $keys[4] => $this->getDestroyProduct(),
-            $keys[5] => $this->getCreateSales(),
-            $keys[6] => $this->getReadSales(),
-            $keys[7] => $this->getUpdateSales(),
-            $keys[8] => $this->getDestroySales(),
-            $keys[9] => $this->getCreateStock(),
-            $keys[10] => $this->getReadStock(),
-            $keys[11] => $this->getUpdateStock(),
-            $keys[12] => $this->getDestroyStock(),
-            $keys[13] => $this->getCreateUser(),
-            $keys[14] => $this->getReadUser(),
-            $keys[15] => $this->getUpdateUser(),
-            $keys[16] => $this->getDestroyUser(),
-            $keys[17] => $this->getResetPassUser(),
+            $keys[5] => $this->getCreatePurchase(),
+            $keys[6] => $this->getReadPurchase(),
+            $keys[7] => $this->getUpdatePurchase(),
+            $keys[8] => $this->getDestroyPurchase(),
+            $keys[9] => $this->getCreateSales(),
+            $keys[10] => $this->getReadSales(),
+            $keys[11] => $this->getUpdateSales(),
+            $keys[12] => $this->getDestroySales(),
+            $keys[13] => $this->getCreateStock(),
+            $keys[14] => $this->getReadStock(),
+            $keys[15] => $this->getUpdateStock(),
+            $keys[16] => $this->getDestroyStock(),
+            $keys[17] => $this->getCreateUser(),
+            $keys[18] => $this->getReadUser(),
+            $keys[19] => $this->getUpdateUser(),
+            $keys[20] => $this->getDestroyUser(),
+            $keys[21] => $this->getResetPassUser(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1883,42 +2151,54 @@ abstract class RolePermission implements ActiveRecordInterface
                 $this->setDestroyProduct($value);
                 break;
             case 5:
-                $this->setCreateSales($value);
+                $this->setCreatePurchase($value);
                 break;
             case 6:
-                $this->setReadSales($value);
+                $this->setReadPurchase($value);
                 break;
             case 7:
-                $this->setUpdateSales($value);
+                $this->setUpdatePurchase($value);
                 break;
             case 8:
-                $this->setDestroySales($value);
+                $this->setDestroyPurchase($value);
                 break;
             case 9:
-                $this->setCreateStock($value);
+                $this->setCreateSales($value);
                 break;
             case 10:
-                $this->setReadStock($value);
+                $this->setReadSales($value);
                 break;
             case 11:
-                $this->setUpdateStock($value);
+                $this->setUpdateSales($value);
                 break;
             case 12:
-                $this->setDestroyStock($value);
+                $this->setDestroySales($value);
                 break;
             case 13:
-                $this->setCreateUser($value);
+                $this->setCreateStock($value);
                 break;
             case 14:
-                $this->setReadUser($value);
+                $this->setReadStock($value);
                 break;
             case 15:
-                $this->setUpdateUser($value);
+                $this->setUpdateStock($value);
                 break;
             case 16:
-                $this->setDestroyUser($value);
+                $this->setDestroyStock($value);
                 break;
             case 17:
+                $this->setCreateUser($value);
+                break;
+            case 18:
+                $this->setReadUser($value);
+                break;
+            case 19:
+                $this->setUpdateUser($value);
+                break;
+            case 20:
+                $this->setDestroyUser($value);
+                break;
+            case 21:
                 $this->setResetPassUser($value);
                 break;
         } // switch()
@@ -1963,43 +2243,55 @@ abstract class RolePermission implements ActiveRecordInterface
             $this->setDestroyProduct($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setCreateSales($arr[$keys[5]]);
+            $this->setCreatePurchase($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setReadSales($arr[$keys[6]]);
+            $this->setReadPurchase($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setUpdateSales($arr[$keys[7]]);
+            $this->setUpdatePurchase($arr[$keys[7]]);
         }
         if (array_key_exists($keys[8], $arr)) {
-            $this->setDestroySales($arr[$keys[8]]);
+            $this->setDestroyPurchase($arr[$keys[8]]);
         }
         if (array_key_exists($keys[9], $arr)) {
-            $this->setCreateStock($arr[$keys[9]]);
+            $this->setCreateSales($arr[$keys[9]]);
         }
         if (array_key_exists($keys[10], $arr)) {
-            $this->setReadStock($arr[$keys[10]]);
+            $this->setReadSales($arr[$keys[10]]);
         }
         if (array_key_exists($keys[11], $arr)) {
-            $this->setUpdateStock($arr[$keys[11]]);
+            $this->setUpdateSales($arr[$keys[11]]);
         }
         if (array_key_exists($keys[12], $arr)) {
-            $this->setDestroyStock($arr[$keys[12]]);
+            $this->setDestroySales($arr[$keys[12]]);
         }
         if (array_key_exists($keys[13], $arr)) {
-            $this->setCreateUser($arr[$keys[13]]);
+            $this->setCreateStock($arr[$keys[13]]);
         }
         if (array_key_exists($keys[14], $arr)) {
-            $this->setReadUser($arr[$keys[14]]);
+            $this->setReadStock($arr[$keys[14]]);
         }
         if (array_key_exists($keys[15], $arr)) {
-            $this->setUpdateUser($arr[$keys[15]]);
+            $this->setUpdateStock($arr[$keys[15]]);
         }
         if (array_key_exists($keys[16], $arr)) {
-            $this->setDestroyUser($arr[$keys[16]]);
+            $this->setDestroyStock($arr[$keys[16]]);
         }
         if (array_key_exists($keys[17], $arr)) {
-            $this->setResetPassUser($arr[$keys[17]]);
+            $this->setCreateUser($arr[$keys[17]]);
+        }
+        if (array_key_exists($keys[18], $arr)) {
+            $this->setReadUser($arr[$keys[18]]);
+        }
+        if (array_key_exists($keys[19], $arr)) {
+            $this->setUpdateUser($arr[$keys[19]]);
+        }
+        if (array_key_exists($keys[20], $arr)) {
+            $this->setDestroyUser($arr[$keys[20]]);
+        }
+        if (array_key_exists($keys[21], $arr)) {
+            $this->setResetPassUser($arr[$keys[21]]);
         }
     }
 
@@ -2050,6 +2342,18 @@ abstract class RolePermission implements ActiveRecordInterface
         }
         if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_PRODUCT)) {
             $criteria->add(RolePermissionTableMap::COL_DESTROY_PRODUCT, $this->destroy_product);
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_PURCHASE)) {
+            $criteria->add(RolePermissionTableMap::COL_CREATE_PURCHASE, $this->create_purchase);
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_PURCHASE)) {
+            $criteria->add(RolePermissionTableMap::COL_READ_PURCHASE, $this->read_purchase);
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_UPDATE_PURCHASE)) {
+            $criteria->add(RolePermissionTableMap::COL_UPDATE_PURCHASE, $this->update_purchase);
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_PURCHASE)) {
+            $criteria->add(RolePermissionTableMap::COL_DESTROY_PURCHASE, $this->destroy_purchase);
         }
         if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_SALES)) {
             $criteria->add(RolePermissionTableMap::COL_CREATE_SALES, $this->create_sales);
@@ -2188,6 +2492,10 @@ abstract class RolePermission implements ActiveRecordInterface
         $copyObj->setReadProduct($this->getReadProduct());
         $copyObj->setUpdateProduct($this->getUpdateProduct());
         $copyObj->setDestroyProduct($this->getDestroyProduct());
+        $copyObj->setCreatePurchase($this->getCreatePurchase());
+        $copyObj->setReadPurchase($this->getReadPurchase());
+        $copyObj->setUpdatePurchase($this->getUpdatePurchase());
+        $copyObj->setDestroyPurchase($this->getDestroyPurchase());
         $copyObj->setCreateSales($this->getCreateSales());
         $copyObj->setReadSales($this->getReadSales());
         $copyObj->setUpdateSales($this->getUpdateSales());
@@ -2288,6 +2596,10 @@ abstract class RolePermission implements ActiveRecordInterface
         $this->read_product = null;
         $this->update_product = null;
         $this->destroy_product = null;
+        $this->create_purchase = null;
+        $this->read_purchase = null;
+        $this->update_purchase = null;
+        $this->destroy_purchase = null;
         $this->create_sales = null;
         $this->read_sales = null;
         $this->update_sales = null;

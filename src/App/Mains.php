@@ -2,11 +2,6 @@
 
 namespace App;
 
-use App\Combos;
-use App\Sale;
-use App\Stocks;
-use App\Users;
-
 use ORM\RoleQuery;
 
 use Propel\Runtime\Propel;
@@ -98,7 +93,10 @@ class Mains implements MessageComponentInterface {
         // list of all module that can be requested
         $registeredModule = array(
             'combo',
+            'notification',
+            'populate',
             'product',
+            'purchase',
             'sales',
             'stock',
             'user'
@@ -123,6 +121,26 @@ class Mains implements MessageComponentInterface {
 
         // errmmmmm
         $from->send(json_encode($results));
+        
+        // followup action
+        if (
+            $event == 'purchase/create'
+            ||
+            $event == 'purchase/destroy'
+            ||
+            $event == 'purchase/update'
+        ){
+            $data = $this->notification($from, 'read', $params, $con);
+            
+            // store to results variable before spitting it out back to client
+            $results['event'] = 'notification/read';
+            $results['data'] = $data;
+            
+            foreach ($this->clients as $client) 
+            {
+                $client->send(json_encode($results));
+            }
+        }
         
         // finish
         return;
@@ -151,6 +169,47 @@ class Mains implements MessageComponentInterface {
 
         return $results;
     }
+
+    private function notification($from, $method, $params, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'destroy',
+            'read',
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Notifications::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+    
+    private function populate($from, $method, $params, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'stock'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Populate::$method($params, $currentUser, $con);
+
+        return $results;
+    }
     
     private function product($from, $method, $params, $con){
         $results = [];
@@ -176,6 +235,31 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
 
+    private function purchase($from, $method, $params, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create',
+            'destroy',
+            'loadFormEdit',
+            'read',
+            'update',
+            'viewDetail'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Purchases::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+
     private function sales($from, $method, $params, $con){
         $results = [];
         
@@ -185,7 +269,8 @@ class Mains implements MessageComponentInterface {
             'destroy',
             'loadFormEdit',
             'read',
-            'update'
+            'update',
+            'viewDetail'
         );
 
         // if called method is not registered then deny access
@@ -205,8 +290,10 @@ class Mains implements MessageComponentInterface {
         
         // list of all method that can be called in current module
         $registeredMethod = array(
+            'addVariant',
             'create',
             'destroy',
+            'getOne',
             'loadFormEdit',
             'read',
             'update'
