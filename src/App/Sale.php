@@ -38,16 +38,21 @@ class Sale
         if(!$sales) throw new \Exception("Data tidak ditemukan");
 
         $salesDetails = SalesDetailQuery::create()
-            ->leftJoin('Unit')
             ->filterByStatus('Active')
             ->filterBySalesId($params->id)
+            ->useStockQuery()
+                ->leftJoin('Product')
+                ->leftJoin('Unit')
+                ->withColumn('Product.Name', 'product_name')
+                ->withColumn('Unit.Id', 'unit_id')
+                ->withColumn('Unit.Name', 'unit_name')
+            ->endUse()
             ->select(array(
                 'id',
                 'sales_id',
                 'type',
                 'stock_id',
                 'amount',
-                'unit_id',
                 'unit_price',
                 'discount',
                 'total_price',
@@ -56,11 +61,6 @@ class Sale
                 'sell_distributor',
                 'sell_misc'
             ))
-            ->useStockQuery()
-                ->leftJoin('Product')
-                ->withColumn('Product.Name', 'product_name')
-            ->endUse()
-            ->withColumn('Unit.Name', 'unit_name')
             ->find($con);
         
         $detail = [];
@@ -106,7 +106,6 @@ class Sale
                 ->setType($product->type)
                 ->setStockId($product->stock_id)
                 ->setAmount($product->amount)
-                ->setUnitId($product->unit_id)
                 ->setUnitPrice($product->unit_price)
                 ->setDiscount($product->discount)
                 ->setTotalPrice($product->total_price)
@@ -339,7 +338,6 @@ class Sale
                 ->setType($product->type)
                 ->setStockId($product->stock_id)
                 ->setAmount($product->amount)
-                ->setUnitId($product->unit_id)
                 ->setUnitPrice($product->unit_price)
                 ->setDiscount($product->discount)
                 ->setTotalPrice($product->total_price)

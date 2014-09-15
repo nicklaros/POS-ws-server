@@ -188,7 +188,6 @@
         <column name="type" phpName="Type" type="CHAR" sqlType="ENUM('Public','Distributor','Misc')" />
         <column name="stock_id" phpName="StockId" type="BIGINT" size="20" />
         <column name="amount" phpName="Amount" type="TINYINT" size="3" />
-        <column name="unit_id" phpName="UnitId" type="BIGINT" size="20" />
         <column name="unit_price" phpName="UnitPrice" type="INTEGER" size="10" />
         <column name="discount" phpName="Discount" type="TINYINT" size="3" />
         <column name="total_price" phpName="TotalPrice" type="INTEGER" size="10" />
@@ -202,9 +201,6 @@
         </foreign-key>
         <foreign-key foreignTable="stock" phpName="Stock" refPhpName="Sales" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="stock_id" foreign="id" />
-        </foreign-key>
-        <foreign-key foreignTable="unit" phpName="Unit" refPhpName="Sales" onDelete="NO ACTION" onUpdate="RESTRICT">
-            <reference local="unit_id" foreign="id" />
         </foreign-key>
     </table>
 

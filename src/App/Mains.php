@@ -134,7 +134,7 @@ class Mains implements MessageComponentInterface {
         ){
             foreach ($this->clients as $client) 
             {
-                $data = $this->notification('read', new stdClass(), $client, $con);
+                $data = $this->notification('read', new \stdClass(), $client, $con);
                 $results['event'] = 'notification/read';
                 $results['data'] = $data;
 
@@ -151,6 +151,7 @@ class Mains implements MessageComponentInterface {
         
         // list of all method that can be called in current module
         $registeredMethod = array(
+            'customSalesVsPurchase',
             'monthlySalesVsPurchase',
             'monthlyTransaction',
             'last30DaysTransaction'
@@ -173,7 +174,12 @@ class Mains implements MessageComponentInterface {
         
         // list of all method that can be called in current module
         $registeredMethod = array(
-            'monthly'
+            'monthly',
+            'custom',
+            'customPurchasedProduct',
+            'customSaledProduct',
+            'monthlyPurchasedProduct',
+            'monthlySaledProduct'
         );
 
         // if called method is not registered then deny access
@@ -197,10 +203,48 @@ class Mains implements MessageComponentInterface {
             
             // send transaction's data on picked month
             $data = $this->chart('monthlyTransaction', $params, $from, $con);
-            $monthlyTransaction['event'] = 'chart/monthlyTransaction';
-            $monthlyTransaction['data'] = $data;
+            $transaction['event'] = 'chart/monthlyTransaction';
+            $transaction['data'] = $data;
             
-            $from->send(json_encode($monthlyTransaction));
+            $from->send(json_encode($transaction));
+            
+            // send saled product
+            $data = Reports::monthlySaledProduct($params, $currentUser, $con);
+            $saledProduct['event'] = 'report/monthlySaledProduct';
+            $saledProduct['data'] = $data;
+            
+            $from->send(json_encode($saledProduct));
+            
+            // send purchased product
+            $data = Reports::monthlyPurchasedProduct($params, $currentUser, $con);
+            $purchasedProduct['event'] = 'report/monthlyPurchasedProduct';
+            $purchasedProduct['data'] = $data;
+            
+            $from->send(json_encode($purchasedProduct));
+        } 
+        elseif ($method == 'custom') {
+            
+            // send Sales vs Purchase comparison
+            $data = $this->chart('customSalesVsPurchase', $params, $from, $con);
+            $salesVsPurchase['event'] = 'chart/customSalesVsPurchase';
+            $salesVsPurchase['data'] = $data;
+            
+            $from->send(json_encode($salesVsPurchase));
+            
+            // send saled product
+            $data = Reports::customSaledProduct($params, $currentUser, $con);
+            $saledProduct['event'] = 'report/customSaledProduct';
+            $saledProduct['data'] = $data;
+            
+            $from->send(json_encode($saledProduct));
+            
+            // send purchased product
+            $data = Reports::customPurchasedProduct($params, $currentUser, $con);
+            $purchasedProduct['event'] = 'report/customPurchasedProduct';
+            $purchasedProduct['data'] = $data;
+            
+            $from->send(json_encode($purchasedProduct));
+            
         }
         
         return $results;
