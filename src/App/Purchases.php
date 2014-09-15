@@ -42,7 +42,7 @@ class Purchases
             $notificationData->to_price = $stock->getBuy() - $priceDifference;
             
             // update stock buy price
-            $stock->setBuy($notificationData->to_price)->save($con)
+            $stock->setBuy($notificationData->to_price)->save($con);
             
             // check whether price notification for this purchase detail is already there
             $oldNotification = $purchaseDetail->getNotification();
@@ -363,6 +363,7 @@ class Purchases
         $logData['params'] = $params;
         $logData['resultId'] = $resultId;
         
+        /*
         // log history
         $purchaseHistory = new PurchaseHistory();
         $purchaseHistory
@@ -372,6 +373,7 @@ class Purchases
             ->setOperation('read')
             ->setData(json_encode($logData))
             ->save($con);
+        */
         
         $results['success'] = true;
         $results['data'] = $data;

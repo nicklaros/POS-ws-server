@@ -280,6 +280,7 @@ class Sale
         $logData['params'] = $params;
         $logData['resultId'] = $resultId;
         
+        /*
         // log history
         $salesHistory = new SalesHistory();
         $salesHistory
@@ -289,6 +290,7 @@ class Sale
             ->setOperation('read')
             ->setData(json_encode($logData))
             ->save($con);
+        */
         
         $results['success'] = true;
         $results['data'] = $data;

@@ -92,11 +92,13 @@ class Mains implements MessageComponentInterface {
 
         // list of all module that can be requested
         $registeredModule = array(
+            'chart',
             'combo',
             'notification',
             'populate',
             'product',
             'purchase',
+            'report',
             'sales',
             'stock',
             'user'
@@ -110,7 +112,7 @@ class Mains implements MessageComponentInterface {
 
         // this is where magic begins..
         // route to requested module
-        $data = $this->$module($from, $method, $params, $con);
+        $data = $this->$module($method, $params, $from, $con);
 
         // commit transaction
         $con->commit();
@@ -130,14 +132,12 @@ class Mains implements MessageComponentInterface {
             ||
             $event == 'purchase/update'
         ){
-            $data = $this->notification($from, 'read', $params, $con);
-            
-            // store to results variable before spitting it out back to client
-            $results['event'] = 'notification/read';
-            $results['data'] = $data;
-            
             foreach ($this->clients as $client) 
             {
+                $data = $this->notification('read', new stdClass(), $client, $con);
+                $results['event'] = 'notification/read';
+                $results['data'] = $data;
+
                 $client->send(json_encode($results));
             }
         }
@@ -146,7 +146,67 @@ class Mains implements MessageComponentInterface {
         return;
     }
 
-    private function combo($from, $method, $params, $con){
+    private function chart($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'monthlySalesVsPurchase',
+            'monthlyTransaction',
+            'last30DaysTransaction'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Charts::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+
+    private function report($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'monthly'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Reports::$method($params, $currentUser, $con);
+
+        // followup action
+        if ($method == 'monthly') {
+            
+            // send Sales vs Purchase comparison
+            $data = $this->chart('monthlySalesVsPurchase', $params, $from, $con);
+            $salesVsPurchase['event'] = 'chart/monthlySalesVsPurchase';
+            $salesVsPurchase['data'] = $data;
+            
+            $from->send(json_encode($salesVsPurchase));
+            
+            // send transaction's data on picked month
+            $data = $this->chart('monthlyTransaction', $params, $from, $con);
+            $monthlyTransaction['event'] = 'chart/monthlyTransaction';
+            $monthlyTransaction['data'] = $data;
+            
+            $from->send(json_encode($monthlyTransaction));
+        }
+        
+        return $results;
+    }
+
+    private function combo($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
@@ -170,7 +230,7 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
 
-    private function notification($from, $method, $params, $con){
+    private function notification($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
@@ -191,7 +251,7 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
     
-    private function populate($from, $method, $params, $con){
+    private function populate($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
@@ -211,7 +271,7 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
     
-    private function product($from, $method, $params, $con){
+    private function product($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
@@ -235,7 +295,7 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
 
-    private function purchase($from, $method, $params, $con){
+    private function purchase($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
@@ -260,7 +320,7 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
 
-    private function sales($from, $method, $params, $con){
+    private function sales($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
@@ -285,7 +345,7 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
 
-    private function stock($from, $method, $params, $con){
+    private function stock($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
@@ -311,7 +371,7 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
 
-    private function user($from, $method, $params, $con){
+    private function user($method, $params, $from, $con){
         $results = [];
                 
         // list of all method that can be called in current module
