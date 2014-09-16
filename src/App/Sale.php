@@ -3,6 +3,8 @@
 namespace App;
 
 use ORM\RolePermissionQuery;
+use ORM\Credit;
+use ORM\CreditQuery;
 use ORM\Sales;
 use ORM\SalesQuery;
 use ORM\SalesDetail;
@@ -76,6 +78,71 @@ class Sale
         return $results;
     }
 
+    public static function cancel($params, $currentUser, $con)
+    {
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('destroy_sales')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        $sales = SalesQuery::create()
+            ->filterById($params->id)
+            ->find($con);
+
+        if (!$sales) throw new \Exception('Data tidak ditemukan');
+
+        foreach($sales as $sale)
+        {
+            $sale
+                ->setStatus('Canceled')
+                ->save($con);
+
+            $credit = CreditQuery::create()
+                ->filterBySalesId($sale->getId())
+                ->findOne($con);
+            
+            if ($credit) {
+                $credit
+                    ->setStatus('Canceled')
+                    ->save($con);
+            }
+            
+            $salesDetails = SalesDetailQuery::create()->filterBySalesId($sale->getId())->find($con);
+            
+            $detailId = []; 
+            foreach($salesDetails as $salesDetail){
+                $salesDetail
+                    ->setStatus('Canceled')
+                    ->save($con);
+                    
+                $stock = StockQuery::create()->findOneById($salesDetail->getStockId(), $con);
+                if ($stock->getUnlimited() == false) {
+                    $stock
+                        ->setAmount($stock->getAmount() + $salesDetail->getAmount())
+                        ->save($con);
+                }
+            
+                $detailId[] = $salesDetail->getId(); 
+            }
+
+            $logData['detailId'] = $detailId;
+            
+            // log history
+            $salesHistory = new SalesHistory();
+            $salesHistory
+                ->setUserId($currentUser->id)
+                ->setSalesId($sale->getId())
+                ->setTime(time())
+                ->setOperation('cancel')
+                ->setData(json_encode($logData))
+                ->save($con);
+        }
+
+        $results['success'] = true;
+        $results['id'] = $params->id;
+
+        return $results;
+    }
+
     public static function create($params, $currentUser, $con)
     {
         // check role's permission
@@ -94,6 +161,19 @@ class Sale
             ->setNote($params->note)
             ->setStatus('Active')
             ->save($con);
+        
+        // check wether this transaction is credit or not
+        $balance = $params->paid - $params->total_price;
+        
+        if ($balance < 0) {
+            $credit = new Credit();
+            $credit
+                ->setSalesId($sales->getId())
+                ->setCustomerId($sales->getCustomerId())
+                ->setTotal(abs($balance))
+                ->setStatus('Active')
+                ->save($con);
+        }
 
         $products = json_decode($params->products);
         
@@ -140,61 +220,6 @@ class Sale
 
         $results['success'] = true;
         $results['id'] = $sales->getId();
-
-        return $results;
-    }
-
-    public static function destroy($params, $currentUser, $con)
-    {
-        // check role's permission
-        $permission = RolePermissionQuery::create()->select('destroy_sales')->findOneById($currentUser->role_id, $con);
-        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
-
-        $sales = SalesQuery::create()
-            ->filterById($params->id)
-            ->find($con);
-
-        if (!$sales) throw new \Exception('Data tidak ditemukan');
-
-        foreach($sales as $sale)
-        {
-            $sale
-                ->setStatus('Canceled')
-                ->save($con);
-
-            $salesDetails = SalesDetailQuery::create()->filterBySalesId($sale->getId())->find($con);
-            
-            $detailId = []; 
-            foreach($salesDetails as $salesDetail){
-                $salesDetail
-                    ->setStatus('Canceled')
-                    ->save($con);
-                    
-                $stock = StockQuery::create()->findOneById($salesDetail->getStockId(), $con);
-                if ($stock->getUnlimited() == false) {
-                    $stock
-                        ->setAmount($stock->getAmount() + $salesDetail->getAmount())
-                        ->save($con);
-                }
-            
-                $detailId[] = $salesDetail->getId(); 
-            }
-
-            $logData['detailId'] = $detailId;
-            
-            // log history
-            $salesHistory = new SalesHistory();
-            $salesHistory
-                ->setUserId($currentUser->id)
-                ->setSalesId($sale->getId())
-                ->setTime(time())
-                ->setOperation('cancel')
-                ->setData(json_encode($logData))
-                ->save($con);
-        }
-
-        $results['success'] = true;
-        $results['id'] = $params->id;
 
         return $results;
     }
@@ -317,6 +342,40 @@ class Sale
             ->setNote($params->note)
             ->setStatus('Active')
             ->save($con);
+        
+        // check wether this transaction is credit or not
+        $balance = $params->paid - $params->total_price;
+        
+        if ($balance < 0) {
+            $credit = CreditQuery::create()
+                ->filterBySalesId($sales->getId())
+                ->findOne($con);
+            
+            if (!$credit) {
+                $credit = new Credit();
+            }
+            
+            $credit
+                ->setSalesId($sales->getId())
+                ->setCustomerId($sales->getCustomerId())
+                ->setTotal(abs($balance))
+                ->setStatus('Active')
+                ->save($con);
+            
+        } else {
+            $credit = CreditQuery::create()
+                ->filterBySalesId($sales->getId())
+                ->findOne($con);
+            
+            if ($credit) {
+                $credit
+                    ->setSalesId($sales->getId())
+                    ->setCustomerId($sales->getCustomerId())
+                    ->setTotal(0)
+                    ->setStatus('Canceled')
+                    ->save($con);
+            }
+        }
         
         $products = json_decode($params->products);
         

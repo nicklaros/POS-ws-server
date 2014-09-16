@@ -2,8 +2,8 @@
 
 namespace ORM\Map;
 
-use ORM\UserDetail;
-use ORM\UserDetailQuery;
+use ORM\Credit;
+use ORM\CreditQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'user_detail' table.
+ * This class defines the structure of the 'credit' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class UserDetailTableMap extends TableMap
+class CreditTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class UserDetailTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'ORM.Map.UserDetailTableMap';
+    const CLASS_NAME = 'ORM.Map.CreditTableMap';
 
     /**
      * The default database name for this class
@@ -44,17 +44,17 @@ class UserDetailTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'user_detail';
+    const TABLE_NAME = 'credit';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\ORM\\UserDetail';
+    const OM_CLASS = '\\ORM\\Credit';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'ORM.UserDetail';
+    const CLASS_DEFAULT = 'ORM.Credit';
 
     /**
      * The total number of columns
@@ -74,22 +74,22 @@ class UserDetailTableMap extends TableMap
     /**
      * the column name for the ID field
      */
-    const COL_ID = 'user_detail.ID';
+    const COL_ID = 'credit.ID';
 
     /**
-     * the column name for the NAME field
+     * the column name for the SALES_ID field
      */
-    const COL_NAME = 'user_detail.NAME';
+    const COL_SALES_ID = 'credit.SALES_ID';
 
     /**
-     * the column name for the ADDRESS field
+     * the column name for the TOTAL field
      */
-    const COL_ADDRESS = 'user_detail.ADDRESS';
+    const COL_TOTAL = 'credit.TOTAL';
 
     /**
-     * the column name for the PHONE field
+     * the column name for the STATUS field
      */
-    const COL_PHONE = 'user_detail.PHONE';
+    const COL_STATUS = 'credit.STATUS';
 
     /**
      * The default string format for model objects of the related table
@@ -103,11 +103,11 @@ class UserDetailTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Name', 'Address', 'Phone', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'name', 'address', 'phone', ),
-        self::TYPE_COLNAME       => array(UserDetailTableMap::COL_ID, UserDetailTableMap::COL_NAME, UserDetailTableMap::COL_ADDRESS, UserDetailTableMap::COL_PHONE, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_NAME', 'COL_ADDRESS', 'COL_PHONE', ),
-        self::TYPE_FIELDNAME     => array('id', 'name', 'address', 'phone', ),
+        self::TYPE_PHPNAME       => array('Id', 'SalesId', 'Total', 'Status', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'salesId', 'total', 'status', ),
+        self::TYPE_COLNAME       => array(CreditTableMap::COL_ID, CreditTableMap::COL_SALES_ID, CreditTableMap::COL_TOTAL, CreditTableMap::COL_STATUS, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_SALES_ID', 'COL_TOTAL', 'COL_STATUS', ),
+        self::TYPE_FIELDNAME     => array('id', 'sales_id', 'total', 'status', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
@@ -118,11 +118,11 @@ class UserDetailTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Address' => 2, 'Phone' => 3, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'name' => 1, 'address' => 2, 'phone' => 3, ),
-        self::TYPE_COLNAME       => array(UserDetailTableMap::COL_ID => 0, UserDetailTableMap::COL_NAME => 1, UserDetailTableMap::COL_ADDRESS => 2, UserDetailTableMap::COL_PHONE => 3, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_NAME' => 1, 'COL_ADDRESS' => 2, 'COL_PHONE' => 3, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'address' => 2, 'phone' => 3, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'SalesId' => 1, 'Total' => 2, 'Status' => 3, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'salesId' => 1, 'total' => 2, 'status' => 3, ),
+        self::TYPE_COLNAME       => array(CreditTableMap::COL_ID => 0, CreditTableMap::COL_SALES_ID => 1, CreditTableMap::COL_TOTAL => 2, CreditTableMap::COL_STATUS => 3, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_SALES_ID' => 1, 'COL_TOTAL' => 2, 'COL_STATUS' => 3, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'sales_id' => 1, 'total' => 2, 'status' => 3, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
@@ -136,16 +136,16 @@ class UserDetailTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('user_detail');
-        $this->setPhpName('UserDetail');
-        $this->setClassName('\\ORM\\UserDetail');
+        $this->setName('credit');
+        $this->setPhpName('Credit');
+        $this->setClassName('\\ORM\\Credit');
         $this->setPackage('ORM');
-        $this->setUseIdGenerator(false);
+        $this->setUseIdGenerator(true);
         // columns
-        $this->addForeignPrimaryKey('ID', 'Id', 'BIGINT' , 'user', 'ID', true, 20, null);
-        $this->addColumn('NAME', 'Name', 'CHAR', true, 128, null);
-        $this->addColumn('ADDRESS', 'Address', 'CHAR', false, 128, null);
-        $this->addColumn('PHONE', 'Phone', 'CHAR', false, 20, null);
+        $this->addPrimaryKey('ID', 'Id', 'BIGINT', true, 20, null);
+        $this->addForeignKey('SALES_ID', 'SalesId', 'BIGINT', 'sales', 'ID', false, 20, null);
+        $this->addColumn('TOTAL', 'Total', 'INTEGER', false, 10, null);
+        $this->addColumn('STATUS', 'Status', 'CHAR', true, null, null);
     } // initialize()
 
     /**
@@ -153,12 +153,8 @@ class UserDetailTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('User', '\\ORM\\User', RelationMap::MANY_TO_ONE, array('id' => 'id', ), 'CASCADE', 'RESTRICT');
-        $this->addRelation('CreditPayment', '\\ORM\\CreditPayment', RelationMap::ONE_TO_MANY, array('id' => 'cashier_id', ), 'RESTRICT', 'RESTRICT', 'CreditPayments');
-        $this->addRelation('PurchaseHistory', '\\ORM\\PurchaseHistory', RelationMap::ONE_TO_MANY, array('id' => 'user_id', ), 'RESTRICT', 'RESTRICT', 'PurchaseHistories');
-        $this->addRelation('History', '\\ORM\\RowHistory', RelationMap::ONE_TO_MANY, array('id' => 'user_id', ), 'RESTRICT', 'RESTRICT', 'Histories');
-        $this->addRelation('Sales', '\\ORM\\Sales', RelationMap::ONE_TO_MANY, array('id' => 'cashier_id', ), 'RESTRICT', 'RESTRICT', 'Saless');
-        $this->addRelation('SalesHistory', '\\ORM\\SalesHistory', RelationMap::ONE_TO_MANY, array('id' => 'user_id', ), 'RESTRICT', 'RESTRICT', 'SalesHistories');
+        $this->addRelation('Sales', '\\ORM\\Sales', RelationMap::MANY_TO_ONE, array('sales_id' => 'id', ), 'CASCADE', 'RESTRICT');
+        $this->addRelation('Payment', '\\ORM\\CreditPayment', RelationMap::ONE_TO_MANY, array('id' => 'credit_id', ), 'NO ACTION', 'RESTRICT', 'Payments');
     } // buildRelations()
 
     /**
@@ -218,7 +214,7 @@ class UserDetailTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? UserDetailTableMap::CLASS_DEFAULT : UserDetailTableMap::OM_CLASS;
+        return $withPrefix ? CreditTableMap::CLASS_DEFAULT : CreditTableMap::OM_CLASS;
     }
 
     /**
@@ -232,22 +228,22 @@ class UserDetailTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (UserDetail object, last column rank)
+     * @return array           (Credit object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = UserDetailTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = UserDetailTableMap::getInstanceFromPool($key))) {
+        $key = CreditTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = CreditTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + UserDetailTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + CreditTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = UserDetailTableMap::OM_CLASS;
-            /** @var UserDetail $obj */
+            $cls = CreditTableMap::OM_CLASS;
+            /** @var Credit $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            UserDetailTableMap::addInstanceToPool($obj, $key);
+            CreditTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -270,18 +266,18 @@ class UserDetailTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = UserDetailTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = UserDetailTableMap::getInstanceFromPool($key))) {
+            $key = CreditTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = CreditTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var UserDetail $obj */
+                /** @var Credit $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                UserDetailTableMap::addInstanceToPool($obj, $key);
+                CreditTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -302,15 +298,15 @@ class UserDetailTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(UserDetailTableMap::COL_ID);
-            $criteria->addSelectColumn(UserDetailTableMap::COL_NAME);
-            $criteria->addSelectColumn(UserDetailTableMap::COL_ADDRESS);
-            $criteria->addSelectColumn(UserDetailTableMap::COL_PHONE);
+            $criteria->addSelectColumn(CreditTableMap::COL_ID);
+            $criteria->addSelectColumn(CreditTableMap::COL_SALES_ID);
+            $criteria->addSelectColumn(CreditTableMap::COL_TOTAL);
+            $criteria->addSelectColumn(CreditTableMap::COL_STATUS);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
-            $criteria->addSelectColumn($alias . '.NAME');
-            $criteria->addSelectColumn($alias . '.ADDRESS');
-            $criteria->addSelectColumn($alias . '.PHONE');
+            $criteria->addSelectColumn($alias . '.SALES_ID');
+            $criteria->addSelectColumn($alias . '.TOTAL');
+            $criteria->addSelectColumn($alias . '.STATUS');
         }
     }
 
@@ -323,7 +319,7 @@ class UserDetailTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(UserDetailTableMap::DATABASE_NAME)->getTable(UserDetailTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(CreditTableMap::DATABASE_NAME)->getTable(CreditTableMap::TABLE_NAME);
     }
 
     /**
@@ -331,16 +327,16 @@ class UserDetailTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(UserDetailTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(UserDetailTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new UserDetailTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(CreditTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(CreditTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new CreditTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a UserDetail or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Credit or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or UserDetail object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Credit object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -351,27 +347,27 @@ class UserDetailTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserDetailTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CreditTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \ORM\UserDetail) { // it's a model object
+        } elseif ($values instanceof \ORM\Credit) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(UserDetailTableMap::DATABASE_NAME);
-            $criteria->add(UserDetailTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(CreditTableMap::DATABASE_NAME);
+            $criteria->add(CreditTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = UserDetailQuery::create()->mergeWith($criteria);
+        $query = CreditQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            UserDetailTableMap::clearInstancePool();
+            CreditTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                UserDetailTableMap::removeInstanceFromPool($singleval);
+                CreditTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -379,20 +375,20 @@ class UserDetailTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the user_detail table.
+     * Deletes all rows from the credit table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return UserDetailQuery::create()->doDeleteAll($con);
+        return CreditQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a UserDetail or Criteria object.
+     * Performs an INSERT on the database, given a Credit or Criteria object.
      *
-     * @param mixed               $criteria Criteria or UserDetail object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Credit object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -401,18 +397,22 @@ class UserDetailTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserDetailTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CreditTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from UserDetail object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Credit object
+        }
+
+        if ($criteria->containsKey(CreditTableMap::COL_ID) && $criteria->keyContainsValue(CreditTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.CreditTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = UserDetailQuery::create()->mergeWith($criteria);
+        $query = CreditQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -421,7 +421,7 @@ class UserDetailTableMap extends TableMap
         });
     }
 
-} // UserDetailTableMap
+} // CreditTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-UserDetailTableMap::buildTableMap();
+CreditTableMap::buildTableMap();

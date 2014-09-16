@@ -20,7 +20,6 @@ class Purchases
 
     private static function newPriceNotification($stock, $purchaseDetail, $con)
     {
-        
         // check price change
         $priceDifference = $stock->getBuy() - ( $purchaseDetail->getTotalPrice() / $purchaseDetail->getAmount() );
         if ( $priceDifference == 0 ) {
@@ -104,11 +103,6 @@ class Purchases
             $notificationId = $notification->getId();
             
         } else {
-            $oldNotification = $purchaseDetail->getNotification();
-            if ($oldNotification) {
-                $oldNotification->delete($con);
-            }
-            
             $notificationId = 0;
         }
         
@@ -160,6 +154,68 @@ class Purchases
         
         $results['data'] = $purchase;
         $results['detail'] = $detail;
+
+        return $results;
+    }
+
+    public static function cancel($params, $currentUser, $con)
+    {
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('destroy_purchase')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        $purchases = PurchaseQuery::create()
+            ->filterById($params->id)
+            ->find($con);
+
+        if (!$purchases) throw new \Exception('Data tidak ditemukan');
+
+        foreach($purchases as $purchase)
+        {
+            $purchase
+                ->setStatus('Canceled')
+                ->save($con);
+
+            $purchaseDetails = PurchaseDetailQuery::create()->filterByPurchaseId($purchase->getId())->find($con);
+            
+            $detailId = []; 
+            foreach($purchaseDetails as $purchaseDetail){
+                $purchaseDetail
+                    ->setStatus('Canceled')
+                    ->save($con);
+                
+                $notification = $purchaseDetail->getNotification();
+                if ($notification){
+                    $notification
+                        ->setStatus('Not Active')
+                        ->save();
+                }
+                    
+                $stock = StockQuery::create()->findOneById($purchaseDetail->getStockId(), $con);
+                if ($stock->getUnlimited() == false) {
+                    $stock
+                        ->setAmount($stock->getAmount() - $purchaseDetail->getAmount())
+                        ->save($con);
+                }
+            
+                $detailId[] = $purchaseDetail->getId(); 
+            }
+
+            $logData['detailId'] = $detailId;
+            
+            // log history
+            $purchaseHistory = new PurchaseHistory();
+            $purchaseHistory
+                ->setUserId($currentUser->id)
+                ->setPurchaseId($purchase->getId())
+                ->setTime(time())
+                ->setOperation('cancel')
+                ->setData(json_encode($logData))
+                ->save($con);
+        }
+
+        $results['success'] = true;
+        $results['id'] = $params->id;
 
         return $results;
     }
@@ -223,68 +279,6 @@ class Purchases
 
         $results['success'] = true;
         $results['id'] = $purchase->getId();
-
-        return $results;
-    }
-
-    public static function destroy($params, $currentUser, $con)
-    {
-        // check role's permission
-        $permission = RolePermissionQuery::create()->select('destroy_purchase')->findOneById($currentUser->role_id, $con);
-        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
-
-        $purchases = PurchaseQuery::create()
-            ->filterById($params->id)
-            ->find($con);
-
-        if (!$purchases) throw new \Exception('Data tidak ditemukan');
-
-        foreach($purchases as $purchase)
-        {
-            $purchase
-                ->setStatus('Canceled')
-                ->save($con);
-
-            $purchaseDetails = PurchaseDetailQuery::create()->filterByPurchaseId($purchase->getId())->find($con);
-            
-            $detailId = []; 
-            foreach($purchaseDetails as $purchaseDetail){
-                $purchaseDetail
-                    ->setStatus('Canceled')
-                    ->save($con);
-                
-                $notification = $purchaseDetail->getNotification();
-                if ($notification){
-                    $notification
-                        ->setStatus('Not Active')
-                        ->save();
-                }
-                    
-                $stock = StockQuery::create()->findOneById($purchaseDetail->getStockId(), $con);
-                if ($stock->getUnlimited() == false) {
-                    $stock
-                        ->setAmount($stock->getAmount() - $purchaseDetail->getAmount())
-                        ->save($con);
-                }
-            
-                $detailId[] = $purchaseDetail->getId(); 
-            }
-
-            $logData['detailId'] = $detailId;
-            
-            // log history
-            $purchaseHistory = new PurchaseHistory();
-            $purchaseHistory
-                ->setUserId($currentUser->id)
-                ->setPurchaseId($purchase->getId())
-                ->setTime(time())
-                ->setOperation('cancel')
-                ->setData(json_encode($logData))
-                ->save($con);
-        }
-
-        $results['success'] = true;
-        $results['id'] = $params->id;
 
         return $results;
     }
@@ -462,9 +456,11 @@ class Purchases
             
             $notificationId = Purchases::newPriceNotification($stock, $newDetail, $con);
             
-            $newDetail
-                ->setNotificationId($notificationId)
-                ->save($con);
+            if ($isNew || !($notificationId == 0)) {
+                $newDetail
+                    ->setNotificationId($notificationId)
+                    ->save($con);
+            }
             
         }
 

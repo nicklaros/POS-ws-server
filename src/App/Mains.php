@@ -94,7 +94,9 @@ class Mains implements MessageComponentInterface {
         $registeredModule = array(
             'chart',
             'combo',
+            'credit',
             'notification',
+            'option',
             'populate',
             'product',
             'purchase',
@@ -132,13 +134,42 @@ class Mains implements MessageComponentInterface {
             ||
             $event == 'purchase/update'
         ){
+            // get update of last 30 Days transaction's data
+            $data = $this->chart('last30DaysTransaction', new \stdClass(), $from, $con);
+            $last30DaysTransaction['event'] = 'chart/last30DaysTransaction';
+            $last30DaysTransaction['data'] = $data;
+            
+            // iterate through all connected client
             foreach ($this->clients as $client) 
             {
+                // get notification update of each client
                 $data = $this->notification('read', new \stdClass(), $client, $con);
                 $results['event'] = 'notification/read';
                 $results['data'] = $data;
 
+                // push notification to each client
                 $client->send(json_encode($results));
+                
+                // push last 30 Days transaction's data to each client
+                $client->send(json_encode($last30DaysTransaction));
+            }
+        } elseif (
+            $event == 'sales/create'
+            ||
+            $event == 'sales/destroy'
+            ||
+            $event == 'sales/update'
+        ){
+            // get update of last 30 Days transaction's data
+            $data = $this->chart('last30DaysTransaction', new \stdClass(), $from, $con);
+            $last30DaysTransaction['event'] = 'chart/last30DaysTransaction';
+            $last30DaysTransaction['data'] = $data;
+            
+            // iterate through all connected client
+            foreach ($this->clients as $client) 
+            {   
+                // push last 30 Days transaction's data to each client
+                $client->send(json_encode($last30DaysTransaction));
             }
         }
         
@@ -152,9 +183,9 @@ class Mains implements MessageComponentInterface {
         // list of all method that can be called in current module
         $registeredMethod = array(
             'customSalesVsPurchase',
+            'last30DaysTransaction',
             'monthlySalesVsPurchase',
-            'monthlyTransaction',
-            'last30DaysTransaction'
+            'monthlyTransaction'
         );
 
         // if called method is not registered then deny access
@@ -165,6 +196,165 @@ class Mains implements MessageComponentInterface {
 
         // route to requested module and method
         $results = Charts::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+
+    private function combo($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'cashier',
+            'customer',
+            'product',
+            'stock',
+            'unit'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Combos::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+
+    private function credit($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'loadFormPay',
+            'pay',
+            'read',
+            'readPayment'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Credits::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+
+    private function notification($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'destroy',
+            'read',
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Notifications::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+    
+    private function option($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'changePassword',
+            'loadBiodata',
+            'updateBiodata'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Options::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+    
+    private function populate($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'stock'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Populate::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+    
+    private function product($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create',
+            'destroy',
+            'loadFormEdit',
+            'read',
+            'update'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Products::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+
+    private function purchase($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'cancel',
+            'create',
+            'loadFormEdit',
+            'read',
+            'update',
+            'viewDetail'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Purchases::$method($params, $currentUser, $con);
 
         return $results;
     }
@@ -250,127 +440,13 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
 
-    private function combo($method, $params, $from, $con){
-        $results = [];
-        
-        // list of all method that can be called in current module
-        $registeredMethod = array(
-            'cashier',
-            'customer',
-            'product',
-            'stock',
-            'unit'
-        );
-
-        // if called method is not registered then deny access
-        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
-
-        // get Current User
-        $currentUser = $from->Session->get('pos/current_user');
-
-        // route to requested module and method
-        $results = Combos::$method($params, $currentUser, $con);
-
-        return $results;
-    }
-
-    private function notification($method, $params, $from, $con){
-        $results = [];
-        
-        // list of all method that can be called in current module
-        $registeredMethod = array(
-            'destroy',
-            'read',
-        );
-
-        // if called method is not registered then deny access
-        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
-
-        // get Current User
-        $currentUser = $from->Session->get('pos/current_user');
-
-        // route to requested module and method
-        $results = Notifications::$method($params, $currentUser, $con);
-
-        return $results;
-    }
-    
-    private function populate($method, $params, $from, $con){
-        $results = [];
-        
-        // list of all method that can be called in current module
-        $registeredMethod = array(
-            'stock'
-        );
-
-        // if called method is not registered then deny access
-        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
-
-        // get Current User
-        $currentUser = $from->Session->get('pos/current_user');
-
-        // route to requested module and method
-        $results = Populate::$method($params, $currentUser, $con);
-
-        return $results;
-    }
-    
-    private function product($method, $params, $from, $con){
-        $results = [];
-        
-        // list of all method that can be called in current module
-        $registeredMethod = array(
-            'create',
-            'destroy',
-            'loadFormEdit',
-            'read',
-            'update'
-        );
-
-        // if called method is not registered then deny access
-        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
-
-        // get Current User
-        $currentUser = $from->Session->get('pos/current_user');
-
-        // route to requested module and method
-        $results = Products::$method($params, $currentUser, $con);
-
-        return $results;
-    }
-
-    private function purchase($method, $params, $from, $con){
-        $results = [];
-        
-        // list of all method that can be called in current module
-        $registeredMethod = array(
-            'create',
-            'destroy',
-            'loadFormEdit',
-            'read',
-            'update',
-            'viewDetail'
-        );
-
-        // if called method is not registered then deny access
-        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
-
-        // get Current User
-        $currentUser = $from->Session->get('pos/current_user');
-
-        // route to requested module and method
-        $results = Purchases::$method($params, $currentUser, $con);
-
-        return $results;
-    }
-
     private function sales($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
         $registeredMethod = array(
+            'cancel',
             'create',
-            'destroy',
             'loadFormEdit',
             'read',
             'update',

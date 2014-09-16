@@ -4,6 +4,8 @@ namespace ORM\Base;
 
 use \Exception;
 use \PDO;
+use ORM\CreditPayment as ChildCreditPayment;
+use ORM\CreditPaymentQuery as ChildCreditPaymentQuery;
 use ORM\PurchaseHistory as ChildPurchaseHistory;
 use ORM\PurchaseHistoryQuery as ChildPurchaseHistoryQuery;
 use ORM\RowHistory as ChildRowHistory;
@@ -94,6 +96,12 @@ abstract class UserDetail implements ActiveRecordInterface
     protected $aUser;
 
     /**
+     * @var        ObjectCollection|ChildCreditPayment[] Collection to store aggregation of ChildCreditPayment objects.
+     */
+    protected $collCreditPayments;
+    protected $collCreditPaymentsPartial;
+
+    /**
      * @var        ObjectCollection|ChildPurchaseHistory[] Collection to store aggregation of ChildPurchaseHistory objects.
      */
     protected $collPurchaseHistories;
@@ -124,6 +132,12 @@ abstract class UserDetail implements ActiveRecordInterface
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildCreditPayment[]
+     */
+    protected $creditPaymentsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -610,6 +624,8 @@ abstract class UserDetail implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aUser = null;
+            $this->collCreditPayments = null;
+
             $this->collPurchaseHistories = null;
 
             $this->collHistories = null;
@@ -738,6 +754,24 @@ abstract class UserDetail implements ActiveRecordInterface
                 }
                 $affectedRows += 1;
                 $this->resetModified();
+            }
+
+            if ($this->creditPaymentsScheduledForDeletion !== null) {
+                if (!$this->creditPaymentsScheduledForDeletion->isEmpty()) {
+                    foreach ($this->creditPaymentsScheduledForDeletion as $creditPayment) {
+                        // need to save related object because we set the relation to null
+                        $creditPayment->save($con);
+                    }
+                    $this->creditPaymentsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collCreditPayments !== null) {
+                foreach ($this->collCreditPayments as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             if ($this->purchaseHistoriesScheduledForDeletion !== null) {
@@ -978,6 +1012,9 @@ abstract class UserDetail implements ActiveRecordInterface
         if ($includeForeignObjects) {
             if (null !== $this->aUser) {
                 $result['User'] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collCreditPayments) {
+                $result['CreditPayments'] = $this->collCreditPayments->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collPurchaseHistories) {
                 $result['PurchaseHistories'] = $this->collPurchaseHistories->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
@@ -1225,6 +1262,12 @@ abstract class UserDetail implements ActiveRecordInterface
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
+            foreach ($this->getCreditPayments() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addCreditPayment($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getPurchaseHistories() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addPurchaseHistory($relObj->copy($deepCopy));
@@ -1334,6 +1377,9 @@ abstract class UserDetail implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
+        if ('CreditPayment' == $relationName) {
+            return $this->initCreditPayments();
+        }
         if ('PurchaseHistory' == $relationName) {
             return $this->initPurchaseHistories();
         }
@@ -1346,6 +1392,249 @@ abstract class UserDetail implements ActiveRecordInterface
         if ('SalesHistory' == $relationName) {
             return $this->initSalesHistories();
         }
+    }
+
+    /**
+     * Clears out the collCreditPayments collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addCreditPayments()
+     */
+    public function clearCreditPayments()
+    {
+        $this->collCreditPayments = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collCreditPayments collection loaded partially.
+     */
+    public function resetPartialCreditPayments($v = true)
+    {
+        $this->collCreditPaymentsPartial = $v;
+    }
+
+    /**
+     * Initializes the collCreditPayments collection.
+     *
+     * By default this just sets the collCreditPayments collection to an empty array (like clearcollCreditPayments());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initCreditPayments($overrideExisting = true)
+    {
+        if (null !== $this->collCreditPayments && !$overrideExisting) {
+            return;
+        }
+        $this->collCreditPayments = new ObjectCollection();
+        $this->collCreditPayments->setModel('\ORM\CreditPayment');
+    }
+
+    /**
+     * Gets an array of ChildCreditPayment objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUserDetail is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildCreditPayment[] List of ChildCreditPayment objects
+     * @throws PropelException
+     */
+    public function getCreditPayments(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collCreditPaymentsPartial && !$this->isNew();
+        if (null === $this->collCreditPayments || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collCreditPayments) {
+                // return empty collection
+                $this->initCreditPayments();
+            } else {
+                $collCreditPayments = ChildCreditPaymentQuery::create(null, $criteria)
+                    ->filterByCashier($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collCreditPaymentsPartial && count($collCreditPayments)) {
+                        $this->initCreditPayments(false);
+
+                        foreach ($collCreditPayments as $obj) {
+                            if (false == $this->collCreditPayments->contains($obj)) {
+                                $this->collCreditPayments->append($obj);
+                            }
+                        }
+
+                        $this->collCreditPaymentsPartial = true;
+                    }
+
+                    return $collCreditPayments;
+                }
+
+                if ($partial && $this->collCreditPayments) {
+                    foreach ($this->collCreditPayments as $obj) {
+                        if ($obj->isNew()) {
+                            $collCreditPayments[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collCreditPayments = $collCreditPayments;
+                $this->collCreditPaymentsPartial = false;
+            }
+        }
+
+        return $this->collCreditPayments;
+    }
+
+    /**
+     * Sets a collection of ChildCreditPayment objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $creditPayments A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUserDetail The current object (for fluent API support)
+     */
+    public function setCreditPayments(Collection $creditPayments, ConnectionInterface $con = null)
+    {
+        /** @var ChildCreditPayment[] $creditPaymentsToDelete */
+        $creditPaymentsToDelete = $this->getCreditPayments(new Criteria(), $con)->diff($creditPayments);
+
+
+        $this->creditPaymentsScheduledForDeletion = $creditPaymentsToDelete;
+
+        foreach ($creditPaymentsToDelete as $creditPaymentRemoved) {
+            $creditPaymentRemoved->setCashier(null);
+        }
+
+        $this->collCreditPayments = null;
+        foreach ($creditPayments as $creditPayment) {
+            $this->addCreditPayment($creditPayment);
+        }
+
+        $this->collCreditPayments = $creditPayments;
+        $this->collCreditPaymentsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related CreditPayment objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related CreditPayment objects.
+     * @throws PropelException
+     */
+    public function countCreditPayments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collCreditPaymentsPartial && !$this->isNew();
+        if (null === $this->collCreditPayments || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collCreditPayments) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getCreditPayments());
+            }
+
+            $query = ChildCreditPaymentQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByCashier($this)
+                ->count($con);
+        }
+
+        return count($this->collCreditPayments);
+    }
+
+    /**
+     * Method called to associate a ChildCreditPayment object to this object
+     * through the ChildCreditPayment foreign key attribute.
+     *
+     * @param  ChildCreditPayment $l ChildCreditPayment
+     * @return $this|\ORM\UserDetail The current object (for fluent API support)
+     */
+    public function addCreditPayment(ChildCreditPayment $l)
+    {
+        if ($this->collCreditPayments === null) {
+            $this->initCreditPayments();
+            $this->collCreditPaymentsPartial = true;
+        }
+
+        if (!$this->collCreditPayments->contains($l)) {
+            $this->doAddCreditPayment($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildCreditPayment $creditPayment The ChildCreditPayment object to add.
+     */
+    protected function doAddCreditPayment(ChildCreditPayment $creditPayment)
+    {
+        $this->collCreditPayments[]= $creditPayment;
+        $creditPayment->setCashier($this);
+    }
+
+    /**
+     * @param  ChildCreditPayment $creditPayment The ChildCreditPayment object to remove.
+     * @return $this|ChildUserDetail The current object (for fluent API support)
+     */
+    public function removeCreditPayment(ChildCreditPayment $creditPayment)
+    {
+        if ($this->getCreditPayments()->contains($creditPayment)) {
+            $pos = $this->collCreditPayments->search($creditPayment);
+            $this->collCreditPayments->remove($pos);
+            if (null === $this->creditPaymentsScheduledForDeletion) {
+                $this->creditPaymentsScheduledForDeletion = clone $this->collCreditPayments;
+                $this->creditPaymentsScheduledForDeletion->clear();
+            }
+            $this->creditPaymentsScheduledForDeletion[]= $creditPayment;
+            $creditPayment->setCashier(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this UserDetail is new, it will return
+     * an empty collection; or if this UserDetail has previously
+     * been saved, it will retrieve related CreditPayments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in UserDetail.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildCreditPayment[] List of ChildCreditPayment objects
+     */
+    public function getCreditPaymentsJoinCredit(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildCreditPaymentQuery::create(null, $criteria);
+        $query->joinWith('Credit', $joinBehavior);
+
+        return $this->getCreditPayments($query, $con);
     }
 
     /**
@@ -2327,6 +2616,11 @@ abstract class UserDetail implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collCreditPayments) {
+                foreach ($this->collCreditPayments as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collPurchaseHistories) {
                 foreach ($this->collPurchaseHistories as $o) {
                     $o->clearAllReferences($deep);
@@ -2349,6 +2643,7 @@ abstract class UserDetail implements ActiveRecordInterface
             }
         } // if ($deep)
 
+        $this->collCreditPayments = null;
         $this->collPurchaseHistories = null;
         $this->collHistories = null;
         $this->collSaless = null;

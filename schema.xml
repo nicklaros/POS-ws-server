@@ -7,6 +7,31 @@
         <column name="name" phpName="Name" type="CHAR" size="128" />
     </table>
 
+    <table name="credit" phpName="Credit">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="sales_id" phpName="SalesId" type="BIGINT" size="20" />
+        <column name="total" phpName="Total" type="INTEGER" size="10" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
+        <foreign-key foreignTable="sales" phpName="Sales" refPhpName="Credit" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference local="sales_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="credit_payment" phpName="CreditPayment">
+        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="date" phpName="Date" type="DATE" />
+        <column name="credit_id" phpName="CreditId" type="BIGINT" size="20" />
+        <column name="cashier_id" phpName="CashierId" type="BIGINT" size="20" />
+        <column name="paid" phpName="Paid" type="INTEGER" size="10" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
+        <foreign-key foreignTable="credit" phpName="Credit" refPhpName="Payment" onDelete="NO ACTION" onUpdate="RESTRICT">
+            <reference local="credit_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="user_detail" phpName="Cashier" refPhpName="CreditPayment" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference local="cashier_id" foreign="id" />
+        </foreign-key>
+    </table>
+
     <table name="customer" phpName="Customer">
         <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
         <column name="registered_date" phpName="RegisteredDate" type="DATE" />
@@ -79,7 +104,7 @@
         <column name="supplier_id" phpName="SupplierId" type="BIGINT" size="20" />
         <column name="total_price" phpName="TotalPrice" type="INTEGER" size="10" />
         <column name="note" phpName="Note" type="CHAR" size="32" />
-        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Canceled')" required="true" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
         <foreign-key foreignTable="supplier" phpName="Supplier" refPhpName="Purchase" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="supplier_id" foreign="id" />
         </foreign-key>
@@ -91,8 +116,8 @@
         <column name="stock_id" phpName="StockId" type="BIGINT" size="20" />
         <column name="amount" phpName="Amount" type="TINYINT" size="3" />
         <column name="total_price" phpName="TotalPrice" type="INTEGER" size="10" />
-        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending', 'Active', 'Not Active', 'Canceled', 'Deleted')" required="true" />
         <column name="notification_id" phpName="NotificationId" type="BIGINT" size="20" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
         <foreign-key foreignTable="purchase" phpName="Purchase" refPhpName="Detail" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="purchase_id" foreign="id" />
         </foreign-key>
@@ -126,6 +151,8 @@
 
     <table name="role_permission" phpName="RolePermission">
         <column name="id" phpName="Id" type="BIGINT" size="20" primaryKey="true" required="true" />
+        <column name="pay_credit" phpName="PayCredit" type="BOOLEAN" />
+        <column name="read_credit" phpName="ReadCredit" type="BOOLEAN" />
         <column name="create_product" phpName="CreateProduct" type="BOOLEAN" />
         <column name="read_product" phpName="ReadProduct" type="BOOLEAN" />
         <column name="update_product" phpName="UpdateProduct" type="BOOLEAN" />
@@ -173,7 +200,7 @@
         <column name="paid" phpName="Paid" type="INTEGER" size="10" />
         <column name="cashier_id" phpName="CashierId" type="BIGINT" size="20" />
         <column name="note" phpName="Note" type="CHAR" size="32" />
-        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending','Active','Not Active', 'Canceled')" required="true" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
         <foreign-key foreignTable="customer" phpName="Customer" refPhpName="Sales" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="customer_id" foreign="id" />
         </foreign-key>
@@ -195,7 +222,7 @@
         <column name="sell_public" phpName="SellPublic" type="INTEGER" size="10" />
         <column name="sell_distributor" phpName="SellDistributor" type="INTEGER" size="10" />
         <column name="sell_misc" phpName="SellMisc" type="INTEGER" size="10" />
-        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Pending', 'Active', 'Not Active', 'Canceled', 'Deleted')" required="true" />
+        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
         <foreign-key foreignTable="sales" phpName="Sales" refPhpName="Detail" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="sales_id" foreign="id" />
         </foreign-key>

@@ -52,6 +52,10 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildSalesQuery rightJoinCashier($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Cashier relation
  * @method     ChildSalesQuery innerJoinCashier($relationAlias = null) Adds a INNER JOIN clause to the query using the Cashier relation
  *
+ * @method     ChildSalesQuery leftJoinCredit($relationAlias = null) Adds a LEFT JOIN clause to the query using the Credit relation
+ * @method     ChildSalesQuery rightJoinCredit($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Credit relation
+ * @method     ChildSalesQuery innerJoinCredit($relationAlias = null) Adds a INNER JOIN clause to the query using the Credit relation
+ *
  * @method     ChildSalesQuery leftJoinDetail($relationAlias = null) Adds a LEFT JOIN clause to the query using the Detail relation
  * @method     ChildSalesQuery rightJoinDetail($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Detail relation
  * @method     ChildSalesQuery innerJoinDetail($relationAlias = null) Adds a INNER JOIN clause to the query using the Detail relation
@@ -60,7 +64,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildSalesQuery rightJoinHistory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the History relation
  * @method     ChildSalesQuery innerJoinHistory($relationAlias = null) Adds a INNER JOIN clause to the query using the History relation
  *
- * @method     \ORM\CustomerQuery|\ORM\UserDetailQuery|\ORM\SalesDetailQuery|\ORM\SalesHistoryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \ORM\CustomerQuery|\ORM\UserDetailQuery|\ORM\CreditQuery|\ORM\SalesDetailQuery|\ORM\SalesHistoryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildSales findOne(ConnectionInterface $con = null) Return the first ChildSales matching the query
  * @method     ChildSales findOneOrCreate(ConnectionInterface $con = null) Return the first ChildSales matching the query, or a new ChildSales object populated from the query conditions when no match is found
@@ -763,6 +767,79 @@ abstract class SalesQuery extends ModelCriteria
         return $this
             ->joinCashier($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Cashier', '\ORM\UserDetailQuery');
+    }
+
+    /**
+     * Filter the query by a related \ORM\Credit object
+     *
+     * @param \ORM\Credit|ObjectCollection $credit  the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildSalesQuery The current query, for fluid interface
+     */
+    public function filterByCredit($credit, $comparison = null)
+    {
+        if ($credit instanceof \ORM\Credit) {
+            return $this
+                ->addUsingAlias(SalesTableMap::COL_ID, $credit->getSalesId(), $comparison);
+        } elseif ($credit instanceof ObjectCollection) {
+            return $this
+                ->useCreditQuery()
+                ->filterByPrimaryKeys($credit->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByCredit() only accepts arguments of type \ORM\Credit or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Credit relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildSalesQuery The current query, for fluid interface
+     */
+    public function joinCredit($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Credit');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Credit');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Credit relation Credit object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \ORM\CreditQuery A secondary query class using the current class as primary query
+     */
+    public function useCreditQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinCredit($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Credit', '\ORM\CreditQuery');
     }
 
     /**

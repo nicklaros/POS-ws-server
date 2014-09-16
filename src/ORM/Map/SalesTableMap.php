@@ -185,6 +185,7 @@ class SalesTableMap extends TableMap
     {
         $this->addRelation('Customer', '\\ORM\\Customer', RelationMap::MANY_TO_ONE, array('customer_id' => 'id', ), 'RESTRICT', 'RESTRICT');
         $this->addRelation('Cashier', '\\ORM\\UserDetail', RelationMap::MANY_TO_ONE, array('cashier_id' => 'id', ), 'RESTRICT', 'RESTRICT');
+        $this->addRelation('Credit', '\\ORM\\Credit', RelationMap::ONE_TO_MANY, array('id' => 'sales_id', ), 'CASCADE', 'RESTRICT', 'Credits');
         $this->addRelation('Detail', '\\ORM\\SalesDetail', RelationMap::ONE_TO_MANY, array('id' => 'sales_id', ), 'CASCADE', 'RESTRICT', 'Details');
         $this->addRelation('History', '\\ORM\\SalesHistory', RelationMap::ONE_TO_MANY, array('id' => 'sales_id', ), 'NO ACTION', 'RESTRICT', 'Histories');
     } // buildRelations()
@@ -195,6 +196,7 @@ class SalesTableMap extends TableMap
     {
         // Invalidate objects in related instance pools,
         // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+        CreditTableMap::clearInstancePool();
         SalesDetailTableMap::clearInstancePool();
     }
 

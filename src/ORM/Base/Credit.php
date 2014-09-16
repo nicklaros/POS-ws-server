@@ -4,19 +4,19 @@ namespace ORM\Base;
 
 use \Exception;
 use \PDO;
-use ORM\Notification as ChildNotification;
-use ORM\NotificationQuery as ChildNotificationQuery;
-use ORM\Purchase as ChildPurchase;
-use ORM\PurchaseDetailQuery as ChildPurchaseDetailQuery;
-use ORM\PurchaseQuery as ChildPurchaseQuery;
-use ORM\Stock as ChildStock;
-use ORM\StockQuery as ChildStockQuery;
-use ORM\Map\PurchaseDetailTableMap;
+use ORM\Credit as ChildCredit;
+use ORM\CreditPayment as ChildCreditPayment;
+use ORM\CreditPaymentQuery as ChildCreditPaymentQuery;
+use ORM\CreditQuery as ChildCreditQuery;
+use ORM\Sales as ChildSales;
+use ORM\SalesQuery as ChildSalesQuery;
+use ORM\Map\CreditTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
+use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -24,12 +24,12 @@ use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
 
-abstract class PurchaseDetail implements ActiveRecordInterface
+abstract class Credit implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\ORM\\Map\\PurchaseDetailTableMap';
+    const TABLE_MAP = '\\ORM\\Map\\CreditTableMap';
 
 
     /**
@@ -65,34 +65,16 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the purchase_id field.
+     * The value for the sales_id field.
      * @var        string
      */
-    protected $purchase_id;
+    protected $sales_id;
 
     /**
-     * The value for the stock_id field.
-     * @var        string
-     */
-    protected $stock_id;
-
-    /**
-     * The value for the amount field.
+     * The value for the total field.
      * @var        int
      */
-    protected $amount;
-
-    /**
-     * The value for the total_price field.
-     * @var        int
-     */
-    protected $total_price;
-
-    /**
-     * The value for the notification_id field.
-     * @var        string
-     */
-    protected $notification_id;
+    protected $total;
 
     /**
      * The value for the status field.
@@ -101,19 +83,15 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     protected $status;
 
     /**
-     * @var        ChildPurchase
+     * @var        ChildSales
      */
-    protected $aPurchase;
+    protected $aSales;
 
     /**
-     * @var        ChildStock
+     * @var        ObjectCollection|ChildCreditPayment[] Collection to store aggregation of ChildCreditPayment objects.
      */
-    protected $aStock;
-
-    /**
-     * @var        ChildNotification
-     */
-    protected $aNotification;
+    protected $collPayments;
+    protected $collPaymentsPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -124,7 +102,13 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of ORM\Base\PurchaseDetail object.
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildCreditPayment[]
+     */
+    protected $paymentsScheduledForDeletion = null;
+
+    /**
+     * Initializes internal state of ORM\Base\Credit object.
      */
     public function __construct()
     {
@@ -219,9 +203,9 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>PurchaseDetail</code> instance.  If
-     * <code>obj</code> is an instance of <code>PurchaseDetail</code>, delegates to
-     * <code>equals(PurchaseDetail)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>Credit</code> instance.  If
+     * <code>obj</code> is an instance of <code>Credit</code>, delegates to
+     * <code>equals(Credit)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -287,7 +271,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|PurchaseDetail The current object, for fluid interface
+     * @return $this|Credit The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -351,53 +335,23 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     }
 
     /**
-     * Get the [purchase_id] column value.
+     * Get the [sales_id] column value.
      *
      * @return string
      */
-    public function getPurchaseId()
+    public function getSalesId()
     {
-        return $this->purchase_id;
+        return $this->sales_id;
     }
 
     /**
-     * Get the [stock_id] column value.
-     *
-     * @return string
-     */
-    public function getStockId()
-    {
-        return $this->stock_id;
-    }
-
-    /**
-     * Get the [amount] column value.
+     * Get the [total] column value.
      *
      * @return int
      */
-    public function getAmount()
+    public function getTotal()
     {
-        return $this->amount;
-    }
-
-    /**
-     * Get the [total_price] column value.
-     *
-     * @return int
-     */
-    public function getTotalPrice()
-    {
-        return $this->total_price;
-    }
-
-    /**
-     * Get the [notification_id] column value.
-     *
-     * @return string
-     */
-    public function getNotificationId()
-    {
-        return $this->notification_id;
+        return $this->total;
     }
 
     /**
@@ -446,25 +400,16 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : PurchaseDetailTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : CreditTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : PurchaseDetailTableMap::translateFieldName('PurchaseId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->purchase_id = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : CreditTableMap::translateFieldName('SalesId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->sales_id = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : PurchaseDetailTableMap::translateFieldName('StockId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->stock_id = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : CreditTableMap::translateFieldName('Total', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->total = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PurchaseDetailTableMap::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->amount = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PurchaseDetailTableMap::translateFieldName('TotalPrice', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->total_price = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PurchaseDetailTableMap::translateFieldName('NotificationId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->notification_id = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PurchaseDetailTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : CreditTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
             $this->status = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
@@ -474,10 +419,10 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 7; // 7 = PurchaseDetailTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 4; // 4 = CreditTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\ORM\\PurchaseDetail'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\ORM\\Credit'), 0, $e);
         }
     }
 
@@ -496,14 +441,8 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aPurchase !== null && $this->purchase_id !== $this->aPurchase->getId()) {
-            $this->aPurchase = null;
-        }
-        if ($this->aStock !== null && $this->stock_id !== $this->aStock->getId()) {
-            $this->aStock = null;
-        }
-        if ($this->aNotification !== null && $this->notification_id !== $this->aNotification->getId()) {
-            $this->aNotification = null;
+        if ($this->aSales !== null && $this->sales_id !== $this->aSales->getId()) {
+            $this->aSales = null;
         }
     } // ensureConsistency
 
@@ -511,7 +450,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param  string $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
+     * @return $this|\ORM\Credit The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -521,129 +460,61 @@ abstract class PurchaseDetail implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_ID] = true;
+            $this->modifiedColumns[CreditTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
-     * Set the value of [purchase_id] column.
+     * Set the value of [sales_id] column.
      *
      * @param  string $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
+     * @return $this|\ORM\Credit The current object (for fluent API support)
      */
-    public function setPurchaseId($v)
+    public function setSalesId($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->purchase_id !== $v) {
-            $this->purchase_id = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_PURCHASE_ID] = true;
+        if ($this->sales_id !== $v) {
+            $this->sales_id = $v;
+            $this->modifiedColumns[CreditTableMap::COL_SALES_ID] = true;
         }
 
-        if ($this->aPurchase !== null && $this->aPurchase->getId() !== $v) {
-            $this->aPurchase = null;
-        }
-
-        return $this;
-    } // setPurchaseId()
-
-    /**
-     * Set the value of [stock_id] column.
-     *
-     * @param  string $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
-     */
-    public function setStockId($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->stock_id !== $v) {
-            $this->stock_id = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_STOCK_ID] = true;
-        }
-
-        if ($this->aStock !== null && $this->aStock->getId() !== $v) {
-            $this->aStock = null;
+        if ($this->aSales !== null && $this->aSales->getId() !== $v) {
+            $this->aSales = null;
         }
 
         return $this;
-    } // setStockId()
+    } // setSalesId()
 
     /**
-     * Set the value of [amount] column.
+     * Set the value of [total] column.
      *
      * @param  int $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
+     * @return $this|\ORM\Credit The current object (for fluent API support)
      */
-    public function setAmount($v)
+    public function setTotal($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->amount !== $v) {
-            $this->amount = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_AMOUNT] = true;
+        if ($this->total !== $v) {
+            $this->total = $v;
+            $this->modifiedColumns[CreditTableMap::COL_TOTAL] = true;
         }
 
         return $this;
-    } // setAmount()
-
-    /**
-     * Set the value of [total_price] column.
-     *
-     * @param  int $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
-     */
-    public function setTotalPrice($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->total_price !== $v) {
-            $this->total_price = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_TOTAL_PRICE] = true;
-        }
-
-        return $this;
-    } // setTotalPrice()
-
-    /**
-     * Set the value of [notification_id] column.
-     *
-     * @param  string $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
-     */
-    public function setNotificationId($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->notification_id !== $v) {
-            $this->notification_id = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_NOTIFICATION_ID] = true;
-        }
-
-        if ($this->aNotification !== null && $this->aNotification->getId() !== $v) {
-            $this->aNotification = null;
-        }
-
-        return $this;
-    } // setNotificationId()
+    } // setTotal()
 
     /**
      * Set the value of [status] column.
      *
      * @param  string $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
+     * @return $this|\ORM\Credit The current object (for fluent API support)
      */
     public function setStatus($v)
     {
@@ -653,7 +524,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
 
         if ($this->status !== $v) {
             $this->status = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_STATUS] = true;
+            $this->modifiedColumns[CreditTableMap::COL_STATUS] = true;
         }
 
         return $this;
@@ -680,13 +551,13 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(PurchaseDetailTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(CreditTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildPurchaseDetailQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildCreditQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -696,9 +567,9 @@ abstract class PurchaseDetail implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aPurchase = null;
-            $this->aStock = null;
-            $this->aNotification = null;
+            $this->aSales = null;
+            $this->collPayments = null;
+
         } // if (deep)
     }
 
@@ -708,8 +579,8 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see PurchaseDetail::setDeleted()
-     * @see PurchaseDetail::isDeleted()
+     * @see Credit::setDeleted()
+     * @see Credit::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -718,11 +589,11 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(PurchaseDetailTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CreditTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildPurchaseDetailQuery::create()
+            $deleteQuery = ChildCreditQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -753,7 +624,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(PurchaseDetailTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CreditTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -772,7 +643,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                PurchaseDetailTableMap::addInstanceToPool($this);
+                CreditTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -803,25 +674,11 @@ abstract class PurchaseDetail implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aPurchase !== null) {
-                if ($this->aPurchase->isModified() || $this->aPurchase->isNew()) {
-                    $affectedRows += $this->aPurchase->save($con);
+            if ($this->aSales !== null) {
+                if ($this->aSales->isModified() || $this->aSales->isNew()) {
+                    $affectedRows += $this->aSales->save($con);
                 }
-                $this->setPurchase($this->aPurchase);
-            }
-
-            if ($this->aStock !== null) {
-                if ($this->aStock->isModified() || $this->aStock->isNew()) {
-                    $affectedRows += $this->aStock->save($con);
-                }
-                $this->setStock($this->aStock);
-            }
-
-            if ($this->aNotification !== null) {
-                if ($this->aNotification->isModified() || $this->aNotification->isNew()) {
-                    $affectedRows += $this->aNotification->save($con);
-                }
-                $this->setNotification($this->aNotification);
+                $this->setSales($this->aSales);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -833,6 +690,24 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                 }
                 $affectedRows += 1;
                 $this->resetModified();
+            }
+
+            if ($this->paymentsScheduledForDeletion !== null) {
+                if (!$this->paymentsScheduledForDeletion->isEmpty()) {
+                    foreach ($this->paymentsScheduledForDeletion as $payment) {
+                        // need to save related object because we set the relation to null
+                        $payment->save($con);
+                    }
+                    $this->paymentsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collPayments !== null) {
+                foreach ($this->collPayments as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             $this->alreadyInSave = false;
@@ -855,36 +730,27 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[PurchaseDetailTableMap::COL_ID] = true;
+        $this->modifiedColumns[CreditTableMap::COL_ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . PurchaseDetailTableMap::COL_ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . CreditTableMap::COL_ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_ID)) {
+        if ($this->isColumnModified(CreditTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'ID';
         }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_PURCHASE_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'PURCHASE_ID';
+        if ($this->isColumnModified(CreditTableMap::COL_SALES_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'SALES_ID';
         }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_STOCK_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'STOCK_ID';
+        if ($this->isColumnModified(CreditTableMap::COL_TOTAL)) {
+            $modifiedColumns[':p' . $index++]  = 'TOTAL';
         }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_AMOUNT)) {
-            $modifiedColumns[':p' . $index++]  = 'AMOUNT';
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_TOTAL_PRICE)) {
-            $modifiedColumns[':p' . $index++]  = 'TOTAL_PRICE';
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_NOTIFICATION_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'NOTIFICATION_ID';
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_STATUS)) {
+        if ($this->isColumnModified(CreditTableMap::COL_STATUS)) {
             $modifiedColumns[':p' . $index++]  = 'STATUS';
         }
 
         $sql = sprintf(
-            'INSERT INTO purchase_detail (%s) VALUES (%s)',
+            'INSERT INTO credit (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -896,20 +762,11 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                     case 'ID':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'PURCHASE_ID':
-                        $stmt->bindValue($identifier, $this->purchase_id, PDO::PARAM_INT);
+                    case 'SALES_ID':
+                        $stmt->bindValue($identifier, $this->sales_id, PDO::PARAM_INT);
                         break;
-                    case 'STOCK_ID':
-                        $stmt->bindValue($identifier, $this->stock_id, PDO::PARAM_INT);
-                        break;
-                    case 'AMOUNT':
-                        $stmt->bindValue($identifier, $this->amount, PDO::PARAM_INT);
-                        break;
-                    case 'TOTAL_PRICE':
-                        $stmt->bindValue($identifier, $this->total_price, PDO::PARAM_INT);
-                        break;
-                    case 'NOTIFICATION_ID':
-                        $stmt->bindValue($identifier, $this->notification_id, PDO::PARAM_INT);
+                    case 'TOTAL':
+                        $stmt->bindValue($identifier, $this->total, PDO::PARAM_INT);
                         break;
                     case 'STATUS':
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
@@ -960,7 +817,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = PurchaseDetailTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = CreditTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -980,21 +837,12 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getPurchaseId();
+                return $this->getSalesId();
                 break;
             case 2:
-                return $this->getStockId();
+                return $this->getTotal();
                 break;
             case 3:
-                return $this->getAmount();
-                break;
-            case 4:
-                return $this->getTotalPrice();
-                break;
-            case 5:
-                return $this->getNotificationId();
-                break;
-            case 6:
                 return $this->getStatus();
                 break;
             default:
@@ -1020,19 +868,16 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
-        if (isset($alreadyDumpedObjects['PurchaseDetail'][$this->getPrimaryKey()])) {
+        if (isset($alreadyDumpedObjects['Credit'][$this->getPrimaryKey()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['PurchaseDetail'][$this->getPrimaryKey()] = true;
-        $keys = PurchaseDetailTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['Credit'][$this->getPrimaryKey()] = true;
+        $keys = CreditTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getPurchaseId(),
-            $keys[2] => $this->getStockId(),
-            $keys[3] => $this->getAmount(),
-            $keys[4] => $this->getTotalPrice(),
-            $keys[5] => $this->getNotificationId(),
-            $keys[6] => $this->getStatus(),
+            $keys[1] => $this->getSalesId(),
+            $keys[2] => $this->getTotal(),
+            $keys[3] => $this->getStatus(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1040,14 +885,11 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aPurchase) {
-                $result['Purchase'] = $this->aPurchase->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            if (null !== $this->aSales) {
+                $result['Sales'] = $this->aSales->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
-            if (null !== $this->aStock) {
-                $result['Stock'] = $this->aStock->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->aNotification) {
-                $result['Notification'] = $this->aNotification->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            if (null !== $this->collPayments) {
+                $result['Payments'] = $this->collPayments->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1063,11 +905,11 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_STUDLYPHPNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\ORM\PurchaseDetail
+     * @return $this|\ORM\Credit
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = PurchaseDetailTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = CreditTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1078,7 +920,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\ORM\PurchaseDetail
+     * @return $this|\ORM\Credit
      */
     public function setByPosition($pos, $value)
     {
@@ -1087,21 +929,12 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setPurchaseId($value);
+                $this->setSalesId($value);
                 break;
             case 2:
-                $this->setStockId($value);
+                $this->setTotal($value);
                 break;
             case 3:
-                $this->setAmount($value);
-                break;
-            case 4:
-                $this->setTotalPrice($value);
-                break;
-            case 5:
-                $this->setNotificationId($value);
-                break;
-            case 6:
                 $this->setStatus($value);
                 break;
         } // switch()
@@ -1128,28 +961,19 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = PurchaseDetailTableMap::getFieldNames($keyType);
+        $keys = CreditTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setPurchaseId($arr[$keys[1]]);
+            $this->setSalesId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setStockId($arr[$keys[2]]);
+            $this->setTotal($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setAmount($arr[$keys[3]]);
-        }
-        if (array_key_exists($keys[4], $arr)) {
-            $this->setTotalPrice($arr[$keys[4]]);
-        }
-        if (array_key_exists($keys[5], $arr)) {
-            $this->setNotificationId($arr[$keys[5]]);
-        }
-        if (array_key_exists($keys[6], $arr)) {
-            $this->setStatus($arr[$keys[6]]);
+            $this->setStatus($arr[$keys[3]]);
         }
     }
 
@@ -1164,7 +988,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      *                       or a format name ('XML', 'YAML', 'JSON', 'CSV')
      * @param string $data The source data to import from
      *
-     * @return $this|\ORM\PurchaseDetail The current object, for fluid interface
+     * @return $this|\ORM\Credit The current object, for fluid interface
      */
     public function importFrom($parser, $data)
     {
@@ -1184,28 +1008,19 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(PurchaseDetailTableMap::DATABASE_NAME);
+        $criteria = new Criteria(CreditTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_ID)) {
-            $criteria->add(PurchaseDetailTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(CreditTableMap::COL_ID)) {
+            $criteria->add(CreditTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_PURCHASE_ID)) {
-            $criteria->add(PurchaseDetailTableMap::COL_PURCHASE_ID, $this->purchase_id);
+        if ($this->isColumnModified(CreditTableMap::COL_SALES_ID)) {
+            $criteria->add(CreditTableMap::COL_SALES_ID, $this->sales_id);
         }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_STOCK_ID)) {
-            $criteria->add(PurchaseDetailTableMap::COL_STOCK_ID, $this->stock_id);
+        if ($this->isColumnModified(CreditTableMap::COL_TOTAL)) {
+            $criteria->add(CreditTableMap::COL_TOTAL, $this->total);
         }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_AMOUNT)) {
-            $criteria->add(PurchaseDetailTableMap::COL_AMOUNT, $this->amount);
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_TOTAL_PRICE)) {
-            $criteria->add(PurchaseDetailTableMap::COL_TOTAL_PRICE, $this->total_price);
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_NOTIFICATION_ID)) {
-            $criteria->add(PurchaseDetailTableMap::COL_NOTIFICATION_ID, $this->notification_id);
-        }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_STATUS)) {
-            $criteria->add(PurchaseDetailTableMap::COL_STATUS, $this->status);
+        if ($this->isColumnModified(CreditTableMap::COL_STATUS)) {
+            $criteria->add(CreditTableMap::COL_STATUS, $this->status);
         }
 
         return $criteria;
@@ -1223,8 +1038,8 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = new Criteria(PurchaseDetailTableMap::DATABASE_NAME);
-        $criteria->add(PurchaseDetailTableMap::COL_ID, $this->id);
+        $criteria = new Criteria(CreditTableMap::DATABASE_NAME);
+        $criteria->add(CreditTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1286,19 +1101,30 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \ORM\PurchaseDetail (or compatible) type.
+     * @param      object $copyObj An object of \ORM\Credit (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setPurchaseId($this->getPurchaseId());
-        $copyObj->setStockId($this->getStockId());
-        $copyObj->setAmount($this->getAmount());
-        $copyObj->setTotalPrice($this->getTotalPrice());
-        $copyObj->setNotificationId($this->getNotificationId());
+        $copyObj->setSalesId($this->getSalesId());
+        $copyObj->setTotal($this->getTotal());
         $copyObj->setStatus($this->getStatus());
+
+        if ($deepCopy) {
+            // important: temporarily setNew(false) because this affects the behavior of
+            // the getter/setter methods for fkey referrer objects.
+            $copyObj->setNew(false);
+
+            foreach ($this->getPayments() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addPayment($relObj->copy($deepCopy));
+                }
+            }
+
+        } // if ($deepCopy)
+
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1314,7 +1140,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \ORM\PurchaseDetail Clone of current object.
+     * @return \ORM\Credit Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1328,26 +1154,26 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildPurchase object.
+     * Declares an association between this object and a ChildSales object.
      *
-     * @param  ChildPurchase $v
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
+     * @param  ChildSales $v
+     * @return $this|\ORM\Credit The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setPurchase(ChildPurchase $v = null)
+    public function setSales(ChildSales $v = null)
     {
         if ($v === null) {
-            $this->setPurchaseId(NULL);
+            $this->setSalesId(NULL);
         } else {
-            $this->setPurchaseId($v->getId());
+            $this->setSalesId($v->getId());
         }
 
-        $this->aPurchase = $v;
+        $this->aSales = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildPurchase object, it will not be re-added.
+        // If this object has already been added to the ChildSales object, it will not be re-added.
         if ($v !== null) {
-            $v->addDetail($this);
+            $v->addCredit($this);
         }
 
 
@@ -1356,128 +1182,285 @@ abstract class PurchaseDetail implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildPurchase object
+     * Get the associated ChildSales object
      *
      * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildPurchase The associated ChildPurchase object.
+     * @return ChildSales The associated ChildSales object.
      * @throws PropelException
      */
-    public function getPurchase(ConnectionInterface $con = null)
+    public function getSales(ConnectionInterface $con = null)
     {
-        if ($this->aPurchase === null && (($this->purchase_id !== "" && $this->purchase_id !== null))) {
-            $this->aPurchase = ChildPurchaseQuery::create()->findPk($this->purchase_id, $con);
+        if ($this->aSales === null && (($this->sales_id !== "" && $this->sales_id !== null))) {
+            $this->aSales = ChildSalesQuery::create()->findPk($this->sales_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aPurchase->addDetails($this);
+                $this->aSales->addCredits($this);
              */
         }
 
-        return $this->aPurchase;
+        return $this->aSales;
+    }
+
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param      string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('Payment' == $relationName) {
+            return $this->initPayments();
+        }
     }
 
     /**
-     * Declares an association between this object and a ChildStock object.
+     * Clears out the collPayments collection
      *
-     * @param  ChildStock $v
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addPayments()
+     */
+    public function clearPayments()
+    {
+        $this->collPayments = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collPayments collection loaded partially.
+     */
+    public function resetPartialPayments($v = true)
+    {
+        $this->collPaymentsPartial = $v;
+    }
+
+    /**
+     * Initializes the collPayments collection.
+     *
+     * By default this just sets the collPayments collection to an empty array (like clearcollPayments());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initPayments($overrideExisting = true)
+    {
+        if (null !== $this->collPayments && !$overrideExisting) {
+            return;
+        }
+        $this->collPayments = new ObjectCollection();
+        $this->collPayments->setModel('\ORM\CreditPayment');
+    }
+
+    /**
+     * Gets an array of ChildCreditPayment objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildCredit is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildCreditPayment[] List of ChildCreditPayment objects
      * @throws PropelException
      */
-    public function setStock(ChildStock $v = null)
+    public function getPayments(Criteria $criteria = null, ConnectionInterface $con = null)
     {
-        if ($v === null) {
-            $this->setStockId(NULL);
-        } else {
-            $this->setStockId($v->getId());
+        $partial = $this->collPaymentsPartial && !$this->isNew();
+        if (null === $this->collPayments || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collPayments) {
+                // return empty collection
+                $this->initPayments();
+            } else {
+                $collPayments = ChildCreditPaymentQuery::create(null, $criteria)
+                    ->filterByCredit($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collPaymentsPartial && count($collPayments)) {
+                        $this->initPayments(false);
+
+                        foreach ($collPayments as $obj) {
+                            if (false == $this->collPayments->contains($obj)) {
+                                $this->collPayments->append($obj);
+                            }
+                        }
+
+                        $this->collPaymentsPartial = true;
+                    }
+
+                    return $collPayments;
+                }
+
+                if ($partial && $this->collPayments) {
+                    foreach ($this->collPayments as $obj) {
+                        if ($obj->isNew()) {
+                            $collPayments[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collPayments = $collPayments;
+                $this->collPaymentsPartial = false;
+            }
         }
 
-        $this->aStock = $v;
+        return $this->collPayments;
+    }
 
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildStock object, it will not be re-added.
-        if ($v !== null) {
-            $v->addPurchase($this);
+    /**
+     * Sets a collection of ChildCreditPayment objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $payments A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildCredit The current object (for fluent API support)
+     */
+    public function setPayments(Collection $payments, ConnectionInterface $con = null)
+    {
+        /** @var ChildCreditPayment[] $paymentsToDelete */
+        $paymentsToDelete = $this->getPayments(new Criteria(), $con)->diff($payments);
+
+
+        $this->paymentsScheduledForDeletion = $paymentsToDelete;
+
+        foreach ($paymentsToDelete as $paymentRemoved) {
+            $paymentRemoved->setCredit(null);
         }
 
+        $this->collPayments = null;
+        foreach ($payments as $payment) {
+            $this->addPayment($payment);
+        }
+
+        $this->collPayments = $payments;
+        $this->collPaymentsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related CreditPayment objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related CreditPayment objects.
+     * @throws PropelException
+     */
+    public function countPayments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPaymentsPartial && !$this->isNew();
+        if (null === $this->collPayments || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collPayments) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getPayments());
+            }
+
+            $query = ChildCreditPaymentQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByCredit($this)
+                ->count($con);
+        }
+
+        return count($this->collPayments);
+    }
+
+    /**
+     * Method called to associate a ChildCreditPayment object to this object
+     * through the ChildCreditPayment foreign key attribute.
+     *
+     * @param  ChildCreditPayment $l ChildCreditPayment
+     * @return $this|\ORM\Credit The current object (for fluent API support)
+     */
+    public function addPayment(ChildCreditPayment $l)
+    {
+        if ($this->collPayments === null) {
+            $this->initPayments();
+            $this->collPaymentsPartial = true;
+        }
+
+        if (!$this->collPayments->contains($l)) {
+            $this->doAddPayment($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildCreditPayment $payment The ChildCreditPayment object to add.
+     */
+    protected function doAddPayment(ChildCreditPayment $payment)
+    {
+        $this->collPayments[]= $payment;
+        $payment->setCredit($this);
+    }
+
+    /**
+     * @param  ChildCreditPayment $payment The ChildCreditPayment object to remove.
+     * @return $this|ChildCredit The current object (for fluent API support)
+     */
+    public function removePayment(ChildCreditPayment $payment)
+    {
+        if ($this->getPayments()->contains($payment)) {
+            $pos = $this->collPayments->search($payment);
+            $this->collPayments->remove($pos);
+            if (null === $this->paymentsScheduledForDeletion) {
+                $this->paymentsScheduledForDeletion = clone $this->collPayments;
+                $this->paymentsScheduledForDeletion->clear();
+            }
+            $this->paymentsScheduledForDeletion[]= $payment;
+            $payment->setCredit(null);
+        }
 
         return $this;
     }
 
 
     /**
-     * Get the associated ChildStock object
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Credit is new, it will return
+     * an empty collection; or if this Credit has previously
+     * been saved, it will retrieve related Payments from storage.
      *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildStock The associated ChildStock object.
-     * @throws PropelException
-     */
-    public function getStock(ConnectionInterface $con = null)
-    {
-        if ($this->aStock === null && (($this->stock_id !== "" && $this->stock_id !== null))) {
-            $this->aStock = ChildStockQuery::create()->findPk($this->stock_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aStock->addPurchases($this);
-             */
-        }
-
-        return $this->aStock;
-    }
-
-    /**
-     * Declares an association between this object and a ChildNotification object.
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Credit.
      *
-     * @param  ChildNotification $v
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
-     * @throws PropelException
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildCreditPayment[] List of ChildCreditPayment objects
      */
-    public function setNotification(ChildNotification $v = null)
+    public function getPaymentsJoinCashier(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
-        if ($v === null) {
-            $this->setNotificationId(NULL);
-        } else {
-            $this->setNotificationId($v->getId());
-        }
+        $query = ChildCreditPaymentQuery::create(null, $criteria);
+        $query->joinWith('Cashier', $joinBehavior);
 
-        $this->aNotification = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildNotification object, it will not be re-added.
-        if ($v !== null) {
-            $v->addPurchaseDetail($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildNotification object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildNotification The associated ChildNotification object.
-     * @throws PropelException
-     */
-    public function getNotification(ConnectionInterface $con = null)
-    {
-        if ($this->aNotification === null && (($this->notification_id !== "" && $this->notification_id !== null))) {
-            $this->aNotification = ChildNotificationQuery::create()->findPk($this->notification_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aNotification->addPurchaseDetails($this);
-             */
-        }
-
-        return $this->aNotification;
+        return $this->getPayments($query, $con);
     }
 
     /**
@@ -1487,21 +1470,12 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->aPurchase) {
-            $this->aPurchase->removeDetail($this);
-        }
-        if (null !== $this->aStock) {
-            $this->aStock->removePurchase($this);
-        }
-        if (null !== $this->aNotification) {
-            $this->aNotification->removePurchaseDetail($this);
+        if (null !== $this->aSales) {
+            $this->aSales->removeCredit($this);
         }
         $this->id = null;
-        $this->purchase_id = null;
-        $this->stock_id = null;
-        $this->amount = null;
-        $this->total_price = null;
-        $this->notification_id = null;
+        $this->sales_id = null;
+        $this->total = null;
         $this->status = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
@@ -1521,11 +1495,15 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collPayments) {
+                foreach ($this->collPayments as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
-        $this->aPurchase = null;
-        $this->aStock = null;
-        $this->aNotification = null;
+        $this->collPayments = null;
+        $this->aSales = null;
     }
 
     /**
@@ -1535,7 +1513,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(PurchaseDetailTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(CreditTableMap::DEFAULT_STRING_FORMAT);
     }
 
     /**
