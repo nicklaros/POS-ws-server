@@ -4,39 +4,37 @@ namespace App;
 
 use ORM\RolePermissionQuery;
 use ORM\RowHistory;
-use ORM\Unit;
-use ORM\UnitQuery;
+use ORM\Supplier;
+use ORM\SupplierQuery;
 
-class Units
+class Suppliers
 {
 
     public static function create($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('create_unit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('create_supplier')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        // check whether unit is already exist
-        $unit = UnitQuery::create()->filterByStatus('Active')->filterByName($params->name)->count($con);
-        if ($unit != 0) throw new \Exception('Satuan ' . $params->name . ' sudah ada dalam data');
-
         // create new record
-        $unit = new Unit();
-        $unit
+        $supplier = new Supplier();
+        $supplier
             ->setName($params->name)
+            ->setAddress($params->address)
+            ->setPhone($params->phone)
             ->setStatus('Active')
             ->save($con);
 
         // log history
         $rowHistory = new RowHistory();
-        $rowHistory->setRowId($unit->getId())
-            ->setData('unit')
+        $rowHistory->setRowId($supplier->getId())
+            ->setData('supplier')
             ->setTime(time())
             ->setOperation('create')
             ->setUserId($currentUser->id)
             ->save($con);
         
-        $params->id = $unit->getId();
+        $params->id = $supplier->getId();
 
         $results['success'] = true;
         $results['data'] = $params;
@@ -47,21 +45,21 @@ class Units
     public static function destroy($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('destroy_unit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('destroy_supplier')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $units = UnitQuery::create()->filterById($params->id)->find($con);
-        if (!$units) throw new \Exception('Data tidak ditemukan');
+        $suppliers = SupplierQuery::create()->filterByStatus('Active')->filterById($params->id)->find($con);
+        if (!$suppliers) throw new \Exception('Data tidak ditemukan');
 
-        foreach($units as $unit)
+        foreach($suppliers as $supplier)
         {
-            $unit
+            $supplier
                 ->setStatus('Deleted')
                 ->save($con);
 
             $rowHistory = new RowHistory();
-            $rowHistory->setRowId($unit->getId())
-                ->setData('unit')
+            $rowHistory->setRowId($supplier->getId())
+                ->setData('supplier')
                 ->setTime(time())
                 ->setOperation('destroy')
                 ->setUserId($currentUser->id)
@@ -77,21 +75,23 @@ class Units
     public static function loadFormEdit($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('update_unit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('update_supplier')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $unit = UnitQuery::create()
+        $supplier = SupplierQuery::create()
             ->filterByStatus('Active')
             ->select(array(
                 'id',
-                'name'
+                'name',
+                'address',
+                'phone'
             ))
             ->findOneById($params->id);
 
-        if (!$unit) throw new \Exception('Data tidak ditemukan');
+        if (!$supplier) throw new \Exception('Data tidak ditemukan');
 
         $results['success'] = true;
-        $results['data'] = $unit;
+        $results['data'] = $supplier;
 
         return $results;
     }
@@ -99,34 +99,37 @@ class Units
     public static function read($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('read_unit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('read_supplier')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         $page = (isset($params->page) ? $params->page : 0);
         $limit = (isset($params->limit) ? $params->limit : 100);
 
-        $units = UnitQuery::create()
-            ->filterByStatus('Active');
+        $suppliers = SupplierQuery::create()
+            ->filterByStatus('Active')
+            ->where('Supplier.Id not like ?', 0);
 
-        if(isset($params->name)) $units->filterByName('%' . $params->name . '%');
+        if(isset($params->name)) $suppliers->filterByName('%' . $params->name . '%');
 
-        $units = $units
+        $suppliers = $suppliers
             ->select(array(
                 'id',
-                'name'
+                'name',
+                'address',
+                'phone'
             ));
 
         foreach($params->sort as $sorter){
-            $units->orderBy($sorter->property, $sorter->direction);
+            $suppliers->orderBy($sorter->property, $sorter->direction);
         }
 
-        $units = $units->paginate($page, $limit);
+        $suppliers = $suppliers->paginate($page, $limit);
 
-        $total = $units->getNbResults();
+        $total = $suppliers->getNbResults();
         
         $data = [];
-        foreach($units as $unit) {
-            $data[] = $unit;
+        foreach($suppliers as $supplier) {
+            $data[] = $supplier;
         }
         
         $results['success'] = true;
@@ -142,25 +145,18 @@ class Units
         $permission = RolePermissionQuery::create()->select('update_unit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        // check whether unit is already exist
-        $unit = UnitQuery::create()
-            ->filterByStatus('Active')
-            ->filterByName($params->name)
-            ->where('Unit.Id not like ?', $params->id)
-            ->count($con);
-                    
-        if ($unit != 0) throw new \Exception('Satuan ' . $params->name . ' sudah ada dalam data');
+        $supplier = SupplierQuery::create()->filterByStatus('Active')->findOneById($params->id, $con);
+        if(!$supplier) throw new \Exception('Data tidak ditemukan');
 
-        $unit = UnitQuery::create()->filterByStatus('Active')->findOneById($params->id, $con);
-        if(!$unit) throw new \Exception('Data tidak ditemukan');
-
-        $unit
+        $supplier
             ->setName($params->name)
+            ->setAddress($params->address)
+            ->setPhone($params->phone)
             ->save($con);
 
         $rowHistory = new RowHistory();
         $rowHistory->setRowId($params->id)
-            ->setData('unit')
+            ->setData('supplier')
             ->setTime(time())
             ->setOperation('update')
             ->setUserId($currentUser->id)

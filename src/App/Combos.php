@@ -5,6 +5,7 @@ namespace App;
 use ORM\CustomerQuery;
 use ORM\ProductQuery;
 use ORM\StockQuery;
+use ORM\SupplierQuery;
 use ORM\UnitQuery;
 use ORM\UserDetailQuery;
 
@@ -130,6 +131,32 @@ class Combos
         $data = [];
         foreach($stocks as $stock) {
             $data[] = $stock;
+        }
+        $results['success'] = true;
+        $results['data'] = $data;
+        
+        return $results;
+    }
+
+    public static function supplier($params, $currentUser, $con)
+    {
+        $suppliers = SupplierQuery::create()
+            ->filterByStatus('Active')
+            ->orderBy('name', 'ASC');
+
+        if(isset($params->query)) $suppliers->where('Supplier.Name like ?', '%' . $params->query . '%');
+        
+        $suppliers = $suppliers
+            ->select(array(
+                'id',
+                'name'
+            ))
+            ->limit(20)
+            ->find($con);
+
+        $data = [];
+        foreach($suppliers as $supplier) {
+            $data[] = $supplier;
         }
         $results['success'] = true;
         $results['data'] = $data;

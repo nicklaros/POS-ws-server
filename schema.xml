@@ -154,6 +154,10 @@
         <column name="id" phpName="Id" type="BIGINT" size="20" primaryKey="true" required="true" />
         <column name="pay_credit" phpName="PayCredit" type="BOOLEAN" />
         <column name="read_credit" phpName="ReadCredit" type="BOOLEAN" />
+        <column name="create_customer" phpName="CreateCustomer" type="BOOLEAN" />
+        <column name="read_customer" phpName="ReadCustomer" type="BOOLEAN" />
+        <column name="update_customer" phpName="UpdateCustomer" type="BOOLEAN" />
+        <column name="destroy_customer" phpName="DestroyCustomer" type="BOOLEAN" />
         <column name="create_product" phpName="CreateProduct" type="BOOLEAN" />
         <column name="read_product" phpName="ReadProduct" type="BOOLEAN" />
         <column name="update_product" phpName="UpdateProduct" type="BOOLEAN" />
@@ -170,6 +174,10 @@
         <column name="read_stock" phpName="ReadStock" type="BOOLEAN" />
         <column name="update_stock" phpName="UpdateStock" type="BOOLEAN" />
         <column name="destroy_stock" phpName="DestroyStock" type="BOOLEAN" />
+        <column name="create_supplier" phpName="CreateSupplier" type="BOOLEAN" />
+        <column name="read_supplier" phpName="ReadSupplier" type="BOOLEAN" />
+        <column name="update_supplier" phpName="UpdateSupplier" type="BOOLEAN" />
+        <column name="destroy_supplier" phpName="DestroySupplier" type="BOOLEAN" />
         <column name="create_unit" phpName="CreateUnit" type="BOOLEAN" />
         <column name="read_unit" phpName="ReadUnit" type="BOOLEAN" />
         <column name="update_unit" phpName="UpdateUnit" type="BOOLEAN" />

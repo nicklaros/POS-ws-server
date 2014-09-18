@@ -95,6 +95,7 @@ class Mains implements MessageComponentInterface {
             'chart',
             'combo',
             'credit',
+            'customer',
             'notification',
             'option',
             'populate',
@@ -103,6 +104,7 @@ class Mains implements MessageComponentInterface {
             'report',
             'sales',
             'stock',
+            'supplier',
             'unit',
             'user'
         );
@@ -210,6 +212,7 @@ class Mains implements MessageComponentInterface {
             'customer',
             'product',
             'stock',
+            'supplier',
             'unit'
         );
 
@@ -245,6 +248,30 @@ class Mains implements MessageComponentInterface {
 
         // route to requested module and method
         $results = Credits::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+    
+    private function customer($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create',
+            'destroy',
+            'loadFormEdit',
+            'read',
+            'update'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Customers::$method($params, $currentUser, $con);
 
         return $results;
     }
@@ -489,6 +516,30 @@ class Mains implements MessageComponentInterface {
 
         // route to requested module and method
         $results = Stocks::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+    
+    private function supplier($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create',
+            'destroy',
+            'loadFormEdit',
+            'read',
+            'update'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Suppliers::$method($params, $currentUser, $con);
 
         return $results;
     }

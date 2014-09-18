@@ -129,7 +129,7 @@ class Credits
         $limit = (isset($params->limit) ? $params->limit : 100);
 
         $credits = CreditQuery::create()
-            ->filterByStatus('Active')
+            ->where('Credit.Status not like ?', 'Deleted')
             ->useSalesQuery()
                 ->leftJoin('Customer')
                 ->withColumn('Customer.Id', 'customer_id')

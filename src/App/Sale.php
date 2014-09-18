@@ -169,7 +169,6 @@ class Sale
             $credit = new Credit();
             $credit
                 ->setSalesId($sales->getId())
-                ->setCustomerId($sales->getCustomerId())
                 ->setTotal(abs($balance))
                 ->setStatus('Active')
                 ->save($con);
@@ -369,7 +368,6 @@ class Sale
             
             $credit
                 ->setSalesId($sales->getId())
-                ->setCustomerId($sales->getCustomerId())
                 ->setTotal(abs($balance))
                 ->setStatus('Active')
                 ->save($con);
@@ -382,7 +380,6 @@ class Sale
             if ($credit) {
                 $credit
                     ->setSalesId($sales->getId())
-                    ->setCustomerId($sales->getCustomerId())
                     ->setTotal(0)
                     ->setStatus('Canceled')
                     ->save($con);

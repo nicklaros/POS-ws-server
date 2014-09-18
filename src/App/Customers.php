@@ -2,41 +2,42 @@
 
 namespace App;
 
+use ORM\Customer;
+use ORM\CustomerQuery;
 use ORM\RolePermissionQuery;
 use ORM\RowHistory;
-use ORM\Unit;
-use ORM\UnitQuery;
 
-class Units
+class Customers
 {
 
     public static function create($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('create_unit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('create_customer')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        // check whether unit is already exist
-        $unit = UnitQuery::create()->filterByStatus('Active')->filterByName($params->name)->count($con);
-        if ($unit != 0) throw new \Exception('Satuan ' . $params->name . ' sudah ada dalam data');
-
         // create new record
-        $unit = new Unit();
-        $unit
+        $customer = new Customer();
+        $customer
+            ->setRegisteredDate($params->registered_date)
             ->setName($params->name)
+            ->setAddress($params->address)
+            ->setBirthday($params->birthday)
+            ->setGender($params->gender)
+            ->setPhone($params->phone)
             ->setStatus('Active')
             ->save($con);
 
         // log history
         $rowHistory = new RowHistory();
-        $rowHistory->setRowId($unit->getId())
-            ->setData('unit')
+        $rowHistory->setRowId($customer->getId())
+            ->setData('customer')
             ->setTime(time())
             ->setOperation('create')
             ->setUserId($currentUser->id)
             ->save($con);
         
-        $params->id = $unit->getId();
+        $params->id = $customer->getId();
 
         $results['success'] = true;
         $results['data'] = $params;
@@ -47,21 +48,21 @@ class Units
     public static function destroy($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('destroy_unit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('destroy_customer')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $units = UnitQuery::create()->filterById($params->id)->find($con);
-        if (!$units) throw new \Exception('Data tidak ditemukan');
+        $customers = CustomerQuery::create()->filterById($params->id)->find($con);
+        if (!$customers) throw new \Exception('Data tidak ditemukan');
 
-        foreach($units as $unit)
+        foreach($customers as $customer)
         {
-            $unit
+            $customer
                 ->setStatus('Deleted')
                 ->save($con);
 
             $rowHistory = new RowHistory();
-            $rowHistory->setRowId($unit->getId())
-                ->setData('unit')
+            $rowHistory->setRowId($customer->getId())
+                ->setData('customer')
                 ->setTime(time())
                 ->setOperation('destroy')
                 ->setUserId($currentUser->id)
@@ -77,21 +78,26 @@ class Units
     public static function loadFormEdit($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('update_unit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('update_customer')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $unit = UnitQuery::create()
+        $customer = CustomerQuery::create()
             ->filterByStatus('Active')
             ->select(array(
                 'id',
-                'name'
+                'registered_date',
+                'name',
+                'address',
+                'birthday',
+                'gender',
+                'phone'
             ))
             ->findOneById($params->id);
 
-        if (!$unit) throw new \Exception('Data tidak ditemukan');
+        if (!$customer) throw new \Exception('Data tidak ditemukan');
 
         $results['success'] = true;
-        $results['data'] = $unit;
+        $results['data'] = $customer;
 
         return $results;
     }
@@ -99,34 +105,40 @@ class Units
     public static function read($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('read_unit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('read_customer')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         $page = (isset($params->page) ? $params->page : 0);
         $limit = (isset($params->limit) ? $params->limit : 100);
 
-        $units = UnitQuery::create()
-            ->filterByStatus('Active');
+        $customers = CustomerQuery::create()
+            ->filterByStatus('Active')
+            ->where('Customer.Id not like ?', 0);
 
-        if(isset($params->name)) $units->filterByName('%' . $params->name . '%');
+        if(isset($params->name)) $customers->filterByName('%' . $params->name . '%');
 
-        $units = $units
+        $customers = $customers
             ->select(array(
                 'id',
-                'name'
+                'registered_date',
+                'name',
+                'address',
+                'birthday',
+                'gender',
+                'phone'
             ));
 
         foreach($params->sort as $sorter){
-            $units->orderBy($sorter->property, $sorter->direction);
+            $customers->orderBy($sorter->property, $sorter->direction);
         }
 
-        $units = $units->paginate($page, $limit);
+        $customers = $customers->paginate($page, $limit);
 
-        $total = $units->getNbResults();
+        $total = $customers->getNbResults();
         
         $data = [];
-        foreach($units as $unit) {
-            $data[] = $unit;
+        foreach($customers as $customer) {
+            $data[] = $customer;
         }
         
         $results['success'] = true;
@@ -142,25 +154,21 @@ class Units
         $permission = RolePermissionQuery::create()->select('update_unit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        // check whether unit is already exist
-        $unit = UnitQuery::create()
-            ->filterByStatus('Active')
-            ->filterByName($params->name)
-            ->where('Unit.Id not like ?', $params->id)
-            ->count($con);
-                    
-        if ($unit != 0) throw new \Exception('Satuan ' . $params->name . ' sudah ada dalam data');
+        $customer = CustomerQuery::create()->filterByStatus('Active')->findOneById($params->id, $con);
+        if(!$customer) throw new \Exception('Data tidak ditemukan');
 
-        $unit = UnitQuery::create()->filterByStatus('Active')->findOneById($params->id, $con);
-        if(!$unit) throw new \Exception('Data tidak ditemukan');
-
-        $unit
+        $customer
+            ->setRegisteredDate($params->registered_date)
             ->setName($params->name)
+            ->setAddress($params->address)
+            ->setBirthday($params->birthday)
+            ->setGender($params->gender)
+            ->setPhone($params->phone)
             ->save($con);
 
         $rowHistory = new RowHistory();
         $rowHistory->setRowId($params->id)
-            ->setData('unit')
+            ->setData('customer')
             ->setTime(time())
             ->setOperation('update')
             ->setUserId($currentUser->id)
