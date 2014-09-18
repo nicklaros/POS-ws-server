@@ -4,40 +4,39 @@ namespace App;
 
 use ORM\RolePermissionQuery;
 use ORM\RowHistory;
-use ORM\Product;
-use ORM\ProductQuery;
+use ORM\Unit;
+use ORM\UnitQuery;
 
-class Products
+class Units
 {
 
     public static function create($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('create_product')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('create_unit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        // check whether picked code is already used
-        $product = ProductQuery::create()->filterByCode($params->code)->count($con);
-        if ($product != 0) throw new \Exception('Kode produk sudah terpakai. Pilih kode lainnya.');
+        // check whether unit is already exist
+        $unit = UnitQuery::create()->filterByStatus('Active')->filterByName($params->name)->count($con);
+        if ($unit != 0) throw new \Exception('Satuan ' . $params->name . ' sudah ada dalam data');
 
         // create new record
-        $product = new Product();
-        $product
-            ->setCode($params->code)
+        $unit = new Unit();
+        $unit
             ->setName($params->name)
             ->setStatus('Active')
             ->save($con);
 
         // log history
         $rowHistory = new RowHistory();
-        $rowHistory->setRowId($product->getId())
-            ->setData('product')
+        $rowHistory->setRowId($unit->getId())
+            ->setData('unit')
             ->setTime(time())
             ->setOperation('create')
             ->setUserId($currentUser->id)
             ->save($con);
         
-        $params->id = $product->getId();
+        $params->id = $unit->getId();
 
         $results['success'] = true;
         $results['data'] = $params;
@@ -48,25 +47,21 @@ class Products
     public static function destroy($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('destroy_product')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('destroy_unit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $products = ProductQuery::create()
-            ->filterById($params->id)
-            ->find($con);
+        $units = UnitQuery::create()->filterById($params->id)->find($con);
+        if (!$units) throw new \Exception('Data tidak ditemukan');
 
-        if (!$products) throw new \Exception('Data tidak ditemukan');
-
-        foreach($products as $product)
+        foreach($units as $unit)
         {
-            $product
-                ->setCode('')
+            $unit
                 ->setStatus('Deleted')
                 ->save($con);
 
             $rowHistory = new RowHistory();
-            $rowHistory->setRowId($product->getId())
-                ->setData('product')
+            $rowHistory->setRowId($unit->getId())
+                ->setData('unit')
                 ->setTime(time())
                 ->setOperation('destroy')
                 ->setUserId($currentUser->id)
@@ -82,22 +77,21 @@ class Products
     public static function loadFormEdit($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('update_product')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('update_unit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $product = ProductQuery::create()
+        $unit = UnitQuery::create()
             ->filterByStatus('Active')
             ->select(array(
                 'id',
-                'code',
                 'name'
             ))
             ->findOneById($params->id);
 
-        if (!$product) throw new \Exception('Data tidak ditemukan');
+        if (!$unit) throw new \Exception('Data tidak ditemukan');
 
         $results['success'] = true;
-        $results['data'] = $product;
+        $results['data'] = $unit;
 
         return $results;
     }
@@ -105,36 +99,34 @@ class Products
     public static function read($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('read_product')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('read_unit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         $page = (isset($params->page) ? $params->page : 0);
         $limit = (isset($params->limit) ? $params->limit : 100);
 
-        $products = ProductQuery::create()
+        $units = UnitQuery::create()
             ->filterByStatus('Active');
 
-        if(isset($params->code)) $products->filterByCode("%$params->code%");
-        if(isset($params->name)) $products->filterByName("%$params->name%");
+        if(isset($params->name)) $units->filterByName('%' . $params->name . '%');
 
-        $products = $products
+        $units = $units
             ->select(array(
                 'id',
-                'code',
                 'name'
             ));
 
         foreach($params->sort as $sorter){
-            $products->orderBy($sorter->property, $sorter->direction);
+            $units->orderBy($sorter->property, $sorter->direction);
         }
 
-        $products = $products->paginate($page, $limit);
+        $units = $units->paginate($page, $limit);
 
-        $total = $products->getNbResults();
+        $total = $units->getNbResults();
         
         $data = [];
-        foreach($products as $product) {
-            $data[] = $product;
+        foreach($units as $unit) {
+            $data[] = $unit;
         }
         
         $results['success'] = true;
@@ -147,35 +139,35 @@ class Products
     public static function update($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('update_product')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('update_unit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        // check whether picked code is already used
-        $product = ProductQuery::create()
-            ->filterByCode($params->code)
-            ->where("Product.Id not like ?", $params->id)
+        // check whether unit is already exist
+        $unit = UnitQuery::create()
+            ->filterByStatus('Active')
+            ->filterByName($params->name)
+            ->where('Unit.Id not like ?', $params->id)
             ->count($con);
-        
-        if ($product != 0) throw new \Exception('Kode produk sudah terpakai. Pilih kode lainnya.');
+                    
+        if ($unit != 0) throw new \Exception('Satuan ' . $params->name . ' sudah ada dalam data');
 
-        $product = ProductQuery::create()->findOneById($params->id, $con);
-        if(!$product) throw new \Exception('Data tidak ditemukan');
+        $unit = UnitQuery::create()->findOneById($params->id, $con);
+        if(!$unit) throw new \Exception('Data tidak ditemukan');
 
-        $product
-            ->setCode($params->code)
+        $unit
             ->setName($params->name)
             ->save($con);
 
         $rowHistory = new RowHistory();
         $rowHistory->setRowId($params->id)
-            ->setData('product')
+            ->setData('unit')
             ->setTime(time())
             ->setOperation('update')
             ->setUserId($currentUser->id)
             ->save($con);
 
         $results['success'] = true;
-        $results['id'] = $params->id;
+        $results['data'] = $params;
 
         return $results;
     }

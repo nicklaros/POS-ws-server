@@ -10,39 +10,63 @@ use ORM\CreditPaymentQuery;
 class Credits
 {
     
+    public static function cancelPayment($params, $currentUser, $con)
+    {
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('pay_credit')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        $payment = CreditPaymentQuery::create()
+            ->filterById($params->id)
+            ->findOne($con);
+
+        if (!$payment) throw new \Exception('Data tidak ditemukan');
+
+        $payment
+            ->setStatus('Canceled')
+            ->save($con);
+        
+        $credit = $payment->getCredit();
+        $credit
+            ->setPaid($credit->getpaid() - $payment->getPaid())
+            ->save($con);
+
+        $results['success'] = true;
+        $results['data'] = $params->id;
+
+        return $results;
+    }
+    
     public static function loadFormPay($params, $currentUser, $con)
     {
         // check role's permission
         $permission = RolePermissionQuery::create()->select('pay_credit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $creditPayment = CreditPaymentQuery::create()
+        $credit = CreditQuery::create()
             ->filterByStatus('Active')
-            ->filterByCreditId($params->credit_id)
-            ->useCreditQuery()
-                ->useSalesQuery()
-                    ->leftJoin('Customer')
-                    ->withColumn('Customer.Id', 'customer_id')
-                    ->withColumn('Customer.Name', 'customer_name')
-                ->endUse()
+            ->filterById($params->credit_id)
+            ->useSalesQuery()
+                ->leftJoin('Customer')
+                ->withColumn('Customer.Id', 'customer_id')
+                ->withColumn('Customer.Name', 'customer_name')
             ->endUse()
-            ->leftJoin('Credit')
-            ->withColumn('Credit.Total - SUM(CreditPayment.Paid)', 'credit')
+            ->withColumn('Credit.Id', 'credit_id')
+            ->withColumn('CONVERT(Credit.Total, SIGNED) - CONVERT(Credit.Paid, SIGNED)', 'credit')
             ->select(array(
                 'credit_id',
                 'customer_id',
                 'customer_name',
                 'credit'
             ))
-            ->groupBy('CreditPayment.CreditId')
             ->findOne($con);
         
-        if (!$creditPayment) throw new \Exception('Data tidak ditemukan.');
+        if (!$credit) throw new \Exception('Data tidak ditemukan.');
         
-        if ($creditPayment['credit'] <= 0) throw new \Exception('Piutang sudah terlunasi.');
+        if ($credit['credit'] <= 0) throw new \Exception('Piutang sudah terlunasi.');
         
         $results['success'] = true;
-        $results['data'] = $creditPayment;
+        $results['data'] = $credit;
 
         return $results;
     }
@@ -53,22 +77,17 @@ class Credits
         $permission = RolePermissionQuery::create()->select('pay_credit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        // make sure the credit is still there 
-        $creditPayment = CreditPaymentQuery::create()
+        // make sure the credit is not fully paid already
+        $credit = CreditQuery::create()
             ->filterByStatus('Active')
-            ->filterByCreditId($params->credit_id)
-            ->leftJoin('Credit')
-            ->withColumn('Credit.Total - SUM(CreditPayment.Paid)', 'credit')
-            ->select(array(
-                'credit'
-            ))
-            ->groupBy('CreditPayment.CreditId')
+            ->filterById($params->credit_id)
+            ->withColumn('CONVERT(Credit.Total, SIGNED) - CONVERT(Credit.Paid, SIGNED)', 'Balance')
             ->findOne($con);
         
-        if (!$creditPayment) throw new \Exception('Data tidak ditemukan.');
+        if (!$credit) throw new \Exception('Data tidak ditemukan.');
         
         // if credit is already fully paid then stop paying 
-        if ($creditPayment <= 0) throw new \Exception('Piutang sudah terlunasi.');
+        if ($credit->getBalance() <= 0) throw new \Exception('Piutang ini sudah dilunasi.');
         
         // create new payment
         $creditPayment = new CreditPayment();
@@ -78,6 +97,20 @@ class Credits
             ->setPaid($params->paid)
             ->setCashierId($params->cashier)
             ->setStatus('Active')
+            ->save($con);
+        
+        $payment = CreditPaymentQuery::create()
+            ->filterByStatus('Active')
+            ->filterByCreditId($params->credit_id)
+            ->withColumn('SUM(Paid)', 'paid')
+            ->select(array(
+                'paid'
+            ))
+            ->groupBy('CreditId')
+            ->findOne($con);
+        
+        $credit
+            ->setPaid($payment)
             ->save($con);
         
         $results['success'] = true;
@@ -102,19 +135,40 @@ class Credits
                 ->withColumn('Customer.Id', 'customer_id')
                 ->withColumn('Customer.Name', 'customer_name')
                 ->withColumn('Sales.Date', 'date')
-            ->endUse();
+            ->endUse()
+            ->withColumn('CONVERT(Credit.Total, SIGNED) - CONVERT(Credit.Paid, SIGNED)', 'balance');
             
-        if(isset($params->nota)) $credits->filterById($params->nota);
-        if(isset($params->customer)) $credits->useCustomerQuery()->filterByName("%$params->customer%")->endUse();
+        if(isset($params->id)) $credits->filterById($params->id);
+        if(isset($params->sales_id)) $credits->filterBySalesId($params->sales_id);
+        if(isset($params->customer)) {
+            $credits
+                ->useSalesQuery()
+                    ->useCustomerQuery()
+                        ->filterByName("%$params->customer%")
+                    ->endUse()
+                ->endUse();
+        }
+        if(isset($params->credit_status)){
+            switch ($params->credit_status) {
+                case 'Lunas':
+                    $credits->where('CONVERT(Credit.Total, SIGNED) - CONVERT(Credit.Paid, SIGNED) <= 0');
+                    break;
+                case 'Belum Lunas':
+                    $credits->where('CONVERT(Credit.Total, SIGNED) - CONVERT(Credit.Paid, SIGNED) > 0');
+                    break;
+            }
+        }
 
         $credits = $credits
             ->select(array(
                 'id',
                 'sales_id',
                 'total',
+                'paid',
                 'customer_id',
                 'customer_name',
-                'date'
+                'date',
+                'balance'
             ));
 
         foreach($params->sort as $sorter){
@@ -129,15 +183,8 @@ class Credits
         
         $data = [];
         foreach($credits as $credit) {
-            $payment = CreditPaymentQuery::create()
-                ->filterByStatus('Active')
-                ->filterByCreditId($credit['id'])
-                ->withColumn('SUM(Paid)', 'TotalPaid')
-                ->findOne($con);
-            
-            $credit['paid'] = $payment->getTotalPaid();
-            $credit['balance'] = $credit['total'] - $credit['paid'];
-            $credit['cash_back'] = ($credit['balance'] < 0 ? abs($credit['balance']) : 0);
+            $credit = (object) $credit;
+            $credit->cash_back = ($credit->balance < 0 ? abs($credit->balance) : 0);
             
             $data[] = $credit;
         }
@@ -170,15 +217,19 @@ class Credits
                 ->endUse()
             ->endUse();
             
-        if(isset($params->nota)) $creditPayments->filterById($params->nota);
+        if(isset($params->credit_id)) $creditPayments->filterByCreditId($params->credit_id);
         if(isset($params->customer)) {
             $creditPayments
                 ->useCreditQuery()
                     ->useSalesQuery()
-                        ->useCustomerQuery()->filterByName('%' . $params->customer . '%')->endUse()
+                        ->useCustomerQuery()
+                            ->filterByName('%' . $params->customer . '%')
+                        ->endUse()
                     ->endUse()
                 ->endUse();
         }
+        if(isset($params->start_date)) $creditPayments->filterByDate(array('min' => $params->start_date));
+        if(isset($params->until_date)) $creditPayments->filterByDate(array('max' => $params->until_date));
 
         $creditPayments = $creditPayments
             ->select(array(

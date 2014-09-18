@@ -59,7 +59,7 @@ class RolePermissionTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 24;
+    const NUM_COLUMNS = 28;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class RolePermissionTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 24;
+    const NUM_HYDRATE_COLUMNS = 28;
 
     /**
      * the column name for the ID field
@@ -167,6 +167,26 @@ class RolePermissionTableMap extends TableMap
     const COL_DESTROY_STOCK = 'role_permission.DESTROY_STOCK';
 
     /**
+     * the column name for the CREATE_UNIT field
+     */
+    const COL_CREATE_UNIT = 'role_permission.CREATE_UNIT';
+
+    /**
+     * the column name for the READ_UNIT field
+     */
+    const COL_READ_UNIT = 'role_permission.READ_UNIT';
+
+    /**
+     * the column name for the UPDATE_UNIT field
+     */
+    const COL_UPDATE_UNIT = 'role_permission.UPDATE_UNIT';
+
+    /**
+     * the column name for the DESTROY_UNIT field
+     */
+    const COL_DESTROY_UNIT = 'role_permission.DESTROY_UNIT';
+
+    /**
      * the column name for the CREATE_USER field
      */
     const COL_CREATE_USER = 'role_permission.CREATE_USER';
@@ -203,12 +223,12 @@ class RolePermissionTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'PayCredit', 'ReadCredit', 'CreateProduct', 'ReadProduct', 'UpdateProduct', 'DestroyProduct', 'CreatePurchase', 'ReadPurchase', 'UpdatePurchase', 'DestroyPurchase', 'CreateSales', 'ReadSales', 'UpdateSales', 'DestroySales', 'CreateStock', 'ReadStock', 'UpdateStock', 'DestroyStock', 'CreateUser', 'ReadUser', 'UpdateUser', 'DestroyUser', 'ResetPassUser', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'payCredit', 'readCredit', 'createProduct', 'readProduct', 'updateProduct', 'destroyProduct', 'createPurchase', 'readPurchase', 'updatePurchase', 'destroyPurchase', 'createSales', 'readSales', 'updateSales', 'destroySales', 'createStock', 'readStock', 'updateStock', 'destroyStock', 'createUser', 'readUser', 'updateUser', 'destroyUser', 'resetPassUser', ),
-        self::TYPE_COLNAME       => array(RolePermissionTableMap::COL_ID, RolePermissionTableMap::COL_PAY_CREDIT, RolePermissionTableMap::COL_READ_CREDIT, RolePermissionTableMap::COL_CREATE_PRODUCT, RolePermissionTableMap::COL_READ_PRODUCT, RolePermissionTableMap::COL_UPDATE_PRODUCT, RolePermissionTableMap::COL_DESTROY_PRODUCT, RolePermissionTableMap::COL_CREATE_PURCHASE, RolePermissionTableMap::COL_READ_PURCHASE, RolePermissionTableMap::COL_UPDATE_PURCHASE, RolePermissionTableMap::COL_DESTROY_PURCHASE, RolePermissionTableMap::COL_CREATE_SALES, RolePermissionTableMap::COL_READ_SALES, RolePermissionTableMap::COL_UPDATE_SALES, RolePermissionTableMap::COL_DESTROY_SALES, RolePermissionTableMap::COL_CREATE_STOCK, RolePermissionTableMap::COL_READ_STOCK, RolePermissionTableMap::COL_UPDATE_STOCK, RolePermissionTableMap::COL_DESTROY_STOCK, RolePermissionTableMap::COL_CREATE_USER, RolePermissionTableMap::COL_READ_USER, RolePermissionTableMap::COL_UPDATE_USER, RolePermissionTableMap::COL_DESTROY_USER, RolePermissionTableMap::COL_RESET_PASS_USER, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_PAY_CREDIT', 'COL_READ_CREDIT', 'COL_CREATE_PRODUCT', 'COL_READ_PRODUCT', 'COL_UPDATE_PRODUCT', 'COL_DESTROY_PRODUCT', 'COL_CREATE_PURCHASE', 'COL_READ_PURCHASE', 'COL_UPDATE_PURCHASE', 'COL_DESTROY_PURCHASE', 'COL_CREATE_SALES', 'COL_READ_SALES', 'COL_UPDATE_SALES', 'COL_DESTROY_SALES', 'COL_CREATE_STOCK', 'COL_READ_STOCK', 'COL_UPDATE_STOCK', 'COL_DESTROY_STOCK', 'COL_CREATE_USER', 'COL_READ_USER', 'COL_UPDATE_USER', 'COL_DESTROY_USER', 'COL_RESET_PASS_USER', ),
-        self::TYPE_FIELDNAME     => array('id', 'pay_credit', 'read_credit', 'create_product', 'read_product', 'update_product', 'destroy_product', 'create_purchase', 'read_purchase', 'update_purchase', 'destroy_purchase', 'create_sales', 'read_sales', 'update_sales', 'destroy_sales', 'create_stock', 'read_stock', 'update_stock', 'destroy_stock', 'create_user', 'read_user', 'update_user', 'destroy_user', 'reset_pass_user', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, )
+        self::TYPE_PHPNAME       => array('Id', 'PayCredit', 'ReadCredit', 'CreateProduct', 'ReadProduct', 'UpdateProduct', 'DestroyProduct', 'CreatePurchase', 'ReadPurchase', 'UpdatePurchase', 'DestroyPurchase', 'CreateSales', 'ReadSales', 'UpdateSales', 'DestroySales', 'CreateStock', 'ReadStock', 'UpdateStock', 'DestroyStock', 'CreateUnit', 'ReadUnit', 'UpdateUnit', 'DestroyUnit', 'CreateUser', 'ReadUser', 'UpdateUser', 'DestroyUser', 'ResetPassUser', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'payCredit', 'readCredit', 'createProduct', 'readProduct', 'updateProduct', 'destroyProduct', 'createPurchase', 'readPurchase', 'updatePurchase', 'destroyPurchase', 'createSales', 'readSales', 'updateSales', 'destroySales', 'createStock', 'readStock', 'updateStock', 'destroyStock', 'createUnit', 'readUnit', 'updateUnit', 'destroyUnit', 'createUser', 'readUser', 'updateUser', 'destroyUser', 'resetPassUser', ),
+        self::TYPE_COLNAME       => array(RolePermissionTableMap::COL_ID, RolePermissionTableMap::COL_PAY_CREDIT, RolePermissionTableMap::COL_READ_CREDIT, RolePermissionTableMap::COL_CREATE_PRODUCT, RolePermissionTableMap::COL_READ_PRODUCT, RolePermissionTableMap::COL_UPDATE_PRODUCT, RolePermissionTableMap::COL_DESTROY_PRODUCT, RolePermissionTableMap::COL_CREATE_PURCHASE, RolePermissionTableMap::COL_READ_PURCHASE, RolePermissionTableMap::COL_UPDATE_PURCHASE, RolePermissionTableMap::COL_DESTROY_PURCHASE, RolePermissionTableMap::COL_CREATE_SALES, RolePermissionTableMap::COL_READ_SALES, RolePermissionTableMap::COL_UPDATE_SALES, RolePermissionTableMap::COL_DESTROY_SALES, RolePermissionTableMap::COL_CREATE_STOCK, RolePermissionTableMap::COL_READ_STOCK, RolePermissionTableMap::COL_UPDATE_STOCK, RolePermissionTableMap::COL_DESTROY_STOCK, RolePermissionTableMap::COL_CREATE_UNIT, RolePermissionTableMap::COL_READ_UNIT, RolePermissionTableMap::COL_UPDATE_UNIT, RolePermissionTableMap::COL_DESTROY_UNIT, RolePermissionTableMap::COL_CREATE_USER, RolePermissionTableMap::COL_READ_USER, RolePermissionTableMap::COL_UPDATE_USER, RolePermissionTableMap::COL_DESTROY_USER, RolePermissionTableMap::COL_RESET_PASS_USER, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_PAY_CREDIT', 'COL_READ_CREDIT', 'COL_CREATE_PRODUCT', 'COL_READ_PRODUCT', 'COL_UPDATE_PRODUCT', 'COL_DESTROY_PRODUCT', 'COL_CREATE_PURCHASE', 'COL_READ_PURCHASE', 'COL_UPDATE_PURCHASE', 'COL_DESTROY_PURCHASE', 'COL_CREATE_SALES', 'COL_READ_SALES', 'COL_UPDATE_SALES', 'COL_DESTROY_SALES', 'COL_CREATE_STOCK', 'COL_READ_STOCK', 'COL_UPDATE_STOCK', 'COL_DESTROY_STOCK', 'COL_CREATE_UNIT', 'COL_READ_UNIT', 'COL_UPDATE_UNIT', 'COL_DESTROY_UNIT', 'COL_CREATE_USER', 'COL_READ_USER', 'COL_UPDATE_USER', 'COL_DESTROY_USER', 'COL_RESET_PASS_USER', ),
+        self::TYPE_FIELDNAME     => array('id', 'pay_credit', 'read_credit', 'create_product', 'read_product', 'update_product', 'destroy_product', 'create_purchase', 'read_purchase', 'update_purchase', 'destroy_purchase', 'create_sales', 'read_sales', 'update_sales', 'destroy_sales', 'create_stock', 'read_stock', 'update_stock', 'destroy_stock', 'create_unit', 'read_unit', 'update_unit', 'destroy_unit', 'create_user', 'read_user', 'update_user', 'destroy_user', 'reset_pass_user', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, )
     );
 
     /**
@@ -218,12 +238,12 @@ class RolePermissionTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'PayCredit' => 1, 'ReadCredit' => 2, 'CreateProduct' => 3, 'ReadProduct' => 4, 'UpdateProduct' => 5, 'DestroyProduct' => 6, 'CreatePurchase' => 7, 'ReadPurchase' => 8, 'UpdatePurchase' => 9, 'DestroyPurchase' => 10, 'CreateSales' => 11, 'ReadSales' => 12, 'UpdateSales' => 13, 'DestroySales' => 14, 'CreateStock' => 15, 'ReadStock' => 16, 'UpdateStock' => 17, 'DestroyStock' => 18, 'CreateUser' => 19, 'ReadUser' => 20, 'UpdateUser' => 21, 'DestroyUser' => 22, 'ResetPassUser' => 23, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'payCredit' => 1, 'readCredit' => 2, 'createProduct' => 3, 'readProduct' => 4, 'updateProduct' => 5, 'destroyProduct' => 6, 'createPurchase' => 7, 'readPurchase' => 8, 'updatePurchase' => 9, 'destroyPurchase' => 10, 'createSales' => 11, 'readSales' => 12, 'updateSales' => 13, 'destroySales' => 14, 'createStock' => 15, 'readStock' => 16, 'updateStock' => 17, 'destroyStock' => 18, 'createUser' => 19, 'readUser' => 20, 'updateUser' => 21, 'destroyUser' => 22, 'resetPassUser' => 23, ),
-        self::TYPE_COLNAME       => array(RolePermissionTableMap::COL_ID => 0, RolePermissionTableMap::COL_PAY_CREDIT => 1, RolePermissionTableMap::COL_READ_CREDIT => 2, RolePermissionTableMap::COL_CREATE_PRODUCT => 3, RolePermissionTableMap::COL_READ_PRODUCT => 4, RolePermissionTableMap::COL_UPDATE_PRODUCT => 5, RolePermissionTableMap::COL_DESTROY_PRODUCT => 6, RolePermissionTableMap::COL_CREATE_PURCHASE => 7, RolePermissionTableMap::COL_READ_PURCHASE => 8, RolePermissionTableMap::COL_UPDATE_PURCHASE => 9, RolePermissionTableMap::COL_DESTROY_PURCHASE => 10, RolePermissionTableMap::COL_CREATE_SALES => 11, RolePermissionTableMap::COL_READ_SALES => 12, RolePermissionTableMap::COL_UPDATE_SALES => 13, RolePermissionTableMap::COL_DESTROY_SALES => 14, RolePermissionTableMap::COL_CREATE_STOCK => 15, RolePermissionTableMap::COL_READ_STOCK => 16, RolePermissionTableMap::COL_UPDATE_STOCK => 17, RolePermissionTableMap::COL_DESTROY_STOCK => 18, RolePermissionTableMap::COL_CREATE_USER => 19, RolePermissionTableMap::COL_READ_USER => 20, RolePermissionTableMap::COL_UPDATE_USER => 21, RolePermissionTableMap::COL_DESTROY_USER => 22, RolePermissionTableMap::COL_RESET_PASS_USER => 23, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_PAY_CREDIT' => 1, 'COL_READ_CREDIT' => 2, 'COL_CREATE_PRODUCT' => 3, 'COL_READ_PRODUCT' => 4, 'COL_UPDATE_PRODUCT' => 5, 'COL_DESTROY_PRODUCT' => 6, 'COL_CREATE_PURCHASE' => 7, 'COL_READ_PURCHASE' => 8, 'COL_UPDATE_PURCHASE' => 9, 'COL_DESTROY_PURCHASE' => 10, 'COL_CREATE_SALES' => 11, 'COL_READ_SALES' => 12, 'COL_UPDATE_SALES' => 13, 'COL_DESTROY_SALES' => 14, 'COL_CREATE_STOCK' => 15, 'COL_READ_STOCK' => 16, 'COL_UPDATE_STOCK' => 17, 'COL_DESTROY_STOCK' => 18, 'COL_CREATE_USER' => 19, 'COL_READ_USER' => 20, 'COL_UPDATE_USER' => 21, 'COL_DESTROY_USER' => 22, 'COL_RESET_PASS_USER' => 23, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'pay_credit' => 1, 'read_credit' => 2, 'create_product' => 3, 'read_product' => 4, 'update_product' => 5, 'destroy_product' => 6, 'create_purchase' => 7, 'read_purchase' => 8, 'update_purchase' => 9, 'destroy_purchase' => 10, 'create_sales' => 11, 'read_sales' => 12, 'update_sales' => 13, 'destroy_sales' => 14, 'create_stock' => 15, 'read_stock' => 16, 'update_stock' => 17, 'destroy_stock' => 18, 'create_user' => 19, 'read_user' => 20, 'update_user' => 21, 'destroy_user' => 22, 'reset_pass_user' => 23, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'PayCredit' => 1, 'ReadCredit' => 2, 'CreateProduct' => 3, 'ReadProduct' => 4, 'UpdateProduct' => 5, 'DestroyProduct' => 6, 'CreatePurchase' => 7, 'ReadPurchase' => 8, 'UpdatePurchase' => 9, 'DestroyPurchase' => 10, 'CreateSales' => 11, 'ReadSales' => 12, 'UpdateSales' => 13, 'DestroySales' => 14, 'CreateStock' => 15, 'ReadStock' => 16, 'UpdateStock' => 17, 'DestroyStock' => 18, 'CreateUnit' => 19, 'ReadUnit' => 20, 'UpdateUnit' => 21, 'DestroyUnit' => 22, 'CreateUser' => 23, 'ReadUser' => 24, 'UpdateUser' => 25, 'DestroyUser' => 26, 'ResetPassUser' => 27, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'payCredit' => 1, 'readCredit' => 2, 'createProduct' => 3, 'readProduct' => 4, 'updateProduct' => 5, 'destroyProduct' => 6, 'createPurchase' => 7, 'readPurchase' => 8, 'updatePurchase' => 9, 'destroyPurchase' => 10, 'createSales' => 11, 'readSales' => 12, 'updateSales' => 13, 'destroySales' => 14, 'createStock' => 15, 'readStock' => 16, 'updateStock' => 17, 'destroyStock' => 18, 'createUnit' => 19, 'readUnit' => 20, 'updateUnit' => 21, 'destroyUnit' => 22, 'createUser' => 23, 'readUser' => 24, 'updateUser' => 25, 'destroyUser' => 26, 'resetPassUser' => 27, ),
+        self::TYPE_COLNAME       => array(RolePermissionTableMap::COL_ID => 0, RolePermissionTableMap::COL_PAY_CREDIT => 1, RolePermissionTableMap::COL_READ_CREDIT => 2, RolePermissionTableMap::COL_CREATE_PRODUCT => 3, RolePermissionTableMap::COL_READ_PRODUCT => 4, RolePermissionTableMap::COL_UPDATE_PRODUCT => 5, RolePermissionTableMap::COL_DESTROY_PRODUCT => 6, RolePermissionTableMap::COL_CREATE_PURCHASE => 7, RolePermissionTableMap::COL_READ_PURCHASE => 8, RolePermissionTableMap::COL_UPDATE_PURCHASE => 9, RolePermissionTableMap::COL_DESTROY_PURCHASE => 10, RolePermissionTableMap::COL_CREATE_SALES => 11, RolePermissionTableMap::COL_READ_SALES => 12, RolePermissionTableMap::COL_UPDATE_SALES => 13, RolePermissionTableMap::COL_DESTROY_SALES => 14, RolePermissionTableMap::COL_CREATE_STOCK => 15, RolePermissionTableMap::COL_READ_STOCK => 16, RolePermissionTableMap::COL_UPDATE_STOCK => 17, RolePermissionTableMap::COL_DESTROY_STOCK => 18, RolePermissionTableMap::COL_CREATE_UNIT => 19, RolePermissionTableMap::COL_READ_UNIT => 20, RolePermissionTableMap::COL_UPDATE_UNIT => 21, RolePermissionTableMap::COL_DESTROY_UNIT => 22, RolePermissionTableMap::COL_CREATE_USER => 23, RolePermissionTableMap::COL_READ_USER => 24, RolePermissionTableMap::COL_UPDATE_USER => 25, RolePermissionTableMap::COL_DESTROY_USER => 26, RolePermissionTableMap::COL_RESET_PASS_USER => 27, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_PAY_CREDIT' => 1, 'COL_READ_CREDIT' => 2, 'COL_CREATE_PRODUCT' => 3, 'COL_READ_PRODUCT' => 4, 'COL_UPDATE_PRODUCT' => 5, 'COL_DESTROY_PRODUCT' => 6, 'COL_CREATE_PURCHASE' => 7, 'COL_READ_PURCHASE' => 8, 'COL_UPDATE_PURCHASE' => 9, 'COL_DESTROY_PURCHASE' => 10, 'COL_CREATE_SALES' => 11, 'COL_READ_SALES' => 12, 'COL_UPDATE_SALES' => 13, 'COL_DESTROY_SALES' => 14, 'COL_CREATE_STOCK' => 15, 'COL_READ_STOCK' => 16, 'COL_UPDATE_STOCK' => 17, 'COL_DESTROY_STOCK' => 18, 'COL_CREATE_UNIT' => 19, 'COL_READ_UNIT' => 20, 'COL_UPDATE_UNIT' => 21, 'COL_DESTROY_UNIT' => 22, 'COL_CREATE_USER' => 23, 'COL_READ_USER' => 24, 'COL_UPDATE_USER' => 25, 'COL_DESTROY_USER' => 26, 'COL_RESET_PASS_USER' => 27, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'pay_credit' => 1, 'read_credit' => 2, 'create_product' => 3, 'read_product' => 4, 'update_product' => 5, 'destroy_product' => 6, 'create_purchase' => 7, 'read_purchase' => 8, 'update_purchase' => 9, 'destroy_purchase' => 10, 'create_sales' => 11, 'read_sales' => 12, 'update_sales' => 13, 'destroy_sales' => 14, 'create_stock' => 15, 'read_stock' => 16, 'update_stock' => 17, 'destroy_stock' => 18, 'create_unit' => 19, 'read_unit' => 20, 'update_unit' => 21, 'destroy_unit' => 22, 'create_user' => 23, 'read_user' => 24, 'update_user' => 25, 'destroy_user' => 26, 'reset_pass_user' => 27, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, )
     );
 
     /**
@@ -261,6 +281,10 @@ class RolePermissionTableMap extends TableMap
         $this->addColumn('READ_STOCK', 'ReadStock', 'BOOLEAN', false, 1, null);
         $this->addColumn('UPDATE_STOCK', 'UpdateStock', 'BOOLEAN', false, 1, null);
         $this->addColumn('DESTROY_STOCK', 'DestroyStock', 'BOOLEAN', false, 1, null);
+        $this->addColumn('CREATE_UNIT', 'CreateUnit', 'BOOLEAN', false, 1, null);
+        $this->addColumn('READ_UNIT', 'ReadUnit', 'BOOLEAN', false, 1, null);
+        $this->addColumn('UPDATE_UNIT', 'UpdateUnit', 'BOOLEAN', false, 1, null);
+        $this->addColumn('DESTROY_UNIT', 'DestroyUnit', 'BOOLEAN', false, 1, null);
         $this->addColumn('CREATE_USER', 'CreateUser', 'BOOLEAN', false, 1, null);
         $this->addColumn('READ_USER', 'ReadUser', 'BOOLEAN', false, 1, null);
         $this->addColumn('UPDATE_USER', 'UpdateUser', 'BOOLEAN', false, 1, null);
@@ -436,6 +460,10 @@ class RolePermissionTableMap extends TableMap
             $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_STOCK);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_STOCK);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_DESTROY_STOCK);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_CREATE_UNIT);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_UNIT);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_UNIT);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_DESTROY_UNIT);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_CREATE_USER);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_USER);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_USER);
@@ -461,6 +489,10 @@ class RolePermissionTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.READ_STOCK');
             $criteria->addSelectColumn($alias . '.UPDATE_STOCK');
             $criteria->addSelectColumn($alias . '.DESTROY_STOCK');
+            $criteria->addSelectColumn($alias . '.CREATE_UNIT');
+            $criteria->addSelectColumn($alias . '.READ_UNIT');
+            $criteria->addSelectColumn($alias . '.UPDATE_UNIT');
+            $criteria->addSelectColumn($alias . '.DESTROY_UNIT');
             $criteria->addSelectColumn($alias . '.CREATE_USER');
             $criteria->addSelectColumn($alias . '.READ_USER');
             $criteria->addSelectColumn($alias . '.UPDATE_USER');

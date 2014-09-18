@@ -103,6 +103,7 @@ class Mains implements MessageComponentInterface {
             'report',
             'sales',
             'stock',
+            'unit',
             'user'
         );
 
@@ -229,6 +230,7 @@ class Mains implements MessageComponentInterface {
         
         // list of all method that can be called in current module
         $registeredMethod = array(
+            'cancelPayment',
             'loadFormPay',
             'pay',
             'read',
@@ -487,6 +489,30 @@ class Mains implements MessageComponentInterface {
 
         // route to requested module and method
         $results = Stocks::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+    
+    private function unit($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create',
+            'destroy',
+            'loadFormEdit',
+            'read',
+            'update'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Units::$method($params, $currentUser, $con);
 
         return $results;
     }

@@ -169,6 +169,30 @@ abstract class RolePermission implements ActiveRecordInterface
     protected $destroy_stock;
 
     /**
+     * The value for the create_unit field.
+     * @var        boolean
+     */
+    protected $create_unit;
+
+    /**
+     * The value for the read_unit field.
+     * @var        boolean
+     */
+    protected $read_unit;
+
+    /**
+     * The value for the update_unit field.
+     * @var        boolean
+     */
+    protected $update_unit;
+
+    /**
+     * The value for the destroy_unit field.
+     * @var        boolean
+     */
+    protected $destroy_unit;
+
+    /**
      * The value for the create_user field.
      * @var        boolean
      */
@@ -799,6 +823,86 @@ abstract class RolePermission implements ActiveRecordInterface
     }
 
     /**
+     * Get the [create_unit] column value.
+     *
+     * @return boolean
+     */
+    public function getCreateUnit()
+    {
+        return $this->create_unit;
+    }
+
+    /**
+     * Get the [create_unit] column value.
+     *
+     * @return boolean
+     */
+    public function isCreateUnit()
+    {
+        return $this->getCreateUnit();
+    }
+
+    /**
+     * Get the [read_unit] column value.
+     *
+     * @return boolean
+     */
+    public function getReadUnit()
+    {
+        return $this->read_unit;
+    }
+
+    /**
+     * Get the [read_unit] column value.
+     *
+     * @return boolean
+     */
+    public function isReadUnit()
+    {
+        return $this->getReadUnit();
+    }
+
+    /**
+     * Get the [update_unit] column value.
+     *
+     * @return boolean
+     */
+    public function getUpdateUnit()
+    {
+        return $this->update_unit;
+    }
+
+    /**
+     * Get the [update_unit] column value.
+     *
+     * @return boolean
+     */
+    public function isUpdateUnit()
+    {
+        return $this->getUpdateUnit();
+    }
+
+    /**
+     * Get the [destroy_unit] column value.
+     *
+     * @return boolean
+     */
+    public function getDestroyUnit()
+    {
+        return $this->destroy_unit;
+    }
+
+    /**
+     * Get the [destroy_unit] column value.
+     *
+     * @return boolean
+     */
+    public function isDestroyUnit()
+    {
+        return $this->getDestroyUnit();
+    }
+
+    /**
      * Get the [create_user] column value.
      *
      * @return boolean
@@ -991,19 +1095,31 @@ abstract class RolePermission implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 18 + $startcol : RolePermissionTableMap::translateFieldName('DestroyStock', TableMap::TYPE_PHPNAME, $indexType)];
             $this->destroy_stock = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 19 + $startcol : RolePermissionTableMap::translateFieldName('CreateUser', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 19 + $startcol : RolePermissionTableMap::translateFieldName('CreateUnit', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->create_unit = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 20 + $startcol : RolePermissionTableMap::translateFieldName('ReadUnit', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->read_unit = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 21 + $startcol : RolePermissionTableMap::translateFieldName('UpdateUnit', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->update_unit = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 22 + $startcol : RolePermissionTableMap::translateFieldName('DestroyUnit', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->destroy_unit = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 23 + $startcol : RolePermissionTableMap::translateFieldName('CreateUser', TableMap::TYPE_PHPNAME, $indexType)];
             $this->create_user = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 20 + $startcol : RolePermissionTableMap::translateFieldName('ReadUser', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 24 + $startcol : RolePermissionTableMap::translateFieldName('ReadUser', TableMap::TYPE_PHPNAME, $indexType)];
             $this->read_user = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 21 + $startcol : RolePermissionTableMap::translateFieldName('UpdateUser', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 25 + $startcol : RolePermissionTableMap::translateFieldName('UpdateUser', TableMap::TYPE_PHPNAME, $indexType)];
             $this->update_user = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 22 + $startcol : RolePermissionTableMap::translateFieldName('DestroyUser', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 26 + $startcol : RolePermissionTableMap::translateFieldName('DestroyUser', TableMap::TYPE_PHPNAME, $indexType)];
             $this->destroy_user = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 23 + $startcol : RolePermissionTableMap::translateFieldName('ResetPassUser', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 27 + $startcol : RolePermissionTableMap::translateFieldName('ResetPassUser', TableMap::TYPE_PHPNAME, $indexType)];
             $this->reset_pass_user = (null !== $col) ? (boolean) $col : null;
             $this->resetModified();
 
@@ -1013,7 +1129,7 @@ abstract class RolePermission implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 24; // 24 = RolePermissionTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 28; // 28 = RolePermissionTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\ORM\\RolePermission'), 0, $e);
@@ -1569,6 +1685,118 @@ abstract class RolePermission implements ActiveRecordInterface
     } // setDestroyStock()
 
     /**
+     * Sets the value of the [create_unit] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setCreateUnit($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->create_unit !== $v) {
+            $this->create_unit = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_CREATE_UNIT] = true;
+        }
+
+        return $this;
+    } // setCreateUnit()
+
+    /**
+     * Sets the value of the [read_unit] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setReadUnit($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->read_unit !== $v) {
+            $this->read_unit = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_READ_UNIT] = true;
+        }
+
+        return $this;
+    } // setReadUnit()
+
+    /**
+     * Sets the value of the [update_unit] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setUpdateUnit($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->update_unit !== $v) {
+            $this->update_unit = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_UPDATE_UNIT] = true;
+        }
+
+        return $this;
+    } // setUpdateUnit()
+
+    /**
+     * Sets the value of the [destroy_unit] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setDestroyUnit($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->destroy_unit !== $v) {
+            $this->destroy_unit = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_DESTROY_UNIT] = true;
+        }
+
+        return $this;
+    } // setDestroyUnit()
+
+    /**
      * Sets the value of the [create_user] column.
      * Non-boolean arguments are converted using the following rules:
      *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
@@ -1947,6 +2175,18 @@ abstract class RolePermission implements ActiveRecordInterface
         if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_STOCK)) {
             $modifiedColumns[':p' . $index++]  = 'DESTROY_STOCK';
         }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_UNIT)) {
+            $modifiedColumns[':p' . $index++]  = 'CREATE_UNIT';
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_UNIT)) {
+            $modifiedColumns[':p' . $index++]  = 'READ_UNIT';
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_UPDATE_UNIT)) {
+            $modifiedColumns[':p' . $index++]  = 'UPDATE_UNIT';
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_UNIT)) {
+            $modifiedColumns[':p' . $index++]  = 'DESTROY_UNIT';
+        }
         if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_USER)) {
             $modifiedColumns[':p' . $index++]  = 'CREATE_USER';
         }
@@ -2029,6 +2269,18 @@ abstract class RolePermission implements ActiveRecordInterface
                         break;
                     case 'DESTROY_STOCK':
                         $stmt->bindValue($identifier, (int) $this->destroy_stock, PDO::PARAM_INT);
+                        break;
+                    case 'CREATE_UNIT':
+                        $stmt->bindValue($identifier, (int) $this->create_unit, PDO::PARAM_INT);
+                        break;
+                    case 'READ_UNIT':
+                        $stmt->bindValue($identifier, (int) $this->read_unit, PDO::PARAM_INT);
+                        break;
+                    case 'UPDATE_UNIT':
+                        $stmt->bindValue($identifier, (int) $this->update_unit, PDO::PARAM_INT);
+                        break;
+                    case 'DESTROY_UNIT':
+                        $stmt->bindValue($identifier, (int) $this->destroy_unit, PDO::PARAM_INT);
                         break;
                     case 'CREATE_USER':
                         $stmt->bindValue($identifier, (int) $this->create_user, PDO::PARAM_INT);
@@ -2158,18 +2410,30 @@ abstract class RolePermission implements ActiveRecordInterface
                 return $this->getDestroyStock();
                 break;
             case 19:
-                return $this->getCreateUser();
+                return $this->getCreateUnit();
                 break;
             case 20:
-                return $this->getReadUser();
+                return $this->getReadUnit();
                 break;
             case 21:
-                return $this->getUpdateUser();
+                return $this->getUpdateUnit();
                 break;
             case 22:
-                return $this->getDestroyUser();
+                return $this->getDestroyUnit();
                 break;
             case 23:
+                return $this->getCreateUser();
+                break;
+            case 24:
+                return $this->getReadUser();
+                break;
+            case 25:
+                return $this->getUpdateUser();
+                break;
+            case 26:
+                return $this->getDestroyUser();
+                break;
+            case 27:
                 return $this->getResetPassUser();
                 break;
             default:
@@ -2220,11 +2484,15 @@ abstract class RolePermission implements ActiveRecordInterface
             $keys[16] => $this->getReadStock(),
             $keys[17] => $this->getUpdateStock(),
             $keys[18] => $this->getDestroyStock(),
-            $keys[19] => $this->getCreateUser(),
-            $keys[20] => $this->getReadUser(),
-            $keys[21] => $this->getUpdateUser(),
-            $keys[22] => $this->getDestroyUser(),
-            $keys[23] => $this->getResetPassUser(),
+            $keys[19] => $this->getCreateUnit(),
+            $keys[20] => $this->getReadUnit(),
+            $keys[21] => $this->getUpdateUnit(),
+            $keys[22] => $this->getDestroyUnit(),
+            $keys[23] => $this->getCreateUser(),
+            $keys[24] => $this->getReadUser(),
+            $keys[25] => $this->getUpdateUser(),
+            $keys[26] => $this->getDestroyUser(),
+            $keys[27] => $this->getResetPassUser(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -2327,18 +2595,30 @@ abstract class RolePermission implements ActiveRecordInterface
                 $this->setDestroyStock($value);
                 break;
             case 19:
-                $this->setCreateUser($value);
+                $this->setCreateUnit($value);
                 break;
             case 20:
-                $this->setReadUser($value);
+                $this->setReadUnit($value);
                 break;
             case 21:
-                $this->setUpdateUser($value);
+                $this->setUpdateUnit($value);
                 break;
             case 22:
-                $this->setDestroyUser($value);
+                $this->setDestroyUnit($value);
                 break;
             case 23:
+                $this->setCreateUser($value);
+                break;
+            case 24:
+                $this->setReadUser($value);
+                break;
+            case 25:
+                $this->setUpdateUser($value);
+                break;
+            case 26:
+                $this->setDestroyUser($value);
+                break;
+            case 27:
                 $this->setResetPassUser($value);
                 break;
         } // switch()
@@ -2425,19 +2705,31 @@ abstract class RolePermission implements ActiveRecordInterface
             $this->setDestroyStock($arr[$keys[18]]);
         }
         if (array_key_exists($keys[19], $arr)) {
-            $this->setCreateUser($arr[$keys[19]]);
+            $this->setCreateUnit($arr[$keys[19]]);
         }
         if (array_key_exists($keys[20], $arr)) {
-            $this->setReadUser($arr[$keys[20]]);
+            $this->setReadUnit($arr[$keys[20]]);
         }
         if (array_key_exists($keys[21], $arr)) {
-            $this->setUpdateUser($arr[$keys[21]]);
+            $this->setUpdateUnit($arr[$keys[21]]);
         }
         if (array_key_exists($keys[22], $arr)) {
-            $this->setDestroyUser($arr[$keys[22]]);
+            $this->setDestroyUnit($arr[$keys[22]]);
         }
         if (array_key_exists($keys[23], $arr)) {
-            $this->setResetPassUser($arr[$keys[23]]);
+            $this->setCreateUser($arr[$keys[23]]);
+        }
+        if (array_key_exists($keys[24], $arr)) {
+            $this->setReadUser($arr[$keys[24]]);
+        }
+        if (array_key_exists($keys[25], $arr)) {
+            $this->setUpdateUser($arr[$keys[25]]);
+        }
+        if (array_key_exists($keys[26], $arr)) {
+            $this->setDestroyUser($arr[$keys[26]]);
+        }
+        if (array_key_exists($keys[27], $arr)) {
+            $this->setResetPassUser($arr[$keys[27]]);
         }
     }
 
@@ -2530,6 +2822,18 @@ abstract class RolePermission implements ActiveRecordInterface
         }
         if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_STOCK)) {
             $criteria->add(RolePermissionTableMap::COL_DESTROY_STOCK, $this->destroy_stock);
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_UNIT)) {
+            $criteria->add(RolePermissionTableMap::COL_CREATE_UNIT, $this->create_unit);
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_UNIT)) {
+            $criteria->add(RolePermissionTableMap::COL_READ_UNIT, $this->read_unit);
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_UPDATE_UNIT)) {
+            $criteria->add(RolePermissionTableMap::COL_UPDATE_UNIT, $this->update_unit);
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_UNIT)) {
+            $criteria->add(RolePermissionTableMap::COL_DESTROY_UNIT, $this->destroy_unit);
         }
         if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_USER)) {
             $criteria->add(RolePermissionTableMap::COL_CREATE_USER, $this->create_user);
@@ -2658,6 +2962,10 @@ abstract class RolePermission implements ActiveRecordInterface
         $copyObj->setReadStock($this->getReadStock());
         $copyObj->setUpdateStock($this->getUpdateStock());
         $copyObj->setDestroyStock($this->getDestroyStock());
+        $copyObj->setCreateUnit($this->getCreateUnit());
+        $copyObj->setReadUnit($this->getReadUnit());
+        $copyObj->setUpdateUnit($this->getUpdateUnit());
+        $copyObj->setDestroyUnit($this->getDestroyUnit());
         $copyObj->setCreateUser($this->getCreateUser());
         $copyObj->setReadUser($this->getReadUser());
         $copyObj->setUpdateUser($this->getUpdateUser());
@@ -2764,6 +3072,10 @@ abstract class RolePermission implements ActiveRecordInterface
         $this->read_stock = null;
         $this->update_stock = null;
         $this->destroy_stock = null;
+        $this->create_unit = null;
+        $this->read_unit = null;
+        $this->update_unit = null;
+        $this->destroy_unit = null;
         $this->create_user = null;
         $this->read_user = null;
         $this->update_user = null;

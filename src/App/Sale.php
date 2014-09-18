@@ -266,8 +266,20 @@ class Sale
             ->leftJoin('Cashier')
             ->filterByStatus('Active');
             
-        if(isset($params->nota)) $sales->filterById($params->nota);
-        if(isset($params->customer)) $sales->useCustomerQuery()->filterByName("%$params->customer%")->endUse();
+        if(isset($params->id)) $sales->filterById($params->id);
+        if(isset($params->customer)) $sales->useCustomerQuery()->filterByName('%' . $params->customer . '%')->endUse();
+        if(isset($params->start_date)) $sales->filterByDate(array('min' => $params->start_date));
+        if(isset($params->until_date)) $sales->filterByDate(array('max' => $params->until_date));
+        if(isset($params->payment_status)){
+            switch ($params->payment_status) {
+                case 'Lunas':
+                    $sales->where('CONVERT(Sales.TotalPrice, SIGNED) - CONVERT(Sales.Paid, SIGNED) <= 0');
+                    break;
+                case 'Belum Lunas':
+                    $sales->where('CONVERT(Sales.TotalPrice, SIGNED) - CONVERT(Sales.Paid, SIGNED) > 0');
+                    break;
+            }
+        }
 
         $sales = $sales
             ->select(array(

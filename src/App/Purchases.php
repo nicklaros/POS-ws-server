@@ -324,8 +324,9 @@ class Purchases
             ->leftJoin('Supplier')
             ->filterByStatus('Active');
             
-        if(isset($params->code)) $purchases->filterById($params->code);
         if(isset($params->supplier)) $purchases->where('Supplier.Name like ?', '%' . $params->supplier . '%');
+        if(isset($params->start_date)) $purchases->filterByDate(array('min' => $params->start_date));
+        if(isset($params->until_date)) $purchases->filterByDate(array('max' => $params->until_date));
 
         $purchases = $purchases
             ->select(array(

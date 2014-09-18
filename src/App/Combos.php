@@ -140,16 +140,16 @@ class Combos
     public static function unit($params, $currentUser, $con)
     {
         $units = UnitQuery::create()
+            ->filterByStatus('Active')
             ->orderBy('name', 'ASC');
 
-        if (isset($params->query)) $units->where('Unit.Name like ?', "%$params->query%");
+        if (isset($params->query)) $units->where('Unit.Name like ?', '%' . $params->query . '%');
         
         $units = $units
             ->select(array(
                 'id',
                 'name'
             ))
-            ->limit(20)
             ->find($con);
 
         $data = [];
