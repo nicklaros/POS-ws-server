@@ -176,6 +176,42 @@ class Reports
         return $results;
     }
 
+    public static function monthlyPurchase($params, $currentUser, $con)
+    {
+        if (!isset($params->month)) throw new \Exception('Missing parameter');
+        
+        $picked = new \DateTime($params->month);
+        
+        $date = new \stdClass();
+        $date->start = new \DateTime($picked->format('Y-m-01'));
+        $date->until = new \DateTime($picked->format('Y-m-t'));
+
+        $purchase = PurchaseQuery::create()
+            ->filterByStatus('Active')
+            ->filterByDate(array('min' => $date->start, 'max' => $date->until))
+            ->leftJoin('Supplier')
+            ->withColumn('Supplier.Name', 'supplier_name')
+            ->select(array(
+                'id',
+                'date',
+                'supplier_id',
+                'total_price'
+            ))
+            ->orderBy('date', 'ASC')
+            ->orderBy('id', 'ASC')
+            ->find($con);
+        
+        $data = [];
+        foreach($purchase as $purchas) {
+            $data[] = $purchas;
+        }
+        
+        $results['success'] = true;
+        $results['data'] = $data;
+        
+        return $results;
+    }
+
     public static function monthlyPurchasedProduct($params, $currentUser, $con) 
     {
         if (!isset($params->month)) throw new \Exception('Missing parameter');
@@ -202,6 +238,45 @@ class Reports
         $date->until = new \DateTime($picked->format('Y-m-t'));
         
         $results = Reports::getSaledProduct($date, $con);
+        
+        return $results;
+    }
+
+    public static function monthlySales($params, $currentUser, $con)
+    {
+        if (!isset($params->month)) throw new \Exception('Missing parameter');
+        
+        $picked = new \DateTime($params->month);
+        
+        $date = new \stdClass();
+        $date->start = new \DateTime($picked->format('Y-m-01'));
+        $date->until = new \DateTime($picked->format('Y-m-t'));
+
+        $sales = SalesQuery::create()
+            ->filterByStatus('Active')
+            ->filterByDate(array('min' => $date->start, 'max' => $date->until))
+            ->leftJoin('Customer')
+            ->leftJoin('Cashier')
+            ->withColumn('Customer.Name', 'customer_name')
+            ->withColumn('Cashier.Name', 'cashier_name')
+            ->select(array(
+                'id',
+                'date',
+                'customer_id',
+                'total_price',
+                'cashier_id'
+            ))
+            ->orderBy('date', 'ASC')
+            ->orderBy('id', 'ASC')
+            ->find($con);
+        
+        $data = [];
+        foreach($sales as $sale) {
+            $data[] = $sale;
+        }
+        
+        $results['success'] = true;
+        $results['data'] = $data;
         
         return $results;
     }

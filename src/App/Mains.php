@@ -398,7 +398,8 @@ class Mains implements MessageComponentInterface {
             'customPurchasedProduct',
             'customSaledProduct',
             'monthlyPurchasedProduct',
-            'monthlySaledProduct'
+            'monthlySaledProduct',
+            'monthlySales'
         );
 
         // if called method is not registered then deny access
@@ -416,30 +417,38 @@ class Mains implements MessageComponentInterface {
             // send Sales vs Purchase comparison
             $data = $this->chart('monthlySalesVsPurchase', $params, $from, $con);
             $salesVsPurchase['event'] = 'chart/monthlySalesVsPurchase';
-            $salesVsPurchase['data'] = $data;
-            
+            $salesVsPurchase['data'] = $data;            
             $from->send(json_encode($salesVsPurchase));
             
             // send transaction's data on picked month
             $data = $this->chart('monthlyTransaction', $params, $from, $con);
             $transaction['event'] = 'chart/monthlyTransaction';
-            $transaction['data'] = $data;
-            
+            $transaction['data'] = $data;            
             $from->send(json_encode($transaction));
             
-            // send saled product
-            $data = Reports::monthlySaledProduct($params, $currentUser, $con);
-            $saledProduct['event'] = 'report/monthlySaledProduct';
-            $saledProduct['data'] = $data;
-            
-            $from->send(json_encode($saledProduct));
+            // send purchase data
+            $data = Reports::monthlyPurchase($params, $currentUser, $con);
+            $purchase['event'] = 'report/monthlyPurchase';
+            $purchase['data'] = $data;
+            $from->send(json_encode($purchase));
             
             // send purchased product
             $data = Reports::monthlyPurchasedProduct($params, $currentUser, $con);
             $purchasedProduct['event'] = 'report/monthlyPurchasedProduct';
-            $purchasedProduct['data'] = $data;
-            
+            $purchasedProduct['data'] = $data;            
             $from->send(json_encode($purchasedProduct));
+            
+            // send saled product
+            $data = Reports::monthlySaledProduct($params, $currentUser, $con);
+            $saledProduct['event'] = 'report/monthlySaledProduct';
+            $saledProduct['data'] = $data;            
+            $from->send(json_encode($saledProduct));
+            
+            // send sales data
+            $data = Reports::monthlySales($params, $currentUser, $con);
+            $sales['event'] = 'report/monthlySales';
+            $sales['data'] = $data;
+            $from->send(json_encode($sales));
         } 
         elseif ($method == 'custom') {
             
@@ -447,21 +456,18 @@ class Mains implements MessageComponentInterface {
             $data = $this->chart('customSalesVsPurchase', $params, $from, $con);
             $salesVsPurchase['event'] = 'chart/customSalesVsPurchase';
             $salesVsPurchase['data'] = $data;
-            
             $from->send(json_encode($salesVsPurchase));
             
             // send saled product
             $data = Reports::customSaledProduct($params, $currentUser, $con);
             $saledProduct['event'] = 'report/customSaledProduct';
             $saledProduct['data'] = $data;
-            
             $from->send(json_encode($saledProduct));
             
             // send purchased product
             $data = Reports::customPurchasedProduct($params, $currentUser, $con);
             $purchasedProduct['event'] = 'report/customPurchasedProduct';
             $purchasedProduct['data'] = $data;
-            
             $from->send(json_encode($purchasedProduct));
             
         }
