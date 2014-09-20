@@ -112,13 +112,13 @@
     </table>
 
     <table name="purchase_detail" phpName="PurchaseDetail">
-        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
-        <column name="purchase_id" phpName="PurchaseId" type="BIGINT" size="20" />
-        <column name="stock_id" phpName="StockId" type="BIGINT" size="20" />
-        <column name="amount" phpName="Amount" type="TINYINT" size="3" />
-        <column name="total_price" phpName="TotalPrice" type="INTEGER" size="10" />
-        <column name="notification_id" phpName="NotificationId" type="BIGINT" size="20" />
-        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
+        <column name="id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="purchase_id" type="BIGINT" size="20" />
+        <column name="stock_id" type="BIGINT" size="20" />
+        <column name="amount" type="DECIMAL" size="10" scale="2" />
+        <column name="total_price" type="INTEGER" size="10" />
+        <column name="notification_id" type="BIGINT" size="20" />
+        <column name="status" type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
         <foreign-key foreignTable="purchase" phpName="Purchase" refPhpName="Detail" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="purchase_id" foreign="id" />
         </foreign-key>
@@ -223,19 +223,19 @@
     </table>
 
     <table name="sales_detail" phpName="SalesDetail">
-        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
-        <column name="sales_id" phpName="SalesId" type="BIGINT" size="20" />
-        <column name="type" phpName="Type" type="CHAR" sqlType="ENUM('Public','Distributor','Misc')" />
-        <column name="stock_id" phpName="StockId" type="BIGINT" size="20" />
-        <column name="amount" phpName="Amount" type="TINYINT" size="3" />
-        <column name="unit_price" phpName="UnitPrice" type="INTEGER" size="10" />
-        <column name="discount" phpName="Discount" type="TINYINT" size="3" />
-        <column name="total_price" phpName="TotalPrice" type="INTEGER" size="10" />
-        <column name="buy" phpName="Buy" type="INTEGER" size="10" />
-        <column name="sell_public" phpName="SellPublic" type="INTEGER" size="10" />
-        <column name="sell_distributor" phpName="SellDistributor" type="INTEGER" size="10" />
-        <column name="sell_misc" phpName="SellMisc" type="INTEGER" size="10" />
-        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
+        <column name="id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="sales_id" type="BIGINT" size="20" />
+        <column name="type" type="CHAR" sqlType="ENUM('Public','Distributor','Misc')" />
+        <column name="stock_id" type="BIGINT" size="20" />
+        <column name="amount" type="DECIMAL" size="10" scale="2" />
+        <column name="unit_price" type="INTEGER" size="10" />
+        <column name="discount" type="TINYINT" size="3" />
+        <column name="total_price" type="INTEGER" size="10" />
+        <column name="buy" type="INTEGER" size="10" />
+        <column name="sell_public" type="INTEGER" size="10" />
+        <column name="sell_distributor" type="INTEGER" size="10" />
+        <column name="sell_misc" type="INTEGER" size="10" />
+        <column name="status" type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
         <foreign-key foreignTable="sales" phpName="Sales" refPhpName="Detail" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="sales_id" foreign="id" />
         </foreign-key>
@@ -260,17 +260,17 @@
     </table>
 
     <table name="stock" phpName="Stock">
-        <column name="id" phpName="Id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
-        <column name="product_id" phpName="ProductId" type="BIGINT" size="20" />
-        <column name="amount" phpName="Amount" type="BIGINT" size="20" />
-        <column name="unit_id" phpName="UnitId" type="BIGINT" size="20" />
-        <column name="buy" phpName="Buy" type="INTEGER" size="10" />
-        <column name="sell_public" phpName="SellPublic" type="INTEGER" size="10" />
-        <column name="sell_distributor" phpName="SellDistributor" type="INTEGER" size="10" />
-        <column name="sell_misc" phpName="SellMisc" type="INTEGER" size="10" />
-        <column name="discount" phpName="Discount" type="TINYINT" size="3" />
-        <column name="unlimited" phpName="Unlimited" type="BOOLEAN" />
-        <column name="status" phpName="Status" type="CHAR" sqlType="ENUM('Active', 'Deleted', 'Not Active','Pending')" required="true" />
+        <column name="id" type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="product_id" type="BIGINT" size="20" />
+        <column name="amount" type="DECIMAL" size="10" scale="2" />
+        <column name="unit_id" type="BIGINT" size="20" />
+        <column name="buy" type="INTEGER" size="10" />
+        <column name="sell_public" type="INTEGER" size="10" />
+        <column name="sell_distributor" type="INTEGER" size="10" />
+        <column name="sell_misc" type="INTEGER" size="10" />
+        <column name="discount" type="TINYINT" size="3" />
+        <column name="unlimited" type="BOOLEAN" />
+        <column name="status" type="CHAR" sqlType="ENUM('Active', 'Deleted', 'Not Active','Pending')" required="true" />
         <foreign-key foreignTable="product" phpName="Product" refPhpName="Stock" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="product_id" foreign="id" />
         </foreign-key>

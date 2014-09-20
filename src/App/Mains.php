@@ -393,10 +393,13 @@ class Mains implements MessageComponentInterface {
         
         // list of all method that can be called in current module
         $registeredMethod = array(
-            'monthly',
             'custom',
+            'customPurchase',
             'customPurchasedProduct',
             'customSaledProduct',
+            'customSales',
+            'monthly',
+            'monthlyPurchase',
             'monthlyPurchasedProduct',
             'monthlySaledProduct',
             'monthlySales'
@@ -420,7 +423,7 @@ class Mains implements MessageComponentInterface {
             $salesVsPurchase['data'] = $data;            
             $from->send(json_encode($salesVsPurchase));
             
-            // send transaction's data on picked month
+            // send transaction chart's data on picked month
             $data = $this->chart('monthlyTransaction', $params, $from, $con);
             $transaction['event'] = 'chart/monthlyTransaction';
             $transaction['data'] = $data;            
@@ -458,17 +461,29 @@ class Mains implements MessageComponentInterface {
             $salesVsPurchase['data'] = $data;
             $from->send(json_encode($salesVsPurchase));
             
-            // send saled product
-            $data = Reports::customSaledProduct($params, $currentUser, $con);
-            $saledProduct['event'] = 'report/customSaledProduct';
-            $saledProduct['data'] = $data;
-            $from->send(json_encode($saledProduct));
+            // send purchase data
+            $data = Reports::customPurchase($params, $currentUser, $con);
+            $purchase['event'] = 'report/customPurchase';
+            $purchase['data'] = $data;
+            $from->send(json_encode($purchase));
             
             // send purchased product
             $data = Reports::customPurchasedProduct($params, $currentUser, $con);
             $purchasedProduct['event'] = 'report/customPurchasedProduct';
             $purchasedProduct['data'] = $data;
             $from->send(json_encode($purchasedProduct));
+            
+            // send saled product
+            $data = Reports::customSaledProduct($params, $currentUser, $con);
+            $saledProduct['event'] = 'report/customSaledProduct';
+            $saledProduct['data'] = $data;
+            $from->send(json_encode($saledProduct));
+            
+            // send sales data
+            $data = Reports::customSales($params, $currentUser, $con);
+            $sales['event'] = 'report/customSales';
+            $sales['data'] = $data;
+            $from->send(json_encode($sales));
             
         }
         

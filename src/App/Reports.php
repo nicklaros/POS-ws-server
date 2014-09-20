@@ -10,6 +10,34 @@ use ORM\SalesDetailQuery;
 class Reports
 {
     
+    private static function getPurchase($date, $con) 
+    {
+        $purchase = PurchaseQuery::create()
+            ->filterByStatus('Active')
+            ->filterByDate(array('min' => $date->start, 'max' => $date->until))
+            ->leftJoin('Supplier')
+            ->withColumn('Supplier.Name', 'supplier_name')
+            ->select(array(
+                'id',
+                'date',
+                'supplier_id',
+                'total_price'
+            ))
+            ->orderBy('date', 'ASC')
+            ->orderBy('id', 'ASC')
+            ->find($con);
+        
+        $data = [];
+        foreach($purchase as $purchas) {
+            $data[] = $purchas;
+        }
+        
+        $results['success'] = true;
+        $results['data'] = $data;
+        
+        return $results;
+    }
+    
     private static function getPurchasedProduct($date, $con) 
     {
         $purchasedProducts = PurchaseDetailQuery::create()
@@ -46,7 +74,7 @@ class Reports
         $results['data'] = $data;
         
         return $results;
-    } 
+    }
     
     private static function getSaledProduct($date, $con) 
     {
@@ -78,6 +106,37 @@ class Reports
         $data = [];
         foreach($saledProducts as $saledProduct) {
             $data[] = $saledProduct;
+        }
+        
+        $results['success'] = true;
+        $results['data'] = $data;
+        
+        return $results;
+    }
+    
+    private static function getSales($date, $con) 
+    {
+        $sales = SalesQuery::create()
+            ->filterByStatus('Active')
+            ->filterByDate(array('min' => $date->start, 'max' => $date->until))
+            ->leftJoin('Customer')
+            ->leftJoin('Cashier')
+            ->withColumn('Customer.Name', 'customer_name')
+            ->withColumn('Cashier.Name', 'cashier_name')
+            ->select(array(
+                'id',
+                'date',
+                'customer_id',
+                'total_price',
+                'cashier_id'
+            ))
+            ->orderBy('date', 'ASC')
+            ->orderBy('id', 'ASC')
+            ->find($con);
+        
+        $data = [];
+        foreach($sales as $sale) {
+            $data[] = $sale;
         }
         
         $results['success'] = true;
@@ -135,6 +194,19 @@ class Reports
         return $results;
     }
 
+    public static function customPurchase($params, $currentUser, $con) 
+    {
+        if (!isset($params->start) || !isset($params->until)) throw new \Exception('Missing parameter');
+        
+        $date = new \stdClass();
+        $date->start = new \DateTime($params->start);
+        $date->until = new \DateTime($params->until);
+        
+        $results = Reports::getPurchase($date, $con);
+        
+        return $results;
+    }
+
     public static function customPurchasedProduct($params, $currentUser, $con) 
     {
         if (!isset($params->start) || !isset($params->until)) throw new \Exception('Missing parameter');
@@ -157,6 +229,19 @@ class Reports
         $date->until = new \DateTime($params->until);
         
         $results = Reports::getSaledProduct($date, $con);
+        
+        return $results;
+    }
+
+    public static function customSales($params, $currentUser, $con)
+    {
+        if (!isset($params->start) || !isset($params->until)) throw new \Exception('Missing parameter');
+        
+        $date = new \stdClass();
+        $date->start = new \DateTime($params->start);
+        $date->until = new \DateTime($params->until);
+
+        $results = Reports::getSales($date, $con);
         
         return $results;
     }
@@ -186,28 +271,7 @@ class Reports
         $date->start = new \DateTime($picked->format('Y-m-01'));
         $date->until = new \DateTime($picked->format('Y-m-t'));
 
-        $purchase = PurchaseQuery::create()
-            ->filterByStatus('Active')
-            ->filterByDate(array('min' => $date->start, 'max' => $date->until))
-            ->leftJoin('Supplier')
-            ->withColumn('Supplier.Name', 'supplier_name')
-            ->select(array(
-                'id',
-                'date',
-                'supplier_id',
-                'total_price'
-            ))
-            ->orderBy('date', 'ASC')
-            ->orderBy('id', 'ASC')
-            ->find($con);
-        
-        $data = [];
-        foreach($purchase as $purchas) {
-            $data[] = $purchas;
-        }
-        
-        $results['success'] = true;
-        $results['data'] = $data;
+        $results = Reports::getPurchase($date, $con);
         
         return $results;
     }
@@ -252,31 +316,7 @@ class Reports
         $date->start = new \DateTime($picked->format('Y-m-01'));
         $date->until = new \DateTime($picked->format('Y-m-t'));
 
-        $sales = SalesQuery::create()
-            ->filterByStatus('Active')
-            ->filterByDate(array('min' => $date->start, 'max' => $date->until))
-            ->leftJoin('Customer')
-            ->leftJoin('Cashier')
-            ->withColumn('Customer.Name', 'customer_name')
-            ->withColumn('Cashier.Name', 'cashier_name')
-            ->select(array(
-                'id',
-                'date',
-                'customer_id',
-                'total_price',
-                'cashier_id'
-            ))
-            ->orderBy('date', 'ASC')
-            ->orderBy('id', 'ASC')
-            ->find($con);
-        
-        $data = [];
-        foreach($sales as $sale) {
-            $data[] = $sale;
-        }
-        
-        $results['success'] = true;
-        $results['data'] = $data;
+        $results = Reports::getSales($date, $con);
         
         return $results;
     }
