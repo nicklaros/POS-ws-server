@@ -303,8 +303,11 @@ class Mains implements MessageComponentInterface {
         // list of all method that can be called in current module
         $registeredMethod = array(
             'changePassword',
+            'loadAppPhoto',
             'loadBiodata',
-            'updateBiodata'
+            'loadClientIdentity',
+            'updateBiodata',
+            'updateClientIdentity'
         );
 
         // if called method is not registered then deny access

@@ -114,9 +114,13 @@ class Products
         $products = ProductQuery::create()
             ->filterByStatus('Active');
 
-        if(isset($params->code)) $products->filterByCode("%$params->code%");
-        if(isset($params->name)) $products->filterByName("%$params->name%");
-
+        if(isset($params->code_or_name)) {
+            $products
+                ->condition('cond1', 'Product.Name like ?', '%' . $params->code_or_name . '%')
+                ->condition('cond2', 'Product.Code like ?', '%' . $params->code_or_name . '%')
+                ->where(array('cond1', 'cond2'), 'or');
+        }
+        
         $products = $products
             ->select(array(
                 'id',

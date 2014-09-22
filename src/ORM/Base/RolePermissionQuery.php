@@ -21,8 +21,6 @@ use Propel\Runtime\Exception\PropelException;
  *
  *
  * @method     ChildRolePermissionQuery orderById($order = Criteria::ASC) Order by the id column
- * @method     ChildRolePermissionQuery orderByPayCredit($order = Criteria::ASC) Order by the pay_credit column
- * @method     ChildRolePermissionQuery orderByReadCredit($order = Criteria::ASC) Order by the read_credit column
  * @method     ChildRolePermissionQuery orderByCreateCustomer($order = Criteria::ASC) Order by the create_customer column
  * @method     ChildRolePermissionQuery orderByReadCustomer($order = Criteria::ASC) Order by the read_customer column
  * @method     ChildRolePermissionQuery orderByUpdateCustomer($order = Criteria::ASC) Order by the update_customer column
@@ -56,10 +54,10 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildRolePermissionQuery orderByUpdateUser($order = Criteria::ASC) Order by the update_user column
  * @method     ChildRolePermissionQuery orderByDestroyUser($order = Criteria::ASC) Order by the destroy_user column
  * @method     ChildRolePermissionQuery orderByResetPassUser($order = Criteria::ASC) Order by the reset_pass_user column
+ * @method     ChildRolePermissionQuery orderByPayCredit($order = Criteria::ASC) Order by the pay_credit column
+ * @method     ChildRolePermissionQuery orderByReadCredit($order = Criteria::ASC) Order by the read_credit column
  *
  * @method     ChildRolePermissionQuery groupById() Group by the id column
- * @method     ChildRolePermissionQuery groupByPayCredit() Group by the pay_credit column
- * @method     ChildRolePermissionQuery groupByReadCredit() Group by the read_credit column
  * @method     ChildRolePermissionQuery groupByCreateCustomer() Group by the create_customer column
  * @method     ChildRolePermissionQuery groupByReadCustomer() Group by the read_customer column
  * @method     ChildRolePermissionQuery groupByUpdateCustomer() Group by the update_customer column
@@ -93,6 +91,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildRolePermissionQuery groupByUpdateUser() Group by the update_user column
  * @method     ChildRolePermissionQuery groupByDestroyUser() Group by the destroy_user column
  * @method     ChildRolePermissionQuery groupByResetPassUser() Group by the reset_pass_user column
+ * @method     ChildRolePermissionQuery groupByPayCredit() Group by the pay_credit column
+ * @method     ChildRolePermissionQuery groupByReadCredit() Group by the read_credit column
  *
  * @method     ChildRolePermissionQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildRolePermissionQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -108,8 +108,6 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildRolePermission findOneOrCreate(ConnectionInterface $con = null) Return the first ChildRolePermission matching the query, or a new ChildRolePermission object populated from the query conditions when no match is found
  *
  * @method     ChildRolePermission findOneById(string $id) Return the first ChildRolePermission filtered by the id column
- * @method     ChildRolePermission findOneByPayCredit(boolean $pay_credit) Return the first ChildRolePermission filtered by the pay_credit column
- * @method     ChildRolePermission findOneByReadCredit(boolean $read_credit) Return the first ChildRolePermission filtered by the read_credit column
  * @method     ChildRolePermission findOneByCreateCustomer(boolean $create_customer) Return the first ChildRolePermission filtered by the create_customer column
  * @method     ChildRolePermission findOneByReadCustomer(boolean $read_customer) Return the first ChildRolePermission filtered by the read_customer column
  * @method     ChildRolePermission findOneByUpdateCustomer(boolean $update_customer) Return the first ChildRolePermission filtered by the update_customer column
@@ -143,11 +141,11 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildRolePermission findOneByUpdateUser(boolean $update_user) Return the first ChildRolePermission filtered by the update_user column
  * @method     ChildRolePermission findOneByDestroyUser(boolean $destroy_user) Return the first ChildRolePermission filtered by the destroy_user column
  * @method     ChildRolePermission findOneByResetPassUser(boolean $reset_pass_user) Return the first ChildRolePermission filtered by the reset_pass_user column
+ * @method     ChildRolePermission findOneByPayCredit(boolean $pay_credit) Return the first ChildRolePermission filtered by the pay_credit column
+ * @method     ChildRolePermission findOneByReadCredit(boolean $read_credit) Return the first ChildRolePermission filtered by the read_credit column
  *
  * @method     ChildRolePermission[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildRolePermission objects based on current ModelCriteria
  * @method     ChildRolePermission[]|ObjectCollection findById(string $id) Return ChildRolePermission objects filtered by the id column
- * @method     ChildRolePermission[]|ObjectCollection findByPayCredit(boolean $pay_credit) Return ChildRolePermission objects filtered by the pay_credit column
- * @method     ChildRolePermission[]|ObjectCollection findByReadCredit(boolean $read_credit) Return ChildRolePermission objects filtered by the read_credit column
  * @method     ChildRolePermission[]|ObjectCollection findByCreateCustomer(boolean $create_customer) Return ChildRolePermission objects filtered by the create_customer column
  * @method     ChildRolePermission[]|ObjectCollection findByReadCustomer(boolean $read_customer) Return ChildRolePermission objects filtered by the read_customer column
  * @method     ChildRolePermission[]|ObjectCollection findByUpdateCustomer(boolean $update_customer) Return ChildRolePermission objects filtered by the update_customer column
@@ -181,6 +179,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildRolePermission[]|ObjectCollection findByUpdateUser(boolean $update_user) Return ChildRolePermission objects filtered by the update_user column
  * @method     ChildRolePermission[]|ObjectCollection findByDestroyUser(boolean $destroy_user) Return ChildRolePermission objects filtered by the destroy_user column
  * @method     ChildRolePermission[]|ObjectCollection findByResetPassUser(boolean $reset_pass_user) Return ChildRolePermission objects filtered by the reset_pass_user column
+ * @method     ChildRolePermission[]|ObjectCollection findByPayCredit(boolean $pay_credit) Return ChildRolePermission objects filtered by the pay_credit column
+ * @method     ChildRolePermission[]|ObjectCollection findByReadCredit(boolean $read_credit) Return ChildRolePermission objects filtered by the read_credit column
  * @method     ChildRolePermission[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -270,7 +270,7 @@ abstract class RolePermissionQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT ID, PAY_CREDIT, READ_CREDIT, CREATE_CUSTOMER, READ_CUSTOMER, UPDATE_CUSTOMER, DESTROY_CUSTOMER, CREATE_PRODUCT, READ_PRODUCT, UPDATE_PRODUCT, DESTROY_PRODUCT, CREATE_PURCHASE, READ_PURCHASE, UPDATE_PURCHASE, DESTROY_PURCHASE, CREATE_SALES, READ_SALES, UPDATE_SALES, DESTROY_SALES, CREATE_STOCK, READ_STOCK, UPDATE_STOCK, DESTROY_STOCK, CREATE_SUPPLIER, READ_SUPPLIER, UPDATE_SUPPLIER, DESTROY_SUPPLIER, CREATE_UNIT, READ_UNIT, UPDATE_UNIT, DESTROY_UNIT, CREATE_USER, READ_USER, UPDATE_USER, DESTROY_USER, RESET_PASS_USER FROM role_permission WHERE ID = :p0';
+        $sql = 'SELECT ID, CREATE_CUSTOMER, READ_CUSTOMER, UPDATE_CUSTOMER, DESTROY_CUSTOMER, CREATE_PRODUCT, READ_PRODUCT, UPDATE_PRODUCT, DESTROY_PRODUCT, CREATE_PURCHASE, READ_PURCHASE, UPDATE_PURCHASE, DESTROY_PURCHASE, CREATE_SALES, READ_SALES, UPDATE_SALES, DESTROY_SALES, CREATE_STOCK, READ_STOCK, UPDATE_STOCK, DESTROY_STOCK, CREATE_SUPPLIER, READ_SUPPLIER, UPDATE_SUPPLIER, DESTROY_SUPPLIER, CREATE_UNIT, READ_UNIT, UPDATE_UNIT, DESTROY_UNIT, CREATE_USER, READ_USER, UPDATE_USER, DESTROY_USER, RESET_PASS_USER, PAY_CREDIT, READ_CREDIT FROM role_permission WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -401,60 +401,6 @@ abstract class RolePermissionQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(RolePermissionTableMap::COL_ID, $id, $comparison);
-    }
-
-    /**
-     * Filter the query on the pay_credit column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByPayCredit(true); // WHERE pay_credit = true
-     * $query->filterByPayCredit('yes'); // WHERE pay_credit = true
-     * </code>
-     *
-     * @param     boolean|string $payCredit The value to use as filter.
-     *              Non-boolean arguments are converted using the following rules:
-     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildRolePermissionQuery The current query, for fluid interface
-     */
-    public function filterByPayCredit($payCredit = null, $comparison = null)
-    {
-        if (is_string($payCredit)) {
-            $payCredit = in_array(strtolower($payCredit), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-        }
-
-        return $this->addUsingAlias(RolePermissionTableMap::COL_PAY_CREDIT, $payCredit, $comparison);
-    }
-
-    /**
-     * Filter the query on the read_credit column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByReadCredit(true); // WHERE read_credit = true
-     * $query->filterByReadCredit('yes'); // WHERE read_credit = true
-     * </code>
-     *
-     * @param     boolean|string $readCredit The value to use as filter.
-     *              Non-boolean arguments are converted using the following rules:
-     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildRolePermissionQuery The current query, for fluid interface
-     */
-    public function filterByReadCredit($readCredit = null, $comparison = null)
-    {
-        if (is_string($readCredit)) {
-            $readCredit = in_array(strtolower($readCredit), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-        }
-
-        return $this->addUsingAlias(RolePermissionTableMap::COL_READ_CREDIT, $readCredit, $comparison);
     }
 
     /**
@@ -1346,6 +1292,60 @@ abstract class RolePermissionQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(RolePermissionTableMap::COL_RESET_PASS_USER, $resetPassUser, $comparison);
+    }
+
+    /**
+     * Filter the query on the pay_credit column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByPayCredit(true); // WHERE pay_credit = true
+     * $query->filterByPayCredit('yes'); // WHERE pay_credit = true
+     * </code>
+     *
+     * @param     boolean|string $payCredit The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRolePermissionQuery The current query, for fluid interface
+     */
+    public function filterByPayCredit($payCredit = null, $comparison = null)
+    {
+        if (is_string($payCredit)) {
+            $payCredit = in_array(strtolower($payCredit), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(RolePermissionTableMap::COL_PAY_CREDIT, $payCredit, $comparison);
+    }
+
+    /**
+     * Filter the query on the read_credit column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByReadCredit(true); // WHERE read_credit = true
+     * $query->filterByReadCredit('yes'); // WHERE read_credit = true
+     * </code>
+     *
+     * @param     boolean|string $readCredit The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRolePermissionQuery The current query, for fluid interface
+     */
+    public function filterByReadCredit($readCredit = null, $comparison = null)
+    {
+        if (is_string($readCredit)) {
+            $readCredit = in_array(strtolower($readCredit), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(RolePermissionTableMap::COL_READ_CREDIT, $readCredit, $comparison);
     }
 
     /**

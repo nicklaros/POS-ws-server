@@ -542,7 +542,7 @@ abstract class UserDetailQuery extends ModelCriteria
     {
         if ($purchaseHistory instanceof \ORM\PurchaseHistory) {
             return $this
-                ->addUsingAlias(UserDetailTableMap::COL_ID, $purchaseHistory->getUserID(), $comparison);
+                ->addUsingAlias(UserDetailTableMap::COL_ID, $purchaseHistory->getUserId(), $comparison);
         } elseif ($purchaseHistory instanceof ObjectCollection) {
             return $this
                 ->usePurchaseHistoryQuery()
@@ -615,7 +615,7 @@ abstract class UserDetailQuery extends ModelCriteria
     {
         if ($rowHistory instanceof \ORM\RowHistory) {
             return $this
-                ->addUsingAlias(UserDetailTableMap::COL_ID, $rowHistory->getUserID(), $comparison);
+                ->addUsingAlias(UserDetailTableMap::COL_ID, $rowHistory->getUserId(), $comparison);
         } elseif ($rowHistory instanceof ObjectCollection) {
             return $this
                 ->useHistoryQuery()
@@ -761,7 +761,7 @@ abstract class UserDetailQuery extends ModelCriteria
     {
         if ($salesHistory instanceof \ORM\SalesHistory) {
             return $this
-                ->addUsingAlias(UserDetailTableMap::COL_ID, $salesHistory->getUserID(), $comparison);
+                ->addUsingAlias(UserDetailTableMap::COL_ID, $salesHistory->getUserId(), $comparison);
         } elseif ($salesHistory instanceof ObjectCollection) {
             return $this
                 ->useSalesHistoryQuery()

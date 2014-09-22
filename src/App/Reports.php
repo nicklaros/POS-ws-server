@@ -152,6 +152,7 @@ class Reports
             ->filterByDate(array('min' => $date->start, 'max' => $date->until))
             ->withColumn('COUNT(Sales.Id)', 'sales_count')
             ->withColumn('SUM(Sales.TotalPrice)', 'sales_total')
+            ->withColumn('SUM(CONVERT(Sales.TotalPrice, SIGNED) - CONVERT(Sales.BuyPrice, SIGNED))', 'sales_netto')
             ->select([
                 'sales_total',
                 'sales_count'
@@ -160,6 +161,7 @@ class Reports
 
         $data['sales_count'] = (isset($sales[0]['sales_count']) ? $sales[0]['sales_count'] : 0);
         $data['sales_total'] = (isset($sales[0]['sales_total']) ? $sales[0]['sales_total'] : 0);
+        $data['sales_netto'] = (isset($sales[0]['sales_netto']) ? $sales[0]['sales_netto'] : 0);
         
         $purchase = PurchaseQuery::create()
             ->filterByStatus('Active')

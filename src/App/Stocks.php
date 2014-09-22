@@ -221,8 +221,14 @@ class Stocks
             
         $stock->useProductQuery()->filterByStatus('Active')->endUse();
 
-        if(isset($params->code)) $stock->useProductQuery()->filterByCode("%$params->code%")->endUse();
-        if(isset($params->product)) $stock->useProductQuery()->filterByName("%$params->product%")->endUse();
+        if(isset($params->code_or_name)) {
+            $stock
+                ->useProductQuery()
+                    ->condition('cond1', 'Product.Name like ?', '%' . $params->code_or_name . '%')
+                    ->condition('cond2', 'Product.Code like ?', '%' . $params->code_or_name . '%')
+                    ->where(array('cond1', 'cond2'), 'or')
+                ->endUse();
+        } 
         if(isset($params->product_id)) $stock->useProductQuery()->filterById($params->product_id)->endUse();
 
         $stock = $stock
