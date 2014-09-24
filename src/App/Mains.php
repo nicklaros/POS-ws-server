@@ -186,9 +186,10 @@ class Mains implements MessageComponentInterface {
         // list of all method that can be called in current module
         $registeredMethod = array(
             'customSalesVsPurchase',
+            'dailyTransaction',
             'last30DaysTransaction',
             'monthlySalesVsPurchase',
-            'monthlyTransaction'
+            'monthlyCustomerTransaction'
         );
 
         // if called method is not registered then deny access
@@ -259,9 +260,11 @@ class Mains implements MessageComponentInterface {
         $registeredMethod = array(
             'create',
             'destroy',
+            'listSales',
             'loadFormEdit',
             'read',
-            'update'
+            'update',
+            'viewDetail'
         );
 
         // if called method is not registered then deny access
@@ -272,7 +275,17 @@ class Mains implements MessageComponentInterface {
 
         // route to requested module and method
         $results = Customers::$method($params, $currentUser, $con);
-
+        
+        // followup action
+        if ($method == 'viewDetail') {
+            
+            // send transaction chart's data on picked month
+            $data = Customers::last7MonthsTransactions($params, $currentUser, $con);
+            $transaction['event'] = 'customer/last7MonthsTransactions';
+            $transaction['data'] = $data;            
+            $from->send(json_encode($transaction));
+        } 
+        
         return $results;
     }
 
@@ -427,8 +440,8 @@ class Mains implements MessageComponentInterface {
             $from->send(json_encode($salesVsPurchase));
             
             // send transaction chart's data on picked month
-            $data = $this->chart('monthlyTransaction', $params, $from, $con);
-            $transaction['event'] = 'chart/monthlyTransaction';
+            $data = $this->chart('dailyTransaction', $params, $from, $con);
+            $transaction['event'] = 'chart/dailyTransaction';
             $transaction['data'] = $data;            
             $from->send(json_encode($transaction));
             

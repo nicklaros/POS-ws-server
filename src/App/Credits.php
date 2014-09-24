@@ -129,7 +129,7 @@ class Credits
         $limit = (isset($params->limit) ? $params->limit : 100);
 
         $credits = CreditQuery::create()
-            ->where('Credit.Status not like ?', 'Deleted')
+            ->filterByStatus('Active')
             ->useSalesQuery()
                 ->leftJoin('Customer')
                 ->withColumn('Customer.Id', 'customer_id')
@@ -140,11 +140,17 @@ class Credits
             
         if(isset($params->id)) $credits->filterById($params->id);
         if(isset($params->sales_id)) $credits->filterBySalesId($params->sales_id);
+        if(isset($params->customer_id)) {
+            $credits
+                ->useSalesQuery()
+                    ->filterByCustomerId($params->customer_id)
+                ->endUse();
+        }
         if(isset($params->customer)) {
             $credits
                 ->useSalesQuery()
                     ->useCustomerQuery()
-                        ->filterByName("%$params->customer%")
+                        ->filterByName("%{$params->customer}%")
                     ->endUse()
                 ->endUse();
         }

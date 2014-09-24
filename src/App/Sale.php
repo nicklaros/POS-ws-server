@@ -266,6 +266,7 @@ class Sale
             ->filterByStatus('Active');
             
         if(isset($params->id)) $sales->filterById($params->id);
+        if(isset($params->customer_id)) $sales->useCustomerQuery()->filterById($params->customer_id)->endUse();
         if(isset($params->customer)) $sales->useCustomerQuery()->filterByName('%' . $params->customer . '%')->endUse();
         if(isset($params->start_date)) $sales->filterByDate(array('min' => $params->start_date));
         if(isset($params->until_date)) $sales->filterByDate(array('max' => $params->until_date));

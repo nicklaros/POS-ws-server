@@ -102,7 +102,7 @@ class Charts
         return $results;
     }
 
-    public static function monthlyTransaction($params, $currentUser, $con)
+    public static function dailyTransaction($params, $currentUser, $con)
     {
         if (!isset($params->month)) throw new \Exception('Missing parameter');
         

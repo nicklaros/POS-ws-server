@@ -1,3 +1,0 @@
-@echo off
-echo pos server....
-php D:\Nick\htdocs\POS-ws-server\bin\server.php
