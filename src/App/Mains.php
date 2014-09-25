@@ -96,6 +96,7 @@ class Mains implements MessageComponentInterface {
             'combo',
             'credit',
             'customer',
+            'debit',
             'notification',
             'option',
             'populate',
@@ -286,6 +287,30 @@ class Mains implements MessageComponentInterface {
             $from->send(json_encode($transaction));
         } 
         
+        return $results;
+    }
+
+    private function debit($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'cancelPayment',
+            'loadFormPay',
+            'pay',
+            'read',
+            'readPayment'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Debits::$method($params, $currentUser, $con);
+
         return $results;
     }
 

@@ -98,6 +98,8 @@ class Customers
             ->findOneById($params->customer_id);
 
         if (!$customer) throw new \Exception('Data tidak ditemukan');
+        
+        if ($customer['age'] > 200) $customer['age'] = '-';
 
         $results['data'] = $customer;
 

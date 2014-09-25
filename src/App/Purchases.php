@@ -2,6 +2,7 @@
 
 namespace App;
 
+use ORM\Debit;
 use ORM\Notification;
 use ORM\NotificationOnUser;
 use ORM\NotificationOnUserQuery;
@@ -115,14 +116,16 @@ class Purchases
             ->leftJoin('Supplier')
             ->filterByStatus('Active')
             ->filterById($params->id)
+            ->withColumn('CAST(Purchase.Paid AS SIGNED) - CAST(Purchase.TotalPrice AS SIGNED)', 'balance')
+            ->withColumn('Supplier.Name', 'supplier_name')
             ->select(array(
                 'id',
                 'date',
                 'supplier_id',
                 'total_price',
+                'paid',
                 'note'
             ))
-            ->withColumn('Supplier.Name', 'supplier_name')
             ->findOne($con);
 
         if(!$purchase) throw new \Exception("Data tidak ditemukan");
@@ -232,9 +235,22 @@ class Purchases
             ->setDate($params->date)
             ->setSupplierId($params->supplier_id)
             ->setTotalPrice($params->total_price)
+            ->setPaid($params->paid)
             ->setNote($params->note)
             ->setStatus('Active')
             ->save($con);
+        
+        // check wether this transaction is debit or not
+        $balance = $params->paid - $params->total_price;
+        
+        if ($balance < 0) {
+            $debit = new Debit();
+            $debit
+                ->setPurchaseId($purchase->getId())
+                ->setTotal(abs($balance))
+                ->setStatus('Active')
+                ->save($con);
+        }
 
         $products = json_decode($params->products);
         
@@ -329,14 +345,16 @@ class Purchases
         if(isset($params->until_date)) $purchases->filterByDate(array('max' => $params->until_date));
 
         $purchases = $purchases
+            ->withColumn('CAST(Purchase.Paid AS SIGNED) - CAST(Purchase.TotalPrice AS SIGNED)', 'balance')
+            ->withColumn('Supplier.Name', 'supplier_name')
             ->select(array(
                 'id',
                 'date',
                 'supplier_id',
                 'total_price',
+                'paid',
                 'note'
-            ))
-            ->withColumn('Supplier.Name', 'supplier_name');
+            ));
 
         foreach($params->sort as $sorter){
             $purchases->orderBy($sorter->property, $sorter->direction);

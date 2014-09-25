@@ -13,7 +13,7 @@
         <column name="total"    type="INTEGER" size="10" />
         <column name="paid"     type="INTEGER" size="10" />
         <column name="status"   type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
-        <foreign-key foreignTable="sales" phpName="Sales" refPhpName="Credit" onDelete="CASCADE" onUpdate="RESTRICT">
+        <foreign-key foreignTable="sales" phpName="Sales" refPhpName="Credit" onDelete="CASCADE" onUpdate="CASCADE">
             <reference local="sales_id" foreign="id" />
         </foreign-key>
     </table>
@@ -42,6 +42,17 @@
         <column name="gender"           type="CHAR" sqlType="ENUM('Male','Female')" />
         <column name="phone"            type="CHAR" size="20" />
         <column name="status"           type="CHAR" sqlType="ENUM('Active', 'Deleted', 'Not Active', 'Pending')" />
+    </table>
+
+    <table name="debit" phpName="Debit">
+        <column name="id"           type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="purchase_id"  type="BIGINT" size="20" />
+        <column name="total"        type="INTEGER" size="10" />
+        <column name="paid"         type="INTEGER" size="10" />
+        <column name="status"       type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
+        <foreign-key foreignTable="purchase" phpName="Purchase" refPhpName="Debit" onDelete="CASCADE" onUpdate="CASCADE">
+            <reference local="purchase_id" foreign="id" />
+        </foreign-key>
     </table>
 
     <table name="menu" phpName="Menu">
@@ -104,6 +115,7 @@
         <column name="date"         type="DATE" />
         <column name="supplier_id"  type="BIGINT" size="20" />
         <column name="total_price"  type="INTEGER" size="10" />
+        <column name="paid"         type="INTEGER" size="10" />
         <column name="note"         type="CHAR" size="32" />
         <column name="status"       type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
         <foreign-key foreignTable="supplier" phpName="Supplier" refPhpName="Purchase" onDelete="RESTRICT" onUpdate="RESTRICT">

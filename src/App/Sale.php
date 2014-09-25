@@ -282,6 +282,9 @@ class Sale
         }
 
         $sales = $sales
+            ->withColumn('CAST(Sales.Paid AS SIGNED) - CAST(Sales.TotalPrice AS SIGNED)', 'balance')
+            ->withColumn('Customer.Name', 'customer_name')
+            ->withColumn('Cashier.Name', 'cashier_name')
             ->select(array(
                 'id',
                 'date',
@@ -291,10 +294,7 @@ class Sale
                 'paid',
                 'cashier_id',
                 'note'
-            ))
-            ->withColumn('CAST(Sales.Paid AS SIGNED) - CAST(Sales.TotalPrice AS SIGNED)', 'balance')
-            ->withColumn('Customer.Name', 'customer_name')
-            ->withColumn('Cashier.Name', 'cashier_name');
+            ));
 
         foreach($params->sort as $sorter){
             $sales->orderBy($sorter->property, $sorter->direction);

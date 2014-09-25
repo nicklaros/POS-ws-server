@@ -159,7 +159,7 @@ class CreditTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Sales', '\\ORM\\Sales', RelationMap::MANY_TO_ONE, array('sales_id' => 'id', ), 'CASCADE', 'RESTRICT');
+        $this->addRelation('Sales', '\\ORM\\Sales', RelationMap::MANY_TO_ONE, array('sales_id' => 'id', ), 'CASCADE', 'CASCADE');
         $this->addRelation('Payment', '\\ORM\\CreditPayment', RelationMap::ONE_TO_MANY, array('id' => 'credit_id', ), 'NO ACTION', 'RESTRICT', 'Payments');
     } // buildRelations()
 

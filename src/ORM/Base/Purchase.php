@@ -5,6 +5,8 @@ namespace ORM\Base;
 use \DateTime;
 use \Exception;
 use \PDO;
+use ORM\Debit as ChildDebit;
+use ORM\DebitQuery as ChildDebitQuery;
 use ORM\Purchase as ChildPurchase;
 use ORM\PurchaseDetail as ChildPurchaseDetail;
 use ORM\PurchaseDetailQuery as ChildPurchaseDetailQuery;
@@ -87,6 +89,12 @@ abstract class Purchase implements ActiveRecordInterface
     protected $total_price;
 
     /**
+     * The value for the paid field.
+     * @var        int
+     */
+    protected $paid;
+
+    /**
      * The value for the note field.
      * @var        string
      */
@@ -102,6 +110,12 @@ abstract class Purchase implements ActiveRecordInterface
      * @var        ChildSupplier
      */
     protected $aSupplier;
+
+    /**
+     * @var        ObjectCollection|ChildDebit[] Collection to store aggregation of ChildDebit objects.
+     */
+    protected $collDebits;
+    protected $collDebitsPartial;
 
     /**
      * @var        ObjectCollection|ChildPurchaseDetail[] Collection to store aggregation of ChildPurchaseDetail objects.
@@ -122,6 +136,12 @@ abstract class Purchase implements ActiveRecordInterface
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildDebit[]
+     */
+    protected $debitsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -403,6 +423,16 @@ abstract class Purchase implements ActiveRecordInterface
     }
 
     /**
+     * Get the [paid] column value.
+     *
+     * @return int
+     */
+    public function getPaid()
+    {
+        return $this->paid;
+    }
+
+    /**
      * Get the [note] column value.
      *
      * @return string
@@ -473,10 +503,13 @@ abstract class Purchase implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PurchaseTableMap::translateFieldName('TotalPrice', TableMap::TYPE_PHPNAME, $indexType)];
             $this->total_price = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PurchaseTableMap::translateFieldName('Note', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PurchaseTableMap::translateFieldName('Paid', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->paid = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PurchaseTableMap::translateFieldName('Note', TableMap::TYPE_PHPNAME, $indexType)];
             $this->note = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PurchaseTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PurchaseTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
             $this->status = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
@@ -486,7 +519,7 @@ abstract class Purchase implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = PurchaseTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 7; // 7 = PurchaseTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\ORM\\Purchase'), 0, $e);
@@ -598,6 +631,26 @@ abstract class Purchase implements ActiveRecordInterface
     } // setTotalPrice()
 
     /**
+     * Set the value of [paid] column.
+     *
+     * @param  int $v new value
+     * @return $this|\ORM\Purchase The current object (for fluent API support)
+     */
+    public function setPaid($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->paid !== $v) {
+            $this->paid = $v;
+            $this->modifiedColumns[PurchaseTableMap::COL_PAID] = true;
+        }
+
+        return $this;
+    } // setPaid()
+
+    /**
      * Set the value of [note] column.
      *
      * @param  string $v new value
@@ -675,6 +728,8 @@ abstract class Purchase implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aSupplier = null;
+            $this->collDebits = null;
+
             $this->collDetails = null;
 
             $this->collHistories = null;
@@ -801,6 +856,23 @@ abstract class Purchase implements ActiveRecordInterface
                 $this->resetModified();
             }
 
+            if ($this->debitsScheduledForDeletion !== null) {
+                if (!$this->debitsScheduledForDeletion->isEmpty()) {
+                    \ORM\DebitQuery::create()
+                        ->filterByPrimaryKeys($this->debitsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->debitsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collDebits !== null) {
+                foreach ($this->collDebits as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
             if ($this->detailsScheduledForDeletion !== null) {
                 if (!$this->detailsScheduledForDeletion->isEmpty()) {
                     \ORM\PurchaseDetailQuery::create()
@@ -874,6 +946,9 @@ abstract class Purchase implements ActiveRecordInterface
         if ($this->isColumnModified(PurchaseTableMap::COL_TOTAL_PRICE)) {
             $modifiedColumns[':p' . $index++]  = 'TOTAL_PRICE';
         }
+        if ($this->isColumnModified(PurchaseTableMap::COL_PAID)) {
+            $modifiedColumns[':p' . $index++]  = 'PAID';
+        }
         if ($this->isColumnModified(PurchaseTableMap::COL_NOTE)) {
             $modifiedColumns[':p' . $index++]  = 'NOTE';
         }
@@ -902,6 +977,9 @@ abstract class Purchase implements ActiveRecordInterface
                         break;
                     case 'TOTAL_PRICE':
                         $stmt->bindValue($identifier, $this->total_price, PDO::PARAM_INT);
+                        break;
+                    case 'PAID':
+                        $stmt->bindValue($identifier, $this->paid, PDO::PARAM_INT);
                         break;
                     case 'NOTE':
                         $stmt->bindValue($identifier, $this->note, PDO::PARAM_STR);
@@ -984,9 +1062,12 @@ abstract class Purchase implements ActiveRecordInterface
                 return $this->getTotalPrice();
                 break;
             case 4:
-                return $this->getNote();
+                return $this->getPaid();
                 break;
             case 5:
+                return $this->getNote();
+                break;
+            case 6:
                 return $this->getStatus();
                 break;
             default:
@@ -1022,8 +1103,9 @@ abstract class Purchase implements ActiveRecordInterface
             $keys[1] => $this->getDate(),
             $keys[2] => $this->getSupplierId(),
             $keys[3] => $this->getTotalPrice(),
-            $keys[4] => $this->getNote(),
-            $keys[5] => $this->getStatus(),
+            $keys[4] => $this->getPaid(),
+            $keys[5] => $this->getNote(),
+            $keys[6] => $this->getStatus(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1033,6 +1115,9 @@ abstract class Purchase implements ActiveRecordInterface
         if ($includeForeignObjects) {
             if (null !== $this->aSupplier) {
                 $result['Supplier'] = $this->aSupplier->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collDebits) {
+                $result['Debits'] = $this->collDebits->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collDetails) {
                 $result['Details'] = $this->collDetails->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
@@ -1087,9 +1172,12 @@ abstract class Purchase implements ActiveRecordInterface
                 $this->setTotalPrice($value);
                 break;
             case 4:
-                $this->setNote($value);
+                $this->setPaid($value);
                 break;
             case 5:
+                $this->setNote($value);
+                break;
+            case 6:
                 $this->setStatus($value);
                 break;
         } // switch()
@@ -1131,10 +1219,13 @@ abstract class Purchase implements ActiveRecordInterface
             $this->setTotalPrice($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setNote($arr[$keys[4]]);
+            $this->setPaid($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setStatus($arr[$keys[5]]);
+            $this->setNote($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setStatus($arr[$keys[6]]);
         }
     }
 
@@ -1182,6 +1273,9 @@ abstract class Purchase implements ActiveRecordInterface
         }
         if ($this->isColumnModified(PurchaseTableMap::COL_TOTAL_PRICE)) {
             $criteria->add(PurchaseTableMap::COL_TOTAL_PRICE, $this->total_price);
+        }
+        if ($this->isColumnModified(PurchaseTableMap::COL_PAID)) {
+            $criteria->add(PurchaseTableMap::COL_PAID, $this->paid);
         }
         if ($this->isColumnModified(PurchaseTableMap::COL_NOTE)) {
             $criteria->add(PurchaseTableMap::COL_NOTE, $this->note);
@@ -1278,6 +1372,7 @@ abstract class Purchase implements ActiveRecordInterface
         $copyObj->setDate($this->getDate());
         $copyObj->setSupplierId($this->getSupplierId());
         $copyObj->setTotalPrice($this->getTotalPrice());
+        $copyObj->setPaid($this->getPaid());
         $copyObj->setNote($this->getNote());
         $copyObj->setStatus($this->getStatus());
 
@@ -1285,6 +1380,12 @@ abstract class Purchase implements ActiveRecordInterface
             // important: temporarily setNew(false) because this affects the behavior of
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
+
+            foreach ($this->getDebits() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addDebit($relObj->copy($deepCopy));
+                }
+            }
 
             foreach ($this->getDetails() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
@@ -1390,12 +1491,233 @@ abstract class Purchase implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
+        if ('Debit' == $relationName) {
+            return $this->initDebits();
+        }
         if ('Detail' == $relationName) {
             return $this->initDetails();
         }
         if ('History' == $relationName) {
             return $this->initHistories();
         }
+    }
+
+    /**
+     * Clears out the collDebits collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addDebits()
+     */
+    public function clearDebits()
+    {
+        $this->collDebits = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collDebits collection loaded partially.
+     */
+    public function resetPartialDebits($v = true)
+    {
+        $this->collDebitsPartial = $v;
+    }
+
+    /**
+     * Initializes the collDebits collection.
+     *
+     * By default this just sets the collDebits collection to an empty array (like clearcollDebits());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initDebits($overrideExisting = true)
+    {
+        if (null !== $this->collDebits && !$overrideExisting) {
+            return;
+        }
+        $this->collDebits = new ObjectCollection();
+        $this->collDebits->setModel('\ORM\Debit');
+    }
+
+    /**
+     * Gets an array of ChildDebit objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildPurchase is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildDebit[] List of ChildDebit objects
+     * @throws PropelException
+     */
+    public function getDebits(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collDebitsPartial && !$this->isNew();
+        if (null === $this->collDebits || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collDebits) {
+                // return empty collection
+                $this->initDebits();
+            } else {
+                $collDebits = ChildDebitQuery::create(null, $criteria)
+                    ->filterByPurchase($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collDebitsPartial && count($collDebits)) {
+                        $this->initDebits(false);
+
+                        foreach ($collDebits as $obj) {
+                            if (false == $this->collDebits->contains($obj)) {
+                                $this->collDebits->append($obj);
+                            }
+                        }
+
+                        $this->collDebitsPartial = true;
+                    }
+
+                    return $collDebits;
+                }
+
+                if ($partial && $this->collDebits) {
+                    foreach ($this->collDebits as $obj) {
+                        if ($obj->isNew()) {
+                            $collDebits[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collDebits = $collDebits;
+                $this->collDebitsPartial = false;
+            }
+        }
+
+        return $this->collDebits;
+    }
+
+    /**
+     * Sets a collection of ChildDebit objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $debits A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildPurchase The current object (for fluent API support)
+     */
+    public function setDebits(Collection $debits, ConnectionInterface $con = null)
+    {
+        /** @var ChildDebit[] $debitsToDelete */
+        $debitsToDelete = $this->getDebits(new Criteria(), $con)->diff($debits);
+
+
+        $this->debitsScheduledForDeletion = $debitsToDelete;
+
+        foreach ($debitsToDelete as $debitRemoved) {
+            $debitRemoved->setPurchase(null);
+        }
+
+        $this->collDebits = null;
+        foreach ($debits as $debit) {
+            $this->addDebit($debit);
+        }
+
+        $this->collDebits = $debits;
+        $this->collDebitsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Debit objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Debit objects.
+     * @throws PropelException
+     */
+    public function countDebits(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collDebitsPartial && !$this->isNew();
+        if (null === $this->collDebits || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collDebits) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getDebits());
+            }
+
+            $query = ChildDebitQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByPurchase($this)
+                ->count($con);
+        }
+
+        return count($this->collDebits);
+    }
+
+    /**
+     * Method called to associate a ChildDebit object to this object
+     * through the ChildDebit foreign key attribute.
+     *
+     * @param  ChildDebit $l ChildDebit
+     * @return $this|\ORM\Purchase The current object (for fluent API support)
+     */
+    public function addDebit(ChildDebit $l)
+    {
+        if ($this->collDebits === null) {
+            $this->initDebits();
+            $this->collDebitsPartial = true;
+        }
+
+        if (!$this->collDebits->contains($l)) {
+            $this->doAddDebit($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildDebit $debit The ChildDebit object to add.
+     */
+    protected function doAddDebit(ChildDebit $debit)
+    {
+        $this->collDebits[]= $debit;
+        $debit->setPurchase($this);
+    }
+
+    /**
+     * @param  ChildDebit $debit The ChildDebit object to remove.
+     * @return $this|ChildPurchase The current object (for fluent API support)
+     */
+    public function removeDebit(ChildDebit $debit)
+    {
+        if ($this->getDebits()->contains($debit)) {
+            $pos = $this->collDebits->search($debit);
+            $this->collDebits->remove($pos);
+            if (null === $this->debitsScheduledForDeletion) {
+                $this->debitsScheduledForDeletion = clone $this->collDebits;
+                $this->debitsScheduledForDeletion->clear();
+            }
+            $this->debitsScheduledForDeletion[]= $debit;
+            $debit->setPurchase(null);
+        }
+
+        return $this;
     }
 
     /**
@@ -1923,6 +2245,7 @@ abstract class Purchase implements ActiveRecordInterface
         $this->date = null;
         $this->supplier_id = null;
         $this->total_price = null;
+        $this->paid = null;
         $this->note = null;
         $this->status = null;
         $this->alreadyInSave = false;
@@ -1943,6 +2266,11 @@ abstract class Purchase implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collDebits) {
+                foreach ($this->collDebits as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collDetails) {
                 foreach ($this->collDetails as $o) {
                     $o->clearAllReferences($deep);
@@ -1955,6 +2283,7 @@ abstract class Purchase implements ActiveRecordInterface
             }
         } // if ($deep)
 
+        $this->collDebits = null;
         $this->collDetails = null;
         $this->collHistories = null;
         $this->aSupplier = null;
