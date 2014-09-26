@@ -40,7 +40,11 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildDebitQuery rightJoinPurchase($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Purchase relation
  * @method     ChildDebitQuery innerJoinPurchase($relationAlias = null) Adds a INNER JOIN clause to the query using the Purchase relation
  *
- * @method     \ORM\PurchaseQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildDebitQuery leftJoinPayment($relationAlias = null) Adds a LEFT JOIN clause to the query using the Payment relation
+ * @method     ChildDebitQuery rightJoinPayment($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Payment relation
+ * @method     ChildDebitQuery innerJoinPayment($relationAlias = null) Adds a INNER JOIN clause to the query using the Payment relation
+ *
+ * @method     \ORM\PurchaseQuery|\ORM\DebitPaymentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildDebit findOne(ConnectionInterface $con = null) Return the first ChildDebit matching the query
  * @method     ChildDebit findOneOrCreate(ConnectionInterface $con = null) Return the first ChildDebit matching the query, or a new ChildDebit object populated from the query conditions when no match is found
@@ -504,6 +508,79 @@ abstract class DebitQuery extends ModelCriteria
         return $this
             ->joinPurchase($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Purchase', '\ORM\PurchaseQuery');
+    }
+
+    /**
+     * Filter the query by a related \ORM\DebitPayment object
+     *
+     * @param \ORM\DebitPayment|ObjectCollection $debitPayment  the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildDebitQuery The current query, for fluid interface
+     */
+    public function filterByPayment($debitPayment, $comparison = null)
+    {
+        if ($debitPayment instanceof \ORM\DebitPayment) {
+            return $this
+                ->addUsingAlias(DebitTableMap::COL_ID, $debitPayment->getDebitId(), $comparison);
+        } elseif ($debitPayment instanceof ObjectCollection) {
+            return $this
+                ->usePaymentQuery()
+                ->filterByPrimaryKeys($debitPayment->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByPayment() only accepts arguments of type \ORM\DebitPayment or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Payment relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildDebitQuery The current query, for fluid interface
+     */
+    public function joinPayment($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Payment');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Payment');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Payment relation DebitPayment object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \ORM\DebitPaymentQuery A secondary query class using the current class as primary query
+     */
+    public function usePaymentQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinPayment($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Payment', '\ORM\DebitPaymentQuery');
     }
 
     /**

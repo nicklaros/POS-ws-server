@@ -56,6 +56,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildRolePermissionQuery orderByResetPassUser($order = Criteria::ASC) Order by the reset_pass_user column
  * @method     ChildRolePermissionQuery orderByPayCredit($order = Criteria::ASC) Order by the pay_credit column
  * @method     ChildRolePermissionQuery orderByReadCredit($order = Criteria::ASC) Order by the read_credit column
+ * @method     ChildRolePermissionQuery orderByPayDebit($order = Criteria::ASC) Order by the pay_debit column
+ * @method     ChildRolePermissionQuery orderByReadDebit($order = Criteria::ASC) Order by the read_debit column
  *
  * @method     ChildRolePermissionQuery groupById() Group by the id column
  * @method     ChildRolePermissionQuery groupByCreateCustomer() Group by the create_customer column
@@ -93,6 +95,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildRolePermissionQuery groupByResetPassUser() Group by the reset_pass_user column
  * @method     ChildRolePermissionQuery groupByPayCredit() Group by the pay_credit column
  * @method     ChildRolePermissionQuery groupByReadCredit() Group by the read_credit column
+ * @method     ChildRolePermissionQuery groupByPayDebit() Group by the pay_debit column
+ * @method     ChildRolePermissionQuery groupByReadDebit() Group by the read_debit column
  *
  * @method     ChildRolePermissionQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildRolePermissionQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -143,6 +147,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildRolePermission findOneByResetPassUser(boolean $reset_pass_user) Return the first ChildRolePermission filtered by the reset_pass_user column
  * @method     ChildRolePermission findOneByPayCredit(boolean $pay_credit) Return the first ChildRolePermission filtered by the pay_credit column
  * @method     ChildRolePermission findOneByReadCredit(boolean $read_credit) Return the first ChildRolePermission filtered by the read_credit column
+ * @method     ChildRolePermission findOneByPayDebit(boolean $pay_debit) Return the first ChildRolePermission filtered by the pay_debit column
+ * @method     ChildRolePermission findOneByReadDebit(boolean $read_debit) Return the first ChildRolePermission filtered by the read_debit column
  *
  * @method     ChildRolePermission[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildRolePermission objects based on current ModelCriteria
  * @method     ChildRolePermission[]|ObjectCollection findById(string $id) Return ChildRolePermission objects filtered by the id column
@@ -181,6 +187,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildRolePermission[]|ObjectCollection findByResetPassUser(boolean $reset_pass_user) Return ChildRolePermission objects filtered by the reset_pass_user column
  * @method     ChildRolePermission[]|ObjectCollection findByPayCredit(boolean $pay_credit) Return ChildRolePermission objects filtered by the pay_credit column
  * @method     ChildRolePermission[]|ObjectCollection findByReadCredit(boolean $read_credit) Return ChildRolePermission objects filtered by the read_credit column
+ * @method     ChildRolePermission[]|ObjectCollection findByPayDebit(boolean $pay_debit) Return ChildRolePermission objects filtered by the pay_debit column
+ * @method     ChildRolePermission[]|ObjectCollection findByReadDebit(boolean $read_debit) Return ChildRolePermission objects filtered by the read_debit column
  * @method     ChildRolePermission[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -270,7 +278,7 @@ abstract class RolePermissionQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT ID, CREATE_CUSTOMER, READ_CUSTOMER, UPDATE_CUSTOMER, DESTROY_CUSTOMER, CREATE_PRODUCT, READ_PRODUCT, UPDATE_PRODUCT, DESTROY_PRODUCT, CREATE_PURCHASE, READ_PURCHASE, UPDATE_PURCHASE, DESTROY_PURCHASE, CREATE_SALES, READ_SALES, UPDATE_SALES, DESTROY_SALES, CREATE_STOCK, READ_STOCK, UPDATE_STOCK, DESTROY_STOCK, CREATE_SUPPLIER, READ_SUPPLIER, UPDATE_SUPPLIER, DESTROY_SUPPLIER, CREATE_UNIT, READ_UNIT, UPDATE_UNIT, DESTROY_UNIT, CREATE_USER, READ_USER, UPDATE_USER, DESTROY_USER, RESET_PASS_USER, PAY_CREDIT, READ_CREDIT FROM role_permission WHERE ID = :p0';
+        $sql = 'SELECT ID, CREATE_CUSTOMER, READ_CUSTOMER, UPDATE_CUSTOMER, DESTROY_CUSTOMER, CREATE_PRODUCT, READ_PRODUCT, UPDATE_PRODUCT, DESTROY_PRODUCT, CREATE_PURCHASE, READ_PURCHASE, UPDATE_PURCHASE, DESTROY_PURCHASE, CREATE_SALES, READ_SALES, UPDATE_SALES, DESTROY_SALES, CREATE_STOCK, READ_STOCK, UPDATE_STOCK, DESTROY_STOCK, CREATE_SUPPLIER, READ_SUPPLIER, UPDATE_SUPPLIER, DESTROY_SUPPLIER, CREATE_UNIT, READ_UNIT, UPDATE_UNIT, DESTROY_UNIT, CREATE_USER, READ_USER, UPDATE_USER, DESTROY_USER, RESET_PASS_USER, PAY_CREDIT, READ_CREDIT, PAY_DEBIT, READ_DEBIT FROM role_permission WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -1346,6 +1354,60 @@ abstract class RolePermissionQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(RolePermissionTableMap::COL_READ_CREDIT, $readCredit, $comparison);
+    }
+
+    /**
+     * Filter the query on the pay_debit column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByPayDebit(true); // WHERE pay_debit = true
+     * $query->filterByPayDebit('yes'); // WHERE pay_debit = true
+     * </code>
+     *
+     * @param     boolean|string $payDebit The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRolePermissionQuery The current query, for fluid interface
+     */
+    public function filterByPayDebit($payDebit = null, $comparison = null)
+    {
+        if (is_string($payDebit)) {
+            $payDebit = in_array(strtolower($payDebit), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(RolePermissionTableMap::COL_PAY_DEBIT, $payDebit, $comparison);
+    }
+
+    /**
+     * Filter the query on the read_debit column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByReadDebit(true); // WHERE read_debit = true
+     * $query->filterByReadDebit('yes'); // WHERE read_debit = true
+     * </code>
+     *
+     * @param     boolean|string $readDebit The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRolePermissionQuery The current query, for fluid interface
+     */
+    public function filterByReadDebit($readDebit = null, $comparison = null)
+    {
+        if (is_string($readDebit)) {
+            $readDebit = in_array(strtolower($readDebit), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(RolePermissionTableMap::COL_READ_DEBIT, $readDebit, $comparison);
     }
 
     /**

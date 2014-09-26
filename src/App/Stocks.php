@@ -74,10 +74,6 @@ class Stocks
             ->setStatus('Active')
             ->save($con);
 
-        $params->id = $stock->getId();
-        
-        $stock = Stocks::seeker($params, $currentUser, $con);
-
         // log history
         $rowHistory = new RowHistory();
         $rowHistory->setRowId($params->id)
@@ -86,6 +82,10 @@ class Stocks
             ->setOperation('create')
             ->setUserId($currentUser->id)
             ->save($con);
+
+        $params->id = $stock->getId();
+        
+        $stock = Stocks::seeker($params, $currentUser, $con);
         
         $results['success'] = true;
         $results['data'] = $stock['data'];
@@ -142,8 +142,12 @@ class Stocks
             ->setUserId($currentUser->id)
             ->save($con);
 
+        $params->id = $stock->getId();
+        
+        $stock = Stocks::seeker($params, $currentUser, $con);
+
         $results['success'] = true;
-        $results['id'] = $stock->getId();
+        $results['data'] = $stock['data'];
 
         return $results;
     }

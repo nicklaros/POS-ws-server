@@ -55,6 +55,21 @@
         </foreign-key>
     </table>
 
+    <table name="debit_payment" phpName="DebitPayment">
+        <column name="id"           type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="date"         type="DATE" />
+        <column name="debit_id"     type="BIGINT" size="20" />
+        <column name="cashier_id"   type="BIGINT" size="20" />
+        <column name="paid"         type="INTEGER" size="10" />
+        <column name="status"       type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
+        <foreign-key foreignTable="debit" phpName="Debit" refPhpName="Payment" onDelete="NO ACTION" onUpdate="RESTRICT">
+            <reference local="debit_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="user_detail" phpName="Cashier" refPhpName="DebitPayment" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference local="cashier_id" foreign="id" />
+        </foreign-key>
+    </table>
+
     <table name="menu" phpName="Menu">
         <column name="id"       type="BIGINT" size="20" primaryKey="true" required="true"/>
         <column name="sub"      type="CHAR" size="32" />
@@ -199,6 +214,8 @@
         <column name="reset_pass_user"  type="BOOLEAN" />
         <column name="pay_credit"       type="BOOLEAN" />
         <column name="read_credit"      type="BOOLEAN" />
+        <column name="pay_debit"        type="BOOLEAN" />
+        <column name="read_debit"       type="BOOLEAN" />
         <foreign-key foreignTable="role" phpName="Role" refPhpName="Permission" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="id" foreign="id" />
         </foreign-key>

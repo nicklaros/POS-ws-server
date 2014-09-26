@@ -40,7 +40,7 @@ class Debits
     public static function loadFormPay($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('pay_credit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('pay_debit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         $debit = DebitQuery::create()
@@ -52,18 +52,18 @@ class Debits
                 ->withColumn('Supplier.Name', 'supplier_name')
             ->endUse()
             ->withColumn('Debit.Id', 'debit_id')
-            ->withColumn('CONVERT(Debit.Total, SIGNED) - CONVERT(Debit.Paid, SIGNED)', 'credit')
+            ->withColumn('CONVERT(Debit.Total, SIGNED) - CONVERT(Debit.Paid, SIGNED)', 'debit')
             ->select(array(
                 'debit_id',
                 'supplier_id',
                 'supplier_name',
-                'credit'
+                'debit'
             ))
             ->findOne($con);
         
         if (!$debit) throw new \Exception('Data tidak ditemukan.');
         
-        if ($debit['credit'] <= 0) throw new \Exception('Piutang sudah terlunasi.');
+        if ($debit['debit'] <= 0) throw new \Exception('Hutang sudah terlunasi.');
         
         $results['success'] = true;
         $results['data'] = $debit;
@@ -74,10 +74,10 @@ class Debits
     public static function pay($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('pay_credit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('pay_debit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        // make sure the credit is not fully paid already
+        // make sure the debit is not fully paid already
         $debit = DebitQuery::create()
             ->filterByStatus('Active')
             ->filterById($params->debit_id)
@@ -86,8 +86,8 @@ class Debits
         
         if (!$debit) throw new \Exception('Data tidak ditemukan.');
         
-        // if credit is already fully paid then stop paying 
-        if ($debit->getBalance() <= 0) throw new \Exception('Piutang ini sudah dilunasi.');
+        // if debit is already fully paid then stop paying 
+        if ($debit->getBalance() <= 0) throw new \Exception('Hutang ini sudah dilunasi.');
         
         // create new payment
         $debitPayment = new DebitPayment();
@@ -122,7 +122,7 @@ class Debits
     public static function read($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('read_credit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('read_debit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         $page = (isset($params->page) ? $params->page : 0);
@@ -146,11 +146,11 @@ class Debits
                     ->filterBySupplierId($params->supplier_id)
                 ->endUse();
         }
-        if(isset($params->supplier)) {
+        if(isset($params->supplier_name)) {
             $debits
                 ->usePurchaseQuery()
                     ->useSupplierQuery()
-                        ->filterByName("%{$params->supplier}%")
+                        ->filterByName("%{$params->supplier_name}%")
                     ->endUse()
                 ->endUse();
         }
@@ -205,7 +205,7 @@ class Debits
     public static function readPayment($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('read_credit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('read_debit')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         $page = (isset($params->page) ? $params->page : 0);
@@ -224,12 +224,12 @@ class Debits
             ->endUse();
             
         if(isset($params->debit_id)) $debitPayments->filterByDebitId($params->debit_id);
-        if(isset($params->supplier)) {
+        if(isset($params->supplier_name)) {
             $debitPayments
                 ->useDebitQuery()
                     ->usePurchaseQuery()
                         ->useSupplierQuery()
-                            ->filterByName('%' . $params->supplier . '%')
+                            ->filterByName("%{$params->supplier_name}%")
                         ->endUse()
                     ->endUse()
                 ->endUse();

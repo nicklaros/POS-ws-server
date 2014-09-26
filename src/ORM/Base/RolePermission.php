@@ -271,6 +271,18 @@ abstract class RolePermission implements ActiveRecordInterface
     protected $read_credit;
 
     /**
+     * The value for the pay_debit field.
+     * @var        boolean
+     */
+    protected $pay_debit;
+
+    /**
+     * The value for the read_debit field.
+     * @var        boolean
+     */
+    protected $read_debit;
+
+    /**
      * @var        ChildRole
      */
     protected $aRole;
@@ -1211,6 +1223,46 @@ abstract class RolePermission implements ActiveRecordInterface
     }
 
     /**
+     * Get the [pay_debit] column value.
+     *
+     * @return boolean
+     */
+    public function getPayDebit()
+    {
+        return $this->pay_debit;
+    }
+
+    /**
+     * Get the [pay_debit] column value.
+     *
+     * @return boolean
+     */
+    public function isPayDebit()
+    {
+        return $this->getPayDebit();
+    }
+
+    /**
+     * Get the [read_debit] column value.
+     *
+     * @return boolean
+     */
+    public function getReadDebit()
+    {
+        return $this->read_debit;
+    }
+
+    /**
+     * Get the [read_debit] column value.
+     *
+     * @return boolean
+     */
+    public function isReadDebit()
+    {
+        return $this->getReadDebit();
+    }
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -1353,6 +1405,12 @@ abstract class RolePermission implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 35 + $startcol : RolePermissionTableMap::translateFieldName('ReadCredit', TableMap::TYPE_PHPNAME, $indexType)];
             $this->read_credit = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 36 + $startcol : RolePermissionTableMap::translateFieldName('PayDebit', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->pay_debit = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 37 + $startcol : RolePermissionTableMap::translateFieldName('ReadDebit', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->read_debit = (null !== $col) ? (boolean) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -1361,7 +1419,7 @@ abstract class RolePermission implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 36; // 36 = RolePermissionTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 38; // 38 = RolePermissionTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\ORM\\RolePermission'), 0, $e);
@@ -2393,6 +2451,62 @@ abstract class RolePermission implements ActiveRecordInterface
     } // setReadCredit()
 
     /**
+     * Sets the value of the [pay_debit] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setPayDebit($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->pay_debit !== $v) {
+            $this->pay_debit = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_PAY_DEBIT] = true;
+        }
+
+        return $this;
+    } // setPayDebit()
+
+    /**
+     * Sets the value of the [read_debit] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setReadDebit($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->read_debit !== $v) {
+            $this->read_debit = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_READ_DEBIT] = true;
+        }
+
+        return $this;
+    } // setReadDebit()
+
+    /**
      * Reloads this object from datastore based on primary key and (optionally) resets all associated objects.
      *
      * This will only work if the object has been saved and has a valid primary key set.
@@ -2682,6 +2796,12 @@ abstract class RolePermission implements ActiveRecordInterface
         if ($this->isColumnModified(RolePermissionTableMap::COL_READ_CREDIT)) {
             $modifiedColumns[':p' . $index++]  = 'READ_CREDIT';
         }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_PAY_DEBIT)) {
+            $modifiedColumns[':p' . $index++]  = 'PAY_DEBIT';
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_DEBIT)) {
+            $modifiedColumns[':p' . $index++]  = 'READ_DEBIT';
+        }
 
         $sql = sprintf(
             'INSERT INTO role_permission (%s) VALUES (%s)',
@@ -2800,6 +2920,12 @@ abstract class RolePermission implements ActiveRecordInterface
                         break;
                     case 'READ_CREDIT':
                         $stmt->bindValue($identifier, (int) $this->read_credit, PDO::PARAM_INT);
+                        break;
+                    case 'PAY_DEBIT':
+                        $stmt->bindValue($identifier, (int) $this->pay_debit, PDO::PARAM_INT);
+                        break;
+                    case 'READ_DEBIT':
+                        $stmt->bindValue($identifier, (int) $this->read_debit, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -2964,6 +3090,12 @@ abstract class RolePermission implements ActiveRecordInterface
             case 35:
                 return $this->getReadCredit();
                 break;
+            case 36:
+                return $this->getPayDebit();
+                break;
+            case 37:
+                return $this->getReadDebit();
+                break;
             default:
                 return null;
                 break;
@@ -3029,6 +3161,8 @@ abstract class RolePermission implements ActiveRecordInterface
             $keys[33] => $this->getResetPassUser(),
             $keys[34] => $this->getPayCredit(),
             $keys[35] => $this->getReadCredit(),
+            $keys[36] => $this->getPayDebit(),
+            $keys[37] => $this->getReadDebit(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -3181,6 +3315,12 @@ abstract class RolePermission implements ActiveRecordInterface
             case 35:
                 $this->setReadCredit($value);
                 break;
+            case 36:
+                $this->setPayDebit($value);
+                break;
+            case 37:
+                $this->setReadDebit($value);
+                break;
         } // switch()
 
         return $this;
@@ -3314,6 +3454,12 @@ abstract class RolePermission implements ActiveRecordInterface
         }
         if (array_key_exists($keys[35], $arr)) {
             $this->setReadCredit($arr[$keys[35]]);
+        }
+        if (array_key_exists($keys[36], $arr)) {
+            $this->setPayDebit($arr[$keys[36]]);
+        }
+        if (array_key_exists($keys[37], $arr)) {
+            $this->setReadDebit($arr[$keys[37]]);
         }
     }
 
@@ -3458,6 +3604,12 @@ abstract class RolePermission implements ActiveRecordInterface
         if ($this->isColumnModified(RolePermissionTableMap::COL_READ_CREDIT)) {
             $criteria->add(RolePermissionTableMap::COL_READ_CREDIT, $this->read_credit);
         }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_PAY_DEBIT)) {
+            $criteria->add(RolePermissionTableMap::COL_PAY_DEBIT, $this->pay_debit);
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_DEBIT)) {
+            $criteria->add(RolePermissionTableMap::COL_READ_DEBIT, $this->read_debit);
+        }
 
         return $criteria;
     }
@@ -3587,6 +3739,8 @@ abstract class RolePermission implements ActiveRecordInterface
         $copyObj->setResetPassUser($this->getResetPassUser());
         $copyObj->setPayCredit($this->getPayCredit());
         $copyObj->setReadCredit($this->getReadCredit());
+        $copyObj->setPayDebit($this->getPayDebit());
+        $copyObj->setReadDebit($this->getReadDebit());
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -3705,6 +3859,8 @@ abstract class RolePermission implements ActiveRecordInterface
         $this->reset_pass_user = null;
         $this->pay_credit = null;
         $this->read_credit = null;
+        $this->pay_debit = null;
+        $this->read_debit = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();

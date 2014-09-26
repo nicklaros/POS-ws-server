@@ -191,6 +191,10 @@ class Reports
         $date->start = new \DateTime($params->start);
         $date->until = new \DateTime($params->until);
         
+        $interval = $date->start->diff($date->until);
+        
+        if ($interval->format('%m') > 3)  throw new \Exception('Jangka Waktu tidak boleh melebihi 3 bulan');
+        
         $results = Reports::getStats($date, $con);
         
         return $results;
