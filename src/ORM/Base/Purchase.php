@@ -13,8 +13,8 @@ use ORM\PurchaseDetailQuery as ChildPurchaseDetailQuery;
 use ORM\PurchaseHistory as ChildPurchaseHistory;
 use ORM\PurchaseHistoryQuery as ChildPurchaseHistoryQuery;
 use ORM\PurchaseQuery as ChildPurchaseQuery;
-use ORM\Supplier as ChildSupplier;
-use ORM\SupplierQuery as ChildSupplierQuery;
+use ORM\SecondParty as ChildSecondParty;
+use ORM\SecondPartyQuery as ChildSecondPartyQuery;
 use ORM\Map\PurchaseTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -77,10 +77,10 @@ abstract class Purchase implements ActiveRecordInterface
     protected $date;
 
     /**
-     * The value for the supplier_id field.
+     * The value for the second_party_id field.
      * @var        string
      */
-    protected $supplier_id;
+    protected $second_party_id;
 
     /**
      * The value for the total_price field.
@@ -107,9 +107,9 @@ abstract class Purchase implements ActiveRecordInterface
     protected $status;
 
     /**
-     * @var        ChildSupplier
+     * @var        ChildSecondParty
      */
-    protected $aSupplier;
+    protected $aSecondParty;
 
     /**
      * @var        ObjectCollection|ChildDebit[] Collection to store aggregation of ChildDebit objects.
@@ -403,13 +403,13 @@ abstract class Purchase implements ActiveRecordInterface
     }
 
     /**
-     * Get the [supplier_id] column value.
+     * Get the [second_party_id] column value.
      *
      * @return string
      */
-    public function getSupplierId()
+    public function getSecondPartyId()
     {
-        return $this->supplier_id;
+        return $this->second_party_id;
     }
 
     /**
@@ -497,8 +497,8 @@ abstract class Purchase implements ActiveRecordInterface
             }
             $this->date = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : PurchaseTableMap::translateFieldName('SupplierId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->supplier_id = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : PurchaseTableMap::translateFieldName('SecondPartyId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->second_party_id = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PurchaseTableMap::translateFieldName('TotalPrice', TableMap::TYPE_PHPNAME, $indexType)];
             $this->total_price = (null !== $col) ? (int) $col : null;
@@ -541,8 +541,8 @@ abstract class Purchase implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aSupplier !== null && $this->supplier_id !== $this->aSupplier->getId()) {
-            $this->aSupplier = null;
+        if ($this->aSecondParty !== null && $this->second_party_id !== $this->aSecondParty->getId()) {
+            $this->aSecondParty = null;
         }
     } // ensureConsistency
 
@@ -587,28 +587,28 @@ abstract class Purchase implements ActiveRecordInterface
     } // setDate()
 
     /**
-     * Set the value of [supplier_id] column.
+     * Set the value of [second_party_id] column.
      *
      * @param  string $v new value
      * @return $this|\ORM\Purchase The current object (for fluent API support)
      */
-    public function setSupplierId($v)
+    public function setSecondPartyId($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->supplier_id !== $v) {
-            $this->supplier_id = $v;
-            $this->modifiedColumns[PurchaseTableMap::COL_SUPPLIER_ID] = true;
+        if ($this->second_party_id !== $v) {
+            $this->second_party_id = $v;
+            $this->modifiedColumns[PurchaseTableMap::COL_SECOND_PARTY_ID] = true;
         }
 
-        if ($this->aSupplier !== null && $this->aSupplier->getId() !== $v) {
-            $this->aSupplier = null;
+        if ($this->aSecondParty !== null && $this->aSecondParty->getId() !== $v) {
+            $this->aSecondParty = null;
         }
 
         return $this;
-    } // setSupplierId()
+    } // setSecondPartyId()
 
     /**
      * Set the value of [total_price] column.
@@ -727,7 +727,7 @@ abstract class Purchase implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aSupplier = null;
+            $this->aSecondParty = null;
             $this->collDebits = null;
 
             $this->collDetails = null;
@@ -838,11 +838,11 @@ abstract class Purchase implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aSupplier !== null) {
-                if ($this->aSupplier->isModified() || $this->aSupplier->isNew()) {
-                    $affectedRows += $this->aSupplier->save($con);
+            if ($this->aSecondParty !== null) {
+                if ($this->aSecondParty->isModified() || $this->aSecondParty->isNew()) {
+                    $affectedRows += $this->aSecondParty->save($con);
                 }
-                $this->setSupplier($this->aSupplier);
+                $this->setSecondParty($this->aSecondParty);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -940,8 +940,8 @@ abstract class Purchase implements ActiveRecordInterface
         if ($this->isColumnModified(PurchaseTableMap::COL_DATE)) {
             $modifiedColumns[':p' . $index++]  = 'DATE';
         }
-        if ($this->isColumnModified(PurchaseTableMap::COL_SUPPLIER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'SUPPLIER_ID';
+        if ($this->isColumnModified(PurchaseTableMap::COL_SECOND_PARTY_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'SECOND_PARTY_ID';
         }
         if ($this->isColumnModified(PurchaseTableMap::COL_TOTAL_PRICE)) {
             $modifiedColumns[':p' . $index++]  = 'TOTAL_PRICE';
@@ -972,8 +972,8 @@ abstract class Purchase implements ActiveRecordInterface
                     case 'DATE':
                         $stmt->bindValue($identifier, $this->date ? $this->date->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
-                    case 'SUPPLIER_ID':
-                        $stmt->bindValue($identifier, $this->supplier_id, PDO::PARAM_INT);
+                    case 'SECOND_PARTY_ID':
+                        $stmt->bindValue($identifier, $this->second_party_id, PDO::PARAM_INT);
                         break;
                     case 'TOTAL_PRICE':
                         $stmt->bindValue($identifier, $this->total_price, PDO::PARAM_INT);
@@ -1056,7 +1056,7 @@ abstract class Purchase implements ActiveRecordInterface
                 return $this->getDate();
                 break;
             case 2:
-                return $this->getSupplierId();
+                return $this->getSecondPartyId();
                 break;
             case 3:
                 return $this->getTotalPrice();
@@ -1101,7 +1101,7 @@ abstract class Purchase implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getDate(),
-            $keys[2] => $this->getSupplierId(),
+            $keys[2] => $this->getSecondPartyId(),
             $keys[3] => $this->getTotalPrice(),
             $keys[4] => $this->getPaid(),
             $keys[5] => $this->getNote(),
@@ -1113,8 +1113,8 @@ abstract class Purchase implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aSupplier) {
-                $result['Supplier'] = $this->aSupplier->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            if (null !== $this->aSecondParty) {
+                $result['SecondParty'] = $this->aSecondParty->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
             if (null !== $this->collDebits) {
                 $result['Debits'] = $this->collDebits->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
@@ -1166,7 +1166,7 @@ abstract class Purchase implements ActiveRecordInterface
                 $this->setDate($value);
                 break;
             case 2:
-                $this->setSupplierId($value);
+                $this->setSecondPartyId($value);
                 break;
             case 3:
                 $this->setTotalPrice($value);
@@ -1213,7 +1213,7 @@ abstract class Purchase implements ActiveRecordInterface
             $this->setDate($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setSupplierId($arr[$keys[2]]);
+            $this->setSecondPartyId($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
             $this->setTotalPrice($arr[$keys[3]]);
@@ -1268,8 +1268,8 @@ abstract class Purchase implements ActiveRecordInterface
         if ($this->isColumnModified(PurchaseTableMap::COL_DATE)) {
             $criteria->add(PurchaseTableMap::COL_DATE, $this->date);
         }
-        if ($this->isColumnModified(PurchaseTableMap::COL_SUPPLIER_ID)) {
-            $criteria->add(PurchaseTableMap::COL_SUPPLIER_ID, $this->supplier_id);
+        if ($this->isColumnModified(PurchaseTableMap::COL_SECOND_PARTY_ID)) {
+            $criteria->add(PurchaseTableMap::COL_SECOND_PARTY_ID, $this->second_party_id);
         }
         if ($this->isColumnModified(PurchaseTableMap::COL_TOTAL_PRICE)) {
             $criteria->add(PurchaseTableMap::COL_TOTAL_PRICE, $this->total_price);
@@ -1370,7 +1370,7 @@ abstract class Purchase implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setDate($this->getDate());
-        $copyObj->setSupplierId($this->getSupplierId());
+        $copyObj->setSecondPartyId($this->getSecondPartyId());
         $copyObj->setTotalPrice($this->getTotalPrice());
         $copyObj->setPaid($this->getPaid());
         $copyObj->setNote($this->getNote());
@@ -1430,24 +1430,24 @@ abstract class Purchase implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildSupplier object.
+     * Declares an association between this object and a ChildSecondParty object.
      *
-     * @param  ChildSupplier $v
+     * @param  ChildSecondParty $v
      * @return $this|\ORM\Purchase The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setSupplier(ChildSupplier $v = null)
+    public function setSecondParty(ChildSecondParty $v = null)
     {
         if ($v === null) {
-            $this->setSupplierId(NULL);
+            $this->setSecondPartyId(NULL);
         } else {
-            $this->setSupplierId($v->getId());
+            $this->setSecondPartyId($v->getId());
         }
 
-        $this->aSupplier = $v;
+        $this->aSecondParty = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildSupplier object, it will not be re-added.
+        // If this object has already been added to the ChildSecondParty object, it will not be re-added.
         if ($v !== null) {
             $v->addPurchase($this);
         }
@@ -1458,26 +1458,26 @@ abstract class Purchase implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildSupplier object
+     * Get the associated ChildSecondParty object
      *
      * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildSupplier The associated ChildSupplier object.
+     * @return ChildSecondParty The associated ChildSecondParty object.
      * @throws PropelException
      */
-    public function getSupplier(ConnectionInterface $con = null)
+    public function getSecondParty(ConnectionInterface $con = null)
     {
-        if ($this->aSupplier === null && (($this->supplier_id !== "" && $this->supplier_id !== null))) {
-            $this->aSupplier = ChildSupplierQuery::create()->findPk($this->supplier_id, $con);
+        if ($this->aSecondParty === null && (($this->second_party_id !== "" && $this->second_party_id !== null))) {
+            $this->aSecondParty = ChildSecondPartyQuery::create()->findPk($this->second_party_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aSupplier->addPurchases($this);
+                $this->aSecondParty->addPurchases($this);
              */
         }
 
-        return $this->aSupplier;
+        return $this->aSecondParty;
     }
 
 
@@ -2238,12 +2238,12 @@ abstract class Purchase implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->aSupplier) {
-            $this->aSupplier->removePurchase($this);
+        if (null !== $this->aSecondParty) {
+            $this->aSecondParty->removePurchase($this);
         }
         $this->id = null;
         $this->date = null;
-        $this->supplier_id = null;
+        $this->second_party_id = null;
         $this->total_price = null;
         $this->paid = null;
         $this->note = null;
@@ -2286,7 +2286,7 @@ abstract class Purchase implements ActiveRecordInterface
         $this->collDebits = null;
         $this->collDetails = null;
         $this->collHistories = null;
-        $this->aSupplier = null;
+        $this->aSecondParty = null;
     }
 
     /**

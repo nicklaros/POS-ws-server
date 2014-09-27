@@ -47,16 +47,16 @@ class Debits
             ->filterByStatus('Active')
             ->filterById($params->debit_id)
             ->usePurchaseQuery()
-                ->leftJoin('Supplier')
-                ->withColumn('Supplier.Id', 'supplier_id')
-                ->withColumn('Supplier.Name', 'supplier_name')
+                ->leftJoin('SecondParty')
+                ->withColumn('SecondParty.Id', 'second_party_id')
+                ->withColumn('SecondParty.Name', 'second_party_name')
             ->endUse()
             ->withColumn('Debit.Id', 'debit_id')
             ->withColumn('CONVERT(Debit.Total, SIGNED) - CONVERT(Debit.Paid, SIGNED)', 'debit')
             ->select(array(
                 'debit_id',
-                'supplier_id',
-                'supplier_name',
+                'second_party_id',
+                'second_party_name',
                 'debit'
             ))
             ->findOne($con);
@@ -131,26 +131,26 @@ class Debits
         $debits = DebitQuery::create()
             ->filterByStatus('Active')
             ->usePurchaseQuery()
-                ->leftJoin('Supplier')
-                ->withColumn('Supplier.Id', 'supplier_id')
-                ->withColumn('Supplier.Name', 'supplier_name')
+                ->leftJoin('SecondParty')
+                ->withColumn('SecondParty.Id', 'second_party_id')
+                ->withColumn('SecondParty.Name', 'second_party_name')
                 ->withColumn('Purchase.Date', 'date')
             ->endUse()
             ->withColumn('CONVERT(Debit.Total, SIGNED) - CONVERT(Debit.Paid, SIGNED)', 'balance');
             
         if(isset($params->id)) $debits->filterById($params->id);
         if(isset($params->purchase_id)) $debits->filterByPurchaseId($params->purchase_id);
-        if(isset($params->supplier_id)) {
+        if(isset($params->second_party_id)) {
             $debits
                 ->usePurchaseQuery()
-                    ->filterBySupplierId($params->supplier_id)
+                    ->filterBySecondPartyId($params->second_party_id)
                 ->endUse();
         }
-        if(isset($params->supplier_name)) {
+        if(isset($params->second_party_name)) {
             $debits
                 ->usePurchaseQuery()
-                    ->useSupplierQuery()
-                        ->filterByName("%{$params->supplier_name}%")
+                    ->useSecondPartyQuery()
+                        ->filterByName("%{$params->second_party_name}%")
                     ->endUse()
                 ->endUse();
         }
@@ -171,8 +171,8 @@ class Debits
                 'purchase_id',
                 'total',
                 'paid',
-                'supplier_id',
-                'supplier_name',
+                'second_party_id',
+                'second_party_name',
                 'date',
                 'balance'
             ));
@@ -217,19 +217,19 @@ class Debits
             ->withColumn('Cashier.Name', 'cashier_name')
             ->useDebitQuery()
                 ->usePurchaseQuery()
-                    ->leftJoin('Supplier')
-                    ->withColumn('Supplier.Id', 'supplier_id')
-                    ->withColumn('Supplier.Name', 'supplier_name')
+                    ->leftJoin('SecondParty')
+                    ->withColumn('SecondParty.Id', 'second_party_id')
+                    ->withColumn('SecondParty.Name', 'second_party_name')
                 ->endUse()
             ->endUse();
             
         if(isset($params->debit_id)) $debitPayments->filterByDebitId($params->debit_id);
-        if(isset($params->supplier_name)) {
+        if(isset($params->second_party_name)) {
             $debitPayments
                 ->useDebitQuery()
                     ->usePurchaseQuery()
-                        ->useSupplierQuery()
-                            ->filterByName("%{$params->supplier_name}%")
+                        ->useSecondPartyQuery()
+                            ->filterByName("%{$params->second_party_name}%")
                         ->endUse()
                     ->endUse()
                 ->endUse();
@@ -245,8 +245,8 @@ class Debits
                 'paid',
                 'cashier_id',
                 'cashier_name',
-                'supplier_id',
-                'supplier_name'
+                'second_party_id',
+                'second_party_name'
             ));
 
         foreach($params->sort as $sorter){

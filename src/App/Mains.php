@@ -104,6 +104,7 @@ class Mains implements MessageComponentInterface {
             'purchase',
             'report',
             'sales',
+            'secondParty',
             'stock',
             'supplier',
             'unit',
@@ -213,6 +214,7 @@ class Mains implements MessageComponentInterface {
             'cashier',
             'customer',
             'product',
+            'secondParty',
             'stock',
             'supplier',
             'unit'
@@ -553,6 +555,26 @@ class Mains implements MessageComponentInterface {
         // route to requested module and method
         $results = Sale::$method($params, $currentUser, $con);
 
+        return $results;
+    }
+    
+    private function secondParty($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = SecondPartys::$method($params, $currentUser, $con);
+        
         return $results;
     }
 

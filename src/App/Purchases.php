@@ -113,15 +113,15 @@ class Purchases
     private static function seeker($params, $currentUser, $con)
     {
         $purchase = PurchaseQuery::create()
-            ->leftJoin('Supplier')
+            ->leftJoin('SecondParty')
             ->filterByStatus('Active')
             ->filterById($params->id)
             ->withColumn('CAST(Purchase.Paid AS SIGNED) - CAST(Purchase.TotalPrice AS SIGNED)', 'balance')
-            ->withColumn('Supplier.Name', 'supplier_name')
+            ->withColumn('SecondParty.Name', 'second_party_name')
             ->select(array(
                 'id',
                 'date',
-                'supplier_id',
+                'second_party_id',
                 'total_price',
                 'paid',
                 'note'
@@ -233,7 +233,7 @@ class Purchases
         $purchase = new Purchase();
         $purchase
             ->setDate($params->date)
-            ->setSupplierId($params->supplier_id)
+            ->setSecondPartyId($params->second_party_id)
             ->setTotalPrice($params->total_price)
             ->setPaid($params->paid)
             ->setNote($params->note)
@@ -337,20 +337,20 @@ class Purchases
         $limit = (isset($params->limit) ? $params->limit : 100);
 
         $purchases = PurchaseQuery::create()
-            ->leftJoin('Supplier')
+            ->leftJoin('SecondParty')
             ->filterByStatus('Active');
             
-        if(isset($params->supplier)) $purchases->where('Supplier.Name like ?', '%' . $params->supplier . '%');
+        if(isset($params->supplier)) $purchases->where('SecondParty.Name like ?', '%' . $params->supplier . '%');
         if(isset($params->start_date)) $purchases->filterByDate(array('min' => $params->start_date));
         if(isset($params->until_date)) $purchases->filterByDate(array('max' => $params->until_date));
 
         $purchases = $purchases
             ->withColumn('CAST(Purchase.Paid AS SIGNED) - CAST(Purchase.TotalPrice AS SIGNED)', 'balance')
-            ->withColumn('Supplier.Name', 'supplier_name')
+            ->withColumn('SecondParty.Name', 'second_party_name')
             ->select(array(
                 'id',
                 'date',
-                'supplier_id',
+                'second_party_id',
                 'total_price',
                 'paid',
                 'note'
@@ -406,7 +406,7 @@ class Purchases
 
         $purchase
             ->setDate($params->date)
-            ->setSupplierId($params->supplier_id)
+            ->setSecondPartyId($params->second_party_id)
             ->setTotalPrice($params->total_price)
             ->setNote($params->note)
             ->setStatus('Active')

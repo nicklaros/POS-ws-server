@@ -33,17 +33,6 @@
         </foreign-key>
     </table>
 
-    <table name="customer" phpName="Customer">
-        <column name="id"               type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
-        <column name="registered_date"  type="DATE" />
-        <column name="name"             type="CHAR" size="128" />
-        <column name="address"          type="CHAR" size="128" />
-        <column name="birthday"         type="DATE" />
-        <column name="gender"           type="CHAR" sqlType="ENUM('Male','Female')" />
-        <column name="phone"            type="CHAR" size="20" />
-        <column name="status"           type="CHAR" sqlType="ENUM('Active', 'Deleted', 'Not Active', 'Pending')" />
-    </table>
-
     <table name="debit" phpName="Debit">
         <column name="id"           type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
         <column name="purchase_id"  type="BIGINT" size="20" />
@@ -126,15 +115,15 @@
     </table>
 
     <table name="purchase" phpName="Purchase">
-        <column name="id"           type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
-        <column name="date"         type="DATE" />
-        <column name="supplier_id"  type="BIGINT" size="20" />
-        <column name="total_price"  type="INTEGER" size="10" />
-        <column name="paid"         type="INTEGER" size="10" />
-        <column name="note"         type="CHAR" size="32" />
-        <column name="status"       type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
-        <foreign-key foreignTable="supplier" phpName="Supplier" refPhpName="Purchase" onDelete="RESTRICT" onUpdate="RESTRICT">
-            <reference local="supplier_id" foreign="id" />
+        <column name="id"               type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="date"             type="DATE" />
+        <column name="second_party_id"  type="BIGINT" size="20" />
+        <column name="total_price"      type="INTEGER" size="10" />
+        <column name="paid"             type="INTEGER" size="10" />
+        <column name="note"             type="CHAR" size="32" />
+        <column name="status"           type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
+        <foreign-key foreignTable="second_party" phpName="SecondParty" refPhpName="Purchase" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference local="second_party_id" foreign="id" />
         </foreign-key>
     </table>
 
@@ -178,44 +167,40 @@
     </table>
 
     <table name="role_permission" phpName="RolePermission">
-        <column name="id"               type="BIGINT" size="20" primaryKey="true" required="true" />
-        <column name="create_customer"  type="BOOLEAN" />
-        <column name="read_customer"    type="BOOLEAN" />
-        <column name="update_customer"  type="BOOLEAN" />
-        <column name="destroy_customer" type="BOOLEAN" />
-        <column name="create_product"   type="BOOLEAN" />
-        <column name="read_product"     type="BOOLEAN" />
-        <column name="update_product"   type="BOOLEAN" />
-        <column name="destroy_product"  type="BOOLEAN" />
-        <column name="create_purchase"  type="BOOLEAN" />
-        <column name="read_purchase"    type="BOOLEAN" />
-        <column name="update_purchase"  type="BOOLEAN" />
-        <column name="destroy_purchase" type="BOOLEAN" />
-        <column name="create_sales"     type="BOOLEAN" />
-        <column name="read_sales"       type="BOOLEAN" />
-        <column name="update_sales"     type="BOOLEAN" />
-        <column name="destroy_sales"    type="BOOLEAN" />
-        <column name="create_stock"     type="BOOLEAN" />
-        <column name="read_stock"       type="BOOLEAN" />
-        <column name="update_stock"     type="BOOLEAN" />
-        <column name="destroy_stock"    type="BOOLEAN" />
-        <column name="create_supplier"  type="BOOLEAN" />
-        <column name="read_supplier"    type="BOOLEAN" />
-        <column name="update_supplier"  type="BOOLEAN" />
-        <column name="destroy_supplier" type="BOOLEAN" />
-        <column name="create_unit"      type="BOOLEAN" />
-        <column name="read_unit"        type="BOOLEAN" />
-        <column name="update_unit"      type="BOOLEAN" />
-        <column name="destroy_unit"     type="BOOLEAN" />
-        <column name="create_user"      type="BOOLEAN" />
-        <column name="read_user"        type="BOOLEAN" />
-        <column name="update_user"      type="BOOLEAN" />
-        <column name="destroy_user"     type="BOOLEAN" />
-        <column name="reset_pass_user"  type="BOOLEAN" />
-        <column name="pay_credit"       type="BOOLEAN" />
-        <column name="read_credit"      type="BOOLEAN" />
-        <column name="pay_debit"        type="BOOLEAN" />
-        <column name="read_debit"       type="BOOLEAN" />
+        <column name="id"                   type="BIGINT" size="20" primaryKey="true" required="true" />
+        <column name="pay_credit"           type="BOOLEAN" />
+        <column name="read_credit"          type="BOOLEAN" />
+        <column name="pay_debit"            type="BOOLEAN" />
+        <column name="read_debit"           type="BOOLEAN" />
+        <column name="create_product"       type="BOOLEAN" />
+        <column name="read_product"         type="BOOLEAN" />
+        <column name="update_product"       type="BOOLEAN" />
+        <column name="destroy_product"      type="BOOLEAN" />
+        <column name="create_purchase"      type="BOOLEAN" />
+        <column name="read_purchase"        type="BOOLEAN" />
+        <column name="update_purchase"      type="BOOLEAN" />
+        <column name="destroy_purchase"     type="BOOLEAN" />
+        <column name="create_sales"         type="BOOLEAN" />
+        <column name="read_sales"           type="BOOLEAN" />
+        <column name="update_sales"         type="BOOLEAN" />
+        <column name="destroy_sales"        type="BOOLEAN" />
+        <column name="create_second_party"  type="BOOLEAN" />
+        <column name="read_second_party"    type="BOOLEAN" />
+        <column name="update_second_party"  type="BOOLEAN" />
+        <column name="destroy_second_party" type="BOOLEAN" />
+        <column name="create_stock"         type="BOOLEAN" />
+        <column name="read_stock"           type="BOOLEAN" />
+        <column name="update_stock"         type="BOOLEAN" />
+        <column name="destroy_stock"        type="BOOLEAN" />
+        <column name="create_unit"          type="BOOLEAN" />
+        <column name="read_unit"            type="BOOLEAN" />
+        <column name="update_unit"          type="BOOLEAN" />
+        <column name="destroy_unit"         type="BOOLEAN" />
+        <column name="create_user"          type="BOOLEAN" />
+        <column name="read_user"            type="BOOLEAN" />
+        <column name="update_user"          type="BOOLEAN" />
+        <column name="destroy_user"         type="BOOLEAN" />
+        <column name="reset_pass_user"      type="BOOLEAN" />
         <foreign-key foreignTable="role" phpName="Role" refPhpName="Permission" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference local="id" foreign="id" />
         </foreign-key>
@@ -236,15 +221,15 @@
     <table name="sales" phpName="Sales">
         <column name="id"           type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
         <column name="date"         type="DATE" />
-        <column name="customer_id"  type="BIGINT" size="20" />
+        <column name="second_party_id"  type="BIGINT" size="20" />
         <column name="buy_price"    type="INTEGER" size="10" />
         <column name="total_price"  type="INTEGER" size="10" />
         <column name="paid"         type="INTEGER" size="10" />
         <column name="cashier_id"   type="BIGINT" size="20" />
         <column name="note"         type="CHAR" size="32" />
         <column name="status"       type="CHAR" sqlType="ENUM('Active', 'Canceled', 'Deleted', 'Not Active', 'Pending')" required="true" />
-        <foreign-key foreignTable="customer" phpName="Customer" refPhpName="Sales" onDelete="RESTRICT" onUpdate="RESTRICT">
-            <reference local="customer_id" foreign="id" />
+        <foreign-key foreignTable="second_party" phpName="SecondParty" refPhpName="Sales" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference local="second_party_id" foreign="id" />
         </foreign-key>
         <foreign-key foreignTable="user_detail" phpName="Cashier" refPhpName="Sales" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="cashier_id" foreign="id" />
@@ -288,6 +273,18 @@
         </foreign-key>
     </table>
 
+    <table name="second_party" phpName="SecondParty">
+        <column name="id"               type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
+        <column name="registered_date"  type="DATE" />
+        <column name="name"             type="CHAR" size="128" />
+        <column name="address"          type="CHAR" size="128" />
+        <column name="birthday"         type="DATE" />
+        <column name="gender"           type="CHAR" sqlType="ENUM('Male','Female')" />
+        <column name="phone"            type="CHAR" size="20" />
+        <column name="type"             type="CHAR" sqlType="ENUM('Customer','Supplier')" />
+        <column name="status"           type="CHAR" sqlType="ENUM('Active', 'Deleted', 'Not Active', 'Pending')" />
+    </table>
+
     <table name="stock" phpName="Stock">
         <column name="id"               type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
         <column name="product_id"       type="BIGINT" size="20" />
@@ -306,14 +303,6 @@
         <foreign-key foreignTable="unit" phpName="Unit" refPhpName="Stock" onDelete="NO ACTION" onUpdate="RESTRICT">
             <reference local="unit_id" foreign="id" />
         </foreign-key>
-    </table>
-
-    <table name="supplier" phpName="Supplier">
-        <column name="id"           type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
-        <column name="name"         type="CHAR" size="128" />
-        <column name="address"      type="CHAR" size="128" />
-        <column name="phone"        type="CHAR" size="20" />
-        <column name="status"       type="CHAR" sqlType="ENUM('Active', 'Deleted', 'Not Active','Pending')" />
     </table>
 
     <table name="unit" phpName="Unit">

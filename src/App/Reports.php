@@ -15,12 +15,12 @@ class Reports
         $purchase = PurchaseQuery::create()
             ->filterByStatus('Active')
             ->filterByDate(array('min' => $date->start, 'max' => $date->until))
-            ->leftJoin('Supplier')
-            ->withColumn('Supplier.Name', 'supplier_name')
+            ->leftJoin('SecondParty')
+            ->withColumn('SecondParty.Name', 'second_party_name')
             ->select(array(
                 'id',
                 'date',
-                'supplier_id',
+                'second_party_id',
                 'total_price'
             ))
             ->orderBy('date', 'ASC')
@@ -119,14 +119,14 @@ class Reports
         $sales = SalesQuery::create()
             ->filterByStatus('Active')
             ->filterByDate(array('min' => $date->start, 'max' => $date->until))
-            ->leftJoin('Customer')
+            ->leftJoin('SecondParty')
             ->leftJoin('Cashier')
-            ->withColumn('Customer.Name', 'customer_name')
+            ->withColumn('SecondParty.Name', 'second_party_name')
             ->withColumn('Cashier.Name', 'cashier_name')
             ->select(array(
                 'id',
                 'date',
-                'customer_id',
+                'second_party_id',
                 'total_price',
                 'cashier_id'
             ))

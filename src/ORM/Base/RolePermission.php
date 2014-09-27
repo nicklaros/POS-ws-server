@@ -61,28 +61,28 @@ abstract class RolePermission implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the create_customer field.
+     * The value for the pay_credit field.
      * @var        boolean
      */
-    protected $create_customer;
+    protected $pay_credit;
 
     /**
-     * The value for the read_customer field.
+     * The value for the read_credit field.
      * @var        boolean
      */
-    protected $read_customer;
+    protected $read_credit;
 
     /**
-     * The value for the update_customer field.
+     * The value for the pay_debit field.
      * @var        boolean
      */
-    protected $update_customer;
+    protected $pay_debit;
 
     /**
-     * The value for the destroy_customer field.
+     * The value for the read_debit field.
      * @var        boolean
      */
-    protected $destroy_customer;
+    protected $read_debit;
 
     /**
      * The value for the create_product field.
@@ -157,6 +157,30 @@ abstract class RolePermission implements ActiveRecordInterface
     protected $destroy_sales;
 
     /**
+     * The value for the create_second_party field.
+     * @var        boolean
+     */
+    protected $create_second_party;
+
+    /**
+     * The value for the read_second_party field.
+     * @var        boolean
+     */
+    protected $read_second_party;
+
+    /**
+     * The value for the update_second_party field.
+     * @var        boolean
+     */
+    protected $update_second_party;
+
+    /**
+     * The value for the destroy_second_party field.
+     * @var        boolean
+     */
+    protected $destroy_second_party;
+
+    /**
      * The value for the create_stock field.
      * @var        boolean
      */
@@ -179,30 +203,6 @@ abstract class RolePermission implements ActiveRecordInterface
      * @var        boolean
      */
     protected $destroy_stock;
-
-    /**
-     * The value for the create_supplier field.
-     * @var        boolean
-     */
-    protected $create_supplier;
-
-    /**
-     * The value for the read_supplier field.
-     * @var        boolean
-     */
-    protected $read_supplier;
-
-    /**
-     * The value for the update_supplier field.
-     * @var        boolean
-     */
-    protected $update_supplier;
-
-    /**
-     * The value for the destroy_supplier field.
-     * @var        boolean
-     */
-    protected $destroy_supplier;
 
     /**
      * The value for the create_unit field.
@@ -257,30 +257,6 @@ abstract class RolePermission implements ActiveRecordInterface
      * @var        boolean
      */
     protected $reset_pass_user;
-
-    /**
-     * The value for the pay_credit field.
-     * @var        boolean
-     */
-    protected $pay_credit;
-
-    /**
-     * The value for the read_credit field.
-     * @var        boolean
-     */
-    protected $read_credit;
-
-    /**
-     * The value for the pay_debit field.
-     * @var        boolean
-     */
-    protected $pay_debit;
-
-    /**
-     * The value for the read_debit field.
-     * @var        boolean
-     */
-    protected $read_debit;
 
     /**
      * @var        ChildRole
@@ -523,83 +499,83 @@ abstract class RolePermission implements ActiveRecordInterface
     }
 
     /**
-     * Get the [create_customer] column value.
+     * Get the [pay_credit] column value.
      *
      * @return boolean
      */
-    public function getCreateCustomer()
+    public function getPayCredit()
     {
-        return $this->create_customer;
+        return $this->pay_credit;
     }
 
     /**
-     * Get the [create_customer] column value.
+     * Get the [pay_credit] column value.
      *
      * @return boolean
      */
-    public function isCreateCustomer()
+    public function isPayCredit()
     {
-        return $this->getCreateCustomer();
+        return $this->getPayCredit();
     }
 
     /**
-     * Get the [read_customer] column value.
+     * Get the [read_credit] column value.
      *
      * @return boolean
      */
-    public function getReadCustomer()
+    public function getReadCredit()
     {
-        return $this->read_customer;
+        return $this->read_credit;
     }
 
     /**
-     * Get the [read_customer] column value.
+     * Get the [read_credit] column value.
      *
      * @return boolean
      */
-    public function isReadCustomer()
+    public function isReadCredit()
     {
-        return $this->getReadCustomer();
+        return $this->getReadCredit();
     }
 
     /**
-     * Get the [update_customer] column value.
+     * Get the [pay_debit] column value.
      *
      * @return boolean
      */
-    public function getUpdateCustomer()
+    public function getPayDebit()
     {
-        return $this->update_customer;
+        return $this->pay_debit;
     }
 
     /**
-     * Get the [update_customer] column value.
+     * Get the [pay_debit] column value.
      *
      * @return boolean
      */
-    public function isUpdateCustomer()
+    public function isPayDebit()
     {
-        return $this->getUpdateCustomer();
+        return $this->getPayDebit();
     }
 
     /**
-     * Get the [destroy_customer] column value.
+     * Get the [read_debit] column value.
      *
      * @return boolean
      */
-    public function getDestroyCustomer()
+    public function getReadDebit()
     {
-        return $this->destroy_customer;
+        return $this->read_debit;
     }
 
     /**
-     * Get the [destroy_customer] column value.
+     * Get the [read_debit] column value.
      *
      * @return boolean
      */
-    public function isDestroyCustomer()
+    public function isReadDebit()
     {
-        return $this->getDestroyCustomer();
+        return $this->getReadDebit();
     }
 
     /**
@@ -843,6 +819,86 @@ abstract class RolePermission implements ActiveRecordInterface
     }
 
     /**
+     * Get the [create_second_party] column value.
+     *
+     * @return boolean
+     */
+    public function getCreateSecondParty()
+    {
+        return $this->create_second_party;
+    }
+
+    /**
+     * Get the [create_second_party] column value.
+     *
+     * @return boolean
+     */
+    public function isCreateSecondParty()
+    {
+        return $this->getCreateSecondParty();
+    }
+
+    /**
+     * Get the [read_second_party] column value.
+     *
+     * @return boolean
+     */
+    public function getReadSecondParty()
+    {
+        return $this->read_second_party;
+    }
+
+    /**
+     * Get the [read_second_party] column value.
+     *
+     * @return boolean
+     */
+    public function isReadSecondParty()
+    {
+        return $this->getReadSecondParty();
+    }
+
+    /**
+     * Get the [update_second_party] column value.
+     *
+     * @return boolean
+     */
+    public function getUpdateSecondParty()
+    {
+        return $this->update_second_party;
+    }
+
+    /**
+     * Get the [update_second_party] column value.
+     *
+     * @return boolean
+     */
+    public function isUpdateSecondParty()
+    {
+        return $this->getUpdateSecondParty();
+    }
+
+    /**
+     * Get the [destroy_second_party] column value.
+     *
+     * @return boolean
+     */
+    public function getDestroySecondParty()
+    {
+        return $this->destroy_second_party;
+    }
+
+    /**
+     * Get the [destroy_second_party] column value.
+     *
+     * @return boolean
+     */
+    public function isDestroySecondParty()
+    {
+        return $this->getDestroySecondParty();
+    }
+
+    /**
      * Get the [create_stock] column value.
      *
      * @return boolean
@@ -920,86 +976,6 @@ abstract class RolePermission implements ActiveRecordInterface
     public function isDestroyStock()
     {
         return $this->getDestroyStock();
-    }
-
-    /**
-     * Get the [create_supplier] column value.
-     *
-     * @return boolean
-     */
-    public function getCreateSupplier()
-    {
-        return $this->create_supplier;
-    }
-
-    /**
-     * Get the [create_supplier] column value.
-     *
-     * @return boolean
-     */
-    public function isCreateSupplier()
-    {
-        return $this->getCreateSupplier();
-    }
-
-    /**
-     * Get the [read_supplier] column value.
-     *
-     * @return boolean
-     */
-    public function getReadSupplier()
-    {
-        return $this->read_supplier;
-    }
-
-    /**
-     * Get the [read_supplier] column value.
-     *
-     * @return boolean
-     */
-    public function isReadSupplier()
-    {
-        return $this->getReadSupplier();
-    }
-
-    /**
-     * Get the [update_supplier] column value.
-     *
-     * @return boolean
-     */
-    public function getUpdateSupplier()
-    {
-        return $this->update_supplier;
-    }
-
-    /**
-     * Get the [update_supplier] column value.
-     *
-     * @return boolean
-     */
-    public function isUpdateSupplier()
-    {
-        return $this->getUpdateSupplier();
-    }
-
-    /**
-     * Get the [destroy_supplier] column value.
-     *
-     * @return boolean
-     */
-    public function getDestroySupplier()
-    {
-        return $this->destroy_supplier;
-    }
-
-    /**
-     * Get the [destroy_supplier] column value.
-     *
-     * @return boolean
-     */
-    public function isDestroySupplier()
-    {
-        return $this->getDestroySupplier();
     }
 
     /**
@@ -1183,86 +1159,6 @@ abstract class RolePermission implements ActiveRecordInterface
     }
 
     /**
-     * Get the [pay_credit] column value.
-     *
-     * @return boolean
-     */
-    public function getPayCredit()
-    {
-        return $this->pay_credit;
-    }
-
-    /**
-     * Get the [pay_credit] column value.
-     *
-     * @return boolean
-     */
-    public function isPayCredit()
-    {
-        return $this->getPayCredit();
-    }
-
-    /**
-     * Get the [read_credit] column value.
-     *
-     * @return boolean
-     */
-    public function getReadCredit()
-    {
-        return $this->read_credit;
-    }
-
-    /**
-     * Get the [read_credit] column value.
-     *
-     * @return boolean
-     */
-    public function isReadCredit()
-    {
-        return $this->getReadCredit();
-    }
-
-    /**
-     * Get the [pay_debit] column value.
-     *
-     * @return boolean
-     */
-    public function getPayDebit()
-    {
-        return $this->pay_debit;
-    }
-
-    /**
-     * Get the [pay_debit] column value.
-     *
-     * @return boolean
-     */
-    public function isPayDebit()
-    {
-        return $this->getPayDebit();
-    }
-
-    /**
-     * Get the [read_debit] column value.
-     *
-     * @return boolean
-     */
-    public function getReadDebit()
-    {
-        return $this->read_debit;
-    }
-
-    /**
-     * Get the [read_debit] column value.
-     *
-     * @return boolean
-     */
-    public function isReadDebit()
-    {
-        return $this->getReadDebit();
-    }
-
-    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -1301,17 +1197,17 @@ abstract class RolePermission implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : RolePermissionTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : RolePermissionTableMap::translateFieldName('CreateCustomer', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->create_customer = (null !== $col) ? (boolean) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : RolePermissionTableMap::translateFieldName('PayCredit', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->pay_credit = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : RolePermissionTableMap::translateFieldName('ReadCustomer', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->read_customer = (null !== $col) ? (boolean) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : RolePermissionTableMap::translateFieldName('ReadCredit', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->read_credit = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : RolePermissionTableMap::translateFieldName('UpdateCustomer', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->update_customer = (null !== $col) ? (boolean) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : RolePermissionTableMap::translateFieldName('PayDebit', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->pay_debit = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : RolePermissionTableMap::translateFieldName('DestroyCustomer', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->destroy_customer = (null !== $col) ? (boolean) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : RolePermissionTableMap::translateFieldName('ReadDebit', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->read_debit = (null !== $col) ? (boolean) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : RolePermissionTableMap::translateFieldName('CreateProduct', TableMap::TYPE_PHPNAME, $indexType)];
             $this->create_product = (null !== $col) ? (boolean) $col : null;
@@ -1349,29 +1245,29 @@ abstract class RolePermission implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 16 + $startcol : RolePermissionTableMap::translateFieldName('DestroySales', TableMap::TYPE_PHPNAME, $indexType)];
             $this->destroy_sales = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 17 + $startcol : RolePermissionTableMap::translateFieldName('CreateStock', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 17 + $startcol : RolePermissionTableMap::translateFieldName('CreateSecondParty', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->create_second_party = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 18 + $startcol : RolePermissionTableMap::translateFieldName('ReadSecondParty', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->read_second_party = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 19 + $startcol : RolePermissionTableMap::translateFieldName('UpdateSecondParty', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->update_second_party = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 20 + $startcol : RolePermissionTableMap::translateFieldName('DestroySecondParty', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->destroy_second_party = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 21 + $startcol : RolePermissionTableMap::translateFieldName('CreateStock', TableMap::TYPE_PHPNAME, $indexType)];
             $this->create_stock = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 18 + $startcol : RolePermissionTableMap::translateFieldName('ReadStock', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 22 + $startcol : RolePermissionTableMap::translateFieldName('ReadStock', TableMap::TYPE_PHPNAME, $indexType)];
             $this->read_stock = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 19 + $startcol : RolePermissionTableMap::translateFieldName('UpdateStock', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 23 + $startcol : RolePermissionTableMap::translateFieldName('UpdateStock', TableMap::TYPE_PHPNAME, $indexType)];
             $this->update_stock = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 20 + $startcol : RolePermissionTableMap::translateFieldName('DestroyStock', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 24 + $startcol : RolePermissionTableMap::translateFieldName('DestroyStock', TableMap::TYPE_PHPNAME, $indexType)];
             $this->destroy_stock = (null !== $col) ? (boolean) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 21 + $startcol : RolePermissionTableMap::translateFieldName('CreateSupplier', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->create_supplier = (null !== $col) ? (boolean) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 22 + $startcol : RolePermissionTableMap::translateFieldName('ReadSupplier', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->read_supplier = (null !== $col) ? (boolean) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 23 + $startcol : RolePermissionTableMap::translateFieldName('UpdateSupplier', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->update_supplier = (null !== $col) ? (boolean) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 24 + $startcol : RolePermissionTableMap::translateFieldName('DestroySupplier', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->destroy_supplier = (null !== $col) ? (boolean) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 25 + $startcol : RolePermissionTableMap::translateFieldName('CreateUnit', TableMap::TYPE_PHPNAME, $indexType)];
             $this->create_unit = (null !== $col) ? (boolean) $col : null;
@@ -1399,18 +1295,6 @@ abstract class RolePermission implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 33 + $startcol : RolePermissionTableMap::translateFieldName('ResetPassUser', TableMap::TYPE_PHPNAME, $indexType)];
             $this->reset_pass_user = (null !== $col) ? (boolean) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 34 + $startcol : RolePermissionTableMap::translateFieldName('PayCredit', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->pay_credit = (null !== $col) ? (boolean) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 35 + $startcol : RolePermissionTableMap::translateFieldName('ReadCredit', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->read_credit = (null !== $col) ? (boolean) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 36 + $startcol : RolePermissionTableMap::translateFieldName('PayDebit', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->pay_debit = (null !== $col) ? (boolean) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 37 + $startcol : RolePermissionTableMap::translateFieldName('ReadDebit', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->read_debit = (null !== $col) ? (boolean) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -1419,7 +1303,7 @@ abstract class RolePermission implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 38; // 38 = RolePermissionTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 34; // 34 = RolePermissionTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\ORM\\RolePermission'), 0, $e);
@@ -1471,7 +1355,7 @@ abstract class RolePermission implements ActiveRecordInterface
     } // setId()
 
     /**
-     * Sets the value of the [create_customer] column.
+     * Sets the value of the [pay_credit] column.
      * Non-boolean arguments are converted using the following rules:
      *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
      *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
@@ -1480,7 +1364,7 @@ abstract class RolePermission implements ActiveRecordInterface
      * @param  boolean|integer|string $v The new value
      * @return $this|\ORM\RolePermission The current object (for fluent API support)
      */
-    public function setCreateCustomer($v)
+    public function setPayCredit($v)
     {
         if ($v !== null) {
             if (is_string($v)) {
@@ -1490,16 +1374,16 @@ abstract class RolePermission implements ActiveRecordInterface
             }
         }
 
-        if ($this->create_customer !== $v) {
-            $this->create_customer = $v;
-            $this->modifiedColumns[RolePermissionTableMap::COL_CREATE_CUSTOMER] = true;
+        if ($this->pay_credit !== $v) {
+            $this->pay_credit = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_PAY_CREDIT] = true;
         }
 
         return $this;
-    } // setCreateCustomer()
+    } // setPayCredit()
 
     /**
-     * Sets the value of the [read_customer] column.
+     * Sets the value of the [read_credit] column.
      * Non-boolean arguments are converted using the following rules:
      *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
      *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
@@ -1508,7 +1392,7 @@ abstract class RolePermission implements ActiveRecordInterface
      * @param  boolean|integer|string $v The new value
      * @return $this|\ORM\RolePermission The current object (for fluent API support)
      */
-    public function setReadCustomer($v)
+    public function setReadCredit($v)
     {
         if ($v !== null) {
             if (is_string($v)) {
@@ -1518,16 +1402,16 @@ abstract class RolePermission implements ActiveRecordInterface
             }
         }
 
-        if ($this->read_customer !== $v) {
-            $this->read_customer = $v;
-            $this->modifiedColumns[RolePermissionTableMap::COL_READ_CUSTOMER] = true;
+        if ($this->read_credit !== $v) {
+            $this->read_credit = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_READ_CREDIT] = true;
         }
 
         return $this;
-    } // setReadCustomer()
+    } // setReadCredit()
 
     /**
-     * Sets the value of the [update_customer] column.
+     * Sets the value of the [pay_debit] column.
      * Non-boolean arguments are converted using the following rules:
      *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
      *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
@@ -1536,7 +1420,7 @@ abstract class RolePermission implements ActiveRecordInterface
      * @param  boolean|integer|string $v The new value
      * @return $this|\ORM\RolePermission The current object (for fluent API support)
      */
-    public function setUpdateCustomer($v)
+    public function setPayDebit($v)
     {
         if ($v !== null) {
             if (is_string($v)) {
@@ -1546,16 +1430,16 @@ abstract class RolePermission implements ActiveRecordInterface
             }
         }
 
-        if ($this->update_customer !== $v) {
-            $this->update_customer = $v;
-            $this->modifiedColumns[RolePermissionTableMap::COL_UPDATE_CUSTOMER] = true;
+        if ($this->pay_debit !== $v) {
+            $this->pay_debit = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_PAY_DEBIT] = true;
         }
 
         return $this;
-    } // setUpdateCustomer()
+    } // setPayDebit()
 
     /**
-     * Sets the value of the [destroy_customer] column.
+     * Sets the value of the [read_debit] column.
      * Non-boolean arguments are converted using the following rules:
      *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
      *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
@@ -1564,7 +1448,7 @@ abstract class RolePermission implements ActiveRecordInterface
      * @param  boolean|integer|string $v The new value
      * @return $this|\ORM\RolePermission The current object (for fluent API support)
      */
-    public function setDestroyCustomer($v)
+    public function setReadDebit($v)
     {
         if ($v !== null) {
             if (is_string($v)) {
@@ -1574,13 +1458,13 @@ abstract class RolePermission implements ActiveRecordInterface
             }
         }
 
-        if ($this->destroy_customer !== $v) {
-            $this->destroy_customer = $v;
-            $this->modifiedColumns[RolePermissionTableMap::COL_DESTROY_CUSTOMER] = true;
+        if ($this->read_debit !== $v) {
+            $this->read_debit = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_READ_DEBIT] = true;
         }
 
         return $this;
-    } // setDestroyCustomer()
+    } // setReadDebit()
 
     /**
      * Sets the value of the [create_product] column.
@@ -1919,6 +1803,118 @@ abstract class RolePermission implements ActiveRecordInterface
     } // setDestroySales()
 
     /**
+     * Sets the value of the [create_second_party] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setCreateSecondParty($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->create_second_party !== $v) {
+            $this->create_second_party = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_CREATE_SECOND_PARTY] = true;
+        }
+
+        return $this;
+    } // setCreateSecondParty()
+
+    /**
+     * Sets the value of the [read_second_party] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setReadSecondParty($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->read_second_party !== $v) {
+            $this->read_second_party = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_READ_SECOND_PARTY] = true;
+        }
+
+        return $this;
+    } // setReadSecondParty()
+
+    /**
+     * Sets the value of the [update_second_party] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setUpdateSecondParty($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->update_second_party !== $v) {
+            $this->update_second_party = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_UPDATE_SECOND_PARTY] = true;
+        }
+
+        return $this;
+    } // setUpdateSecondParty()
+
+    /**
+     * Sets the value of the [destroy_second_party] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\ORM\RolePermission The current object (for fluent API support)
+     */
+    public function setDestroySecondParty($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->destroy_second_party !== $v) {
+            $this->destroy_second_party = $v;
+            $this->modifiedColumns[RolePermissionTableMap::COL_DESTROY_SECOND_PARTY] = true;
+        }
+
+        return $this;
+    } // setDestroySecondParty()
+
+    /**
      * Sets the value of the [create_stock] column.
      * Non-boolean arguments are converted using the following rules:
      *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
@@ -2029,118 +2025,6 @@ abstract class RolePermission implements ActiveRecordInterface
 
         return $this;
     } // setDestroyStock()
-
-    /**
-     * Sets the value of the [create_supplier] column.
-     * Non-boolean arguments are converted using the following rules:
-     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     *
-     * @param  boolean|integer|string $v The new value
-     * @return $this|\ORM\RolePermission The current object (for fluent API support)
-     */
-    public function setCreateSupplier($v)
-    {
-        if ($v !== null) {
-            if (is_string($v)) {
-                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-            } else {
-                $v = (boolean) $v;
-            }
-        }
-
-        if ($this->create_supplier !== $v) {
-            $this->create_supplier = $v;
-            $this->modifiedColumns[RolePermissionTableMap::COL_CREATE_SUPPLIER] = true;
-        }
-
-        return $this;
-    } // setCreateSupplier()
-
-    /**
-     * Sets the value of the [read_supplier] column.
-     * Non-boolean arguments are converted using the following rules:
-     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     *
-     * @param  boolean|integer|string $v The new value
-     * @return $this|\ORM\RolePermission The current object (for fluent API support)
-     */
-    public function setReadSupplier($v)
-    {
-        if ($v !== null) {
-            if (is_string($v)) {
-                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-            } else {
-                $v = (boolean) $v;
-            }
-        }
-
-        if ($this->read_supplier !== $v) {
-            $this->read_supplier = $v;
-            $this->modifiedColumns[RolePermissionTableMap::COL_READ_SUPPLIER] = true;
-        }
-
-        return $this;
-    } // setReadSupplier()
-
-    /**
-     * Sets the value of the [update_supplier] column.
-     * Non-boolean arguments are converted using the following rules:
-     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     *
-     * @param  boolean|integer|string $v The new value
-     * @return $this|\ORM\RolePermission The current object (for fluent API support)
-     */
-    public function setUpdateSupplier($v)
-    {
-        if ($v !== null) {
-            if (is_string($v)) {
-                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-            } else {
-                $v = (boolean) $v;
-            }
-        }
-
-        if ($this->update_supplier !== $v) {
-            $this->update_supplier = $v;
-            $this->modifiedColumns[RolePermissionTableMap::COL_UPDATE_SUPPLIER] = true;
-        }
-
-        return $this;
-    } // setUpdateSupplier()
-
-    /**
-     * Sets the value of the [destroy_supplier] column.
-     * Non-boolean arguments are converted using the following rules:
-     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     *
-     * @param  boolean|integer|string $v The new value
-     * @return $this|\ORM\RolePermission The current object (for fluent API support)
-     */
-    public function setDestroySupplier($v)
-    {
-        if ($v !== null) {
-            if (is_string($v)) {
-                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-            } else {
-                $v = (boolean) $v;
-            }
-        }
-
-        if ($this->destroy_supplier !== $v) {
-            $this->destroy_supplier = $v;
-            $this->modifiedColumns[RolePermissionTableMap::COL_DESTROY_SUPPLIER] = true;
-        }
-
-        return $this;
-    } // setDestroySupplier()
 
     /**
      * Sets the value of the [create_unit] column.
@@ -2395,118 +2279,6 @@ abstract class RolePermission implements ActiveRecordInterface
     } // setResetPassUser()
 
     /**
-     * Sets the value of the [pay_credit] column.
-     * Non-boolean arguments are converted using the following rules:
-     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     *
-     * @param  boolean|integer|string $v The new value
-     * @return $this|\ORM\RolePermission The current object (for fluent API support)
-     */
-    public function setPayCredit($v)
-    {
-        if ($v !== null) {
-            if (is_string($v)) {
-                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-            } else {
-                $v = (boolean) $v;
-            }
-        }
-
-        if ($this->pay_credit !== $v) {
-            $this->pay_credit = $v;
-            $this->modifiedColumns[RolePermissionTableMap::COL_PAY_CREDIT] = true;
-        }
-
-        return $this;
-    } // setPayCredit()
-
-    /**
-     * Sets the value of the [read_credit] column.
-     * Non-boolean arguments are converted using the following rules:
-     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     *
-     * @param  boolean|integer|string $v The new value
-     * @return $this|\ORM\RolePermission The current object (for fluent API support)
-     */
-    public function setReadCredit($v)
-    {
-        if ($v !== null) {
-            if (is_string($v)) {
-                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-            } else {
-                $v = (boolean) $v;
-            }
-        }
-
-        if ($this->read_credit !== $v) {
-            $this->read_credit = $v;
-            $this->modifiedColumns[RolePermissionTableMap::COL_READ_CREDIT] = true;
-        }
-
-        return $this;
-    } // setReadCredit()
-
-    /**
-     * Sets the value of the [pay_debit] column.
-     * Non-boolean arguments are converted using the following rules:
-     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     *
-     * @param  boolean|integer|string $v The new value
-     * @return $this|\ORM\RolePermission The current object (for fluent API support)
-     */
-    public function setPayDebit($v)
-    {
-        if ($v !== null) {
-            if (is_string($v)) {
-                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-            } else {
-                $v = (boolean) $v;
-            }
-        }
-
-        if ($this->pay_debit !== $v) {
-            $this->pay_debit = $v;
-            $this->modifiedColumns[RolePermissionTableMap::COL_PAY_DEBIT] = true;
-        }
-
-        return $this;
-    } // setPayDebit()
-
-    /**
-     * Sets the value of the [read_debit] column.
-     * Non-boolean arguments are converted using the following rules:
-     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     *
-     * @param  boolean|integer|string $v The new value
-     * @return $this|\ORM\RolePermission The current object (for fluent API support)
-     */
-    public function setReadDebit($v)
-    {
-        if ($v !== null) {
-            if (is_string($v)) {
-                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-            } else {
-                $v = (boolean) $v;
-            }
-        }
-
-        if ($this->read_debit !== $v) {
-            $this->read_debit = $v;
-            $this->modifiedColumns[RolePermissionTableMap::COL_READ_DEBIT] = true;
-        }
-
-        return $this;
-    } // setReadDebit()
-
-    /**
      * Reloads this object from datastore based on primary key and (optionally) resets all associated objects.
      *
      * This will only work if the object has been saved and has a valid primary key set.
@@ -2691,17 +2463,17 @@ abstract class RolePermission implements ActiveRecordInterface
         if ($this->isColumnModified(RolePermissionTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'ID';
         }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_CUSTOMER)) {
-            $modifiedColumns[':p' . $index++]  = 'CREATE_CUSTOMER';
+        if ($this->isColumnModified(RolePermissionTableMap::COL_PAY_CREDIT)) {
+            $modifiedColumns[':p' . $index++]  = 'PAY_CREDIT';
         }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_CUSTOMER)) {
-            $modifiedColumns[':p' . $index++]  = 'READ_CUSTOMER';
+        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_CREDIT)) {
+            $modifiedColumns[':p' . $index++]  = 'READ_CREDIT';
         }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_UPDATE_CUSTOMER)) {
-            $modifiedColumns[':p' . $index++]  = 'UPDATE_CUSTOMER';
+        if ($this->isColumnModified(RolePermissionTableMap::COL_PAY_DEBIT)) {
+            $modifiedColumns[':p' . $index++]  = 'PAY_DEBIT';
         }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_CUSTOMER)) {
-            $modifiedColumns[':p' . $index++]  = 'DESTROY_CUSTOMER';
+        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_DEBIT)) {
+            $modifiedColumns[':p' . $index++]  = 'READ_DEBIT';
         }
         if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_PRODUCT)) {
             $modifiedColumns[':p' . $index++]  = 'CREATE_PRODUCT';
@@ -2739,6 +2511,18 @@ abstract class RolePermission implements ActiveRecordInterface
         if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_SALES)) {
             $modifiedColumns[':p' . $index++]  = 'DESTROY_SALES';
         }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_SECOND_PARTY)) {
+            $modifiedColumns[':p' . $index++]  = 'CREATE_SECOND_PARTY';
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_SECOND_PARTY)) {
+            $modifiedColumns[':p' . $index++]  = 'READ_SECOND_PARTY';
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_UPDATE_SECOND_PARTY)) {
+            $modifiedColumns[':p' . $index++]  = 'UPDATE_SECOND_PARTY';
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_SECOND_PARTY)) {
+            $modifiedColumns[':p' . $index++]  = 'DESTROY_SECOND_PARTY';
+        }
         if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_STOCK)) {
             $modifiedColumns[':p' . $index++]  = 'CREATE_STOCK';
         }
@@ -2750,18 +2534,6 @@ abstract class RolePermission implements ActiveRecordInterface
         }
         if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_STOCK)) {
             $modifiedColumns[':p' . $index++]  = 'DESTROY_STOCK';
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_SUPPLIER)) {
-            $modifiedColumns[':p' . $index++]  = 'CREATE_SUPPLIER';
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_SUPPLIER)) {
-            $modifiedColumns[':p' . $index++]  = 'READ_SUPPLIER';
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_UPDATE_SUPPLIER)) {
-            $modifiedColumns[':p' . $index++]  = 'UPDATE_SUPPLIER';
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_SUPPLIER)) {
-            $modifiedColumns[':p' . $index++]  = 'DESTROY_SUPPLIER';
         }
         if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_UNIT)) {
             $modifiedColumns[':p' . $index++]  = 'CREATE_UNIT';
@@ -2790,18 +2562,6 @@ abstract class RolePermission implements ActiveRecordInterface
         if ($this->isColumnModified(RolePermissionTableMap::COL_RESET_PASS_USER)) {
             $modifiedColumns[':p' . $index++]  = 'RESET_PASS_USER';
         }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_PAY_CREDIT)) {
-            $modifiedColumns[':p' . $index++]  = 'PAY_CREDIT';
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_CREDIT)) {
-            $modifiedColumns[':p' . $index++]  = 'READ_CREDIT';
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_PAY_DEBIT)) {
-            $modifiedColumns[':p' . $index++]  = 'PAY_DEBIT';
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_DEBIT)) {
-            $modifiedColumns[':p' . $index++]  = 'READ_DEBIT';
-        }
 
         $sql = sprintf(
             'INSERT INTO role_permission (%s) VALUES (%s)',
@@ -2816,17 +2576,17 @@ abstract class RolePermission implements ActiveRecordInterface
                     case 'ID':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'CREATE_CUSTOMER':
-                        $stmt->bindValue($identifier, (int) $this->create_customer, PDO::PARAM_INT);
+                    case 'PAY_CREDIT':
+                        $stmt->bindValue($identifier, (int) $this->pay_credit, PDO::PARAM_INT);
                         break;
-                    case 'READ_CUSTOMER':
-                        $stmt->bindValue($identifier, (int) $this->read_customer, PDO::PARAM_INT);
+                    case 'READ_CREDIT':
+                        $stmt->bindValue($identifier, (int) $this->read_credit, PDO::PARAM_INT);
                         break;
-                    case 'UPDATE_CUSTOMER':
-                        $stmt->bindValue($identifier, (int) $this->update_customer, PDO::PARAM_INT);
+                    case 'PAY_DEBIT':
+                        $stmt->bindValue($identifier, (int) $this->pay_debit, PDO::PARAM_INT);
                         break;
-                    case 'DESTROY_CUSTOMER':
-                        $stmt->bindValue($identifier, (int) $this->destroy_customer, PDO::PARAM_INT);
+                    case 'READ_DEBIT':
+                        $stmt->bindValue($identifier, (int) $this->read_debit, PDO::PARAM_INT);
                         break;
                     case 'CREATE_PRODUCT':
                         $stmt->bindValue($identifier, (int) $this->create_product, PDO::PARAM_INT);
@@ -2864,6 +2624,18 @@ abstract class RolePermission implements ActiveRecordInterface
                     case 'DESTROY_SALES':
                         $stmt->bindValue($identifier, (int) $this->destroy_sales, PDO::PARAM_INT);
                         break;
+                    case 'CREATE_SECOND_PARTY':
+                        $stmt->bindValue($identifier, (int) $this->create_second_party, PDO::PARAM_INT);
+                        break;
+                    case 'READ_SECOND_PARTY':
+                        $stmt->bindValue($identifier, (int) $this->read_second_party, PDO::PARAM_INT);
+                        break;
+                    case 'UPDATE_SECOND_PARTY':
+                        $stmt->bindValue($identifier, (int) $this->update_second_party, PDO::PARAM_INT);
+                        break;
+                    case 'DESTROY_SECOND_PARTY':
+                        $stmt->bindValue($identifier, (int) $this->destroy_second_party, PDO::PARAM_INT);
+                        break;
                     case 'CREATE_STOCK':
                         $stmt->bindValue($identifier, (int) $this->create_stock, PDO::PARAM_INT);
                         break;
@@ -2875,18 +2647,6 @@ abstract class RolePermission implements ActiveRecordInterface
                         break;
                     case 'DESTROY_STOCK':
                         $stmt->bindValue($identifier, (int) $this->destroy_stock, PDO::PARAM_INT);
-                        break;
-                    case 'CREATE_SUPPLIER':
-                        $stmt->bindValue($identifier, (int) $this->create_supplier, PDO::PARAM_INT);
-                        break;
-                    case 'READ_SUPPLIER':
-                        $stmt->bindValue($identifier, (int) $this->read_supplier, PDO::PARAM_INT);
-                        break;
-                    case 'UPDATE_SUPPLIER':
-                        $stmt->bindValue($identifier, (int) $this->update_supplier, PDO::PARAM_INT);
-                        break;
-                    case 'DESTROY_SUPPLIER':
-                        $stmt->bindValue($identifier, (int) $this->destroy_supplier, PDO::PARAM_INT);
                         break;
                     case 'CREATE_UNIT':
                         $stmt->bindValue($identifier, (int) $this->create_unit, PDO::PARAM_INT);
@@ -2914,18 +2674,6 @@ abstract class RolePermission implements ActiveRecordInterface
                         break;
                     case 'RESET_PASS_USER':
                         $stmt->bindValue($identifier, (int) $this->reset_pass_user, PDO::PARAM_INT);
-                        break;
-                    case 'PAY_CREDIT':
-                        $stmt->bindValue($identifier, (int) $this->pay_credit, PDO::PARAM_INT);
-                        break;
-                    case 'READ_CREDIT':
-                        $stmt->bindValue($identifier, (int) $this->read_credit, PDO::PARAM_INT);
-                        break;
-                    case 'PAY_DEBIT':
-                        $stmt->bindValue($identifier, (int) $this->pay_debit, PDO::PARAM_INT);
-                        break;
-                    case 'READ_DEBIT':
-                        $stmt->bindValue($identifier, (int) $this->read_debit, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -2986,16 +2734,16 @@ abstract class RolePermission implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getCreateCustomer();
+                return $this->getPayCredit();
                 break;
             case 2:
-                return $this->getReadCustomer();
+                return $this->getReadCredit();
                 break;
             case 3:
-                return $this->getUpdateCustomer();
+                return $this->getPayDebit();
                 break;
             case 4:
-                return $this->getDestroyCustomer();
+                return $this->getReadDebit();
                 break;
             case 5:
                 return $this->getCreateProduct();
@@ -3034,28 +2782,28 @@ abstract class RolePermission implements ActiveRecordInterface
                 return $this->getDestroySales();
                 break;
             case 17:
-                return $this->getCreateStock();
+                return $this->getCreateSecondParty();
                 break;
             case 18:
-                return $this->getReadStock();
+                return $this->getReadSecondParty();
                 break;
             case 19:
-                return $this->getUpdateStock();
+                return $this->getUpdateSecondParty();
                 break;
             case 20:
-                return $this->getDestroyStock();
+                return $this->getDestroySecondParty();
                 break;
             case 21:
-                return $this->getCreateSupplier();
+                return $this->getCreateStock();
                 break;
             case 22:
-                return $this->getReadSupplier();
+                return $this->getReadStock();
                 break;
             case 23:
-                return $this->getUpdateSupplier();
+                return $this->getUpdateStock();
                 break;
             case 24:
-                return $this->getDestroySupplier();
+                return $this->getDestroyStock();
                 break;
             case 25:
                 return $this->getCreateUnit();
@@ -3083,18 +2831,6 @@ abstract class RolePermission implements ActiveRecordInterface
                 break;
             case 33:
                 return $this->getResetPassUser();
-                break;
-            case 34:
-                return $this->getPayCredit();
-                break;
-            case 35:
-                return $this->getReadCredit();
-                break;
-            case 36:
-                return $this->getPayDebit();
-                break;
-            case 37:
-                return $this->getReadDebit();
                 break;
             default:
                 return null;
@@ -3126,10 +2862,10 @@ abstract class RolePermission implements ActiveRecordInterface
         $keys = RolePermissionTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getCreateCustomer(),
-            $keys[2] => $this->getReadCustomer(),
-            $keys[3] => $this->getUpdateCustomer(),
-            $keys[4] => $this->getDestroyCustomer(),
+            $keys[1] => $this->getPayCredit(),
+            $keys[2] => $this->getReadCredit(),
+            $keys[3] => $this->getPayDebit(),
+            $keys[4] => $this->getReadDebit(),
             $keys[5] => $this->getCreateProduct(),
             $keys[6] => $this->getReadProduct(),
             $keys[7] => $this->getUpdateProduct(),
@@ -3142,14 +2878,14 @@ abstract class RolePermission implements ActiveRecordInterface
             $keys[14] => $this->getReadSales(),
             $keys[15] => $this->getUpdateSales(),
             $keys[16] => $this->getDestroySales(),
-            $keys[17] => $this->getCreateStock(),
-            $keys[18] => $this->getReadStock(),
-            $keys[19] => $this->getUpdateStock(),
-            $keys[20] => $this->getDestroyStock(),
-            $keys[21] => $this->getCreateSupplier(),
-            $keys[22] => $this->getReadSupplier(),
-            $keys[23] => $this->getUpdateSupplier(),
-            $keys[24] => $this->getDestroySupplier(),
+            $keys[17] => $this->getCreateSecondParty(),
+            $keys[18] => $this->getReadSecondParty(),
+            $keys[19] => $this->getUpdateSecondParty(),
+            $keys[20] => $this->getDestroySecondParty(),
+            $keys[21] => $this->getCreateStock(),
+            $keys[22] => $this->getReadStock(),
+            $keys[23] => $this->getUpdateStock(),
+            $keys[24] => $this->getDestroyStock(),
             $keys[25] => $this->getCreateUnit(),
             $keys[26] => $this->getReadUnit(),
             $keys[27] => $this->getUpdateUnit(),
@@ -3159,10 +2895,6 @@ abstract class RolePermission implements ActiveRecordInterface
             $keys[31] => $this->getUpdateUser(),
             $keys[32] => $this->getDestroyUser(),
             $keys[33] => $this->getResetPassUser(),
-            $keys[34] => $this->getPayCredit(),
-            $keys[35] => $this->getReadCredit(),
-            $keys[36] => $this->getPayDebit(),
-            $keys[37] => $this->getReadDebit(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -3211,16 +2943,16 @@ abstract class RolePermission implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setCreateCustomer($value);
+                $this->setPayCredit($value);
                 break;
             case 2:
-                $this->setReadCustomer($value);
+                $this->setReadCredit($value);
                 break;
             case 3:
-                $this->setUpdateCustomer($value);
+                $this->setPayDebit($value);
                 break;
             case 4:
-                $this->setDestroyCustomer($value);
+                $this->setReadDebit($value);
                 break;
             case 5:
                 $this->setCreateProduct($value);
@@ -3259,28 +2991,28 @@ abstract class RolePermission implements ActiveRecordInterface
                 $this->setDestroySales($value);
                 break;
             case 17:
-                $this->setCreateStock($value);
+                $this->setCreateSecondParty($value);
                 break;
             case 18:
-                $this->setReadStock($value);
+                $this->setReadSecondParty($value);
                 break;
             case 19:
-                $this->setUpdateStock($value);
+                $this->setUpdateSecondParty($value);
                 break;
             case 20:
-                $this->setDestroyStock($value);
+                $this->setDestroySecondParty($value);
                 break;
             case 21:
-                $this->setCreateSupplier($value);
+                $this->setCreateStock($value);
                 break;
             case 22:
-                $this->setReadSupplier($value);
+                $this->setReadStock($value);
                 break;
             case 23:
-                $this->setUpdateSupplier($value);
+                $this->setUpdateStock($value);
                 break;
             case 24:
-                $this->setDestroySupplier($value);
+                $this->setDestroyStock($value);
                 break;
             case 25:
                 $this->setCreateUnit($value);
@@ -3308,18 +3040,6 @@ abstract class RolePermission implements ActiveRecordInterface
                 break;
             case 33:
                 $this->setResetPassUser($value);
-                break;
-            case 34:
-                $this->setPayCredit($value);
-                break;
-            case 35:
-                $this->setReadCredit($value);
-                break;
-            case 36:
-                $this->setPayDebit($value);
-                break;
-            case 37:
-                $this->setReadDebit($value);
                 break;
         } // switch()
 
@@ -3351,16 +3071,16 @@ abstract class RolePermission implements ActiveRecordInterface
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setCreateCustomer($arr[$keys[1]]);
+            $this->setPayCredit($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setReadCustomer($arr[$keys[2]]);
+            $this->setReadCredit($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setUpdateCustomer($arr[$keys[3]]);
+            $this->setPayDebit($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setDestroyCustomer($arr[$keys[4]]);
+            $this->setReadDebit($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
             $this->setCreateProduct($arr[$keys[5]]);
@@ -3399,28 +3119,28 @@ abstract class RolePermission implements ActiveRecordInterface
             $this->setDestroySales($arr[$keys[16]]);
         }
         if (array_key_exists($keys[17], $arr)) {
-            $this->setCreateStock($arr[$keys[17]]);
+            $this->setCreateSecondParty($arr[$keys[17]]);
         }
         if (array_key_exists($keys[18], $arr)) {
-            $this->setReadStock($arr[$keys[18]]);
+            $this->setReadSecondParty($arr[$keys[18]]);
         }
         if (array_key_exists($keys[19], $arr)) {
-            $this->setUpdateStock($arr[$keys[19]]);
+            $this->setUpdateSecondParty($arr[$keys[19]]);
         }
         if (array_key_exists($keys[20], $arr)) {
-            $this->setDestroyStock($arr[$keys[20]]);
+            $this->setDestroySecondParty($arr[$keys[20]]);
         }
         if (array_key_exists($keys[21], $arr)) {
-            $this->setCreateSupplier($arr[$keys[21]]);
+            $this->setCreateStock($arr[$keys[21]]);
         }
         if (array_key_exists($keys[22], $arr)) {
-            $this->setReadSupplier($arr[$keys[22]]);
+            $this->setReadStock($arr[$keys[22]]);
         }
         if (array_key_exists($keys[23], $arr)) {
-            $this->setUpdateSupplier($arr[$keys[23]]);
+            $this->setUpdateStock($arr[$keys[23]]);
         }
         if (array_key_exists($keys[24], $arr)) {
-            $this->setDestroySupplier($arr[$keys[24]]);
+            $this->setDestroyStock($arr[$keys[24]]);
         }
         if (array_key_exists($keys[25], $arr)) {
             $this->setCreateUnit($arr[$keys[25]]);
@@ -3448,18 +3168,6 @@ abstract class RolePermission implements ActiveRecordInterface
         }
         if (array_key_exists($keys[33], $arr)) {
             $this->setResetPassUser($arr[$keys[33]]);
-        }
-        if (array_key_exists($keys[34], $arr)) {
-            $this->setPayCredit($arr[$keys[34]]);
-        }
-        if (array_key_exists($keys[35], $arr)) {
-            $this->setReadCredit($arr[$keys[35]]);
-        }
-        if (array_key_exists($keys[36], $arr)) {
-            $this->setPayDebit($arr[$keys[36]]);
-        }
-        if (array_key_exists($keys[37], $arr)) {
-            $this->setReadDebit($arr[$keys[37]]);
         }
     }
 
@@ -3499,17 +3207,17 @@ abstract class RolePermission implements ActiveRecordInterface
         if ($this->isColumnModified(RolePermissionTableMap::COL_ID)) {
             $criteria->add(RolePermissionTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_CUSTOMER)) {
-            $criteria->add(RolePermissionTableMap::COL_CREATE_CUSTOMER, $this->create_customer);
+        if ($this->isColumnModified(RolePermissionTableMap::COL_PAY_CREDIT)) {
+            $criteria->add(RolePermissionTableMap::COL_PAY_CREDIT, $this->pay_credit);
         }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_CUSTOMER)) {
-            $criteria->add(RolePermissionTableMap::COL_READ_CUSTOMER, $this->read_customer);
+        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_CREDIT)) {
+            $criteria->add(RolePermissionTableMap::COL_READ_CREDIT, $this->read_credit);
         }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_UPDATE_CUSTOMER)) {
-            $criteria->add(RolePermissionTableMap::COL_UPDATE_CUSTOMER, $this->update_customer);
+        if ($this->isColumnModified(RolePermissionTableMap::COL_PAY_DEBIT)) {
+            $criteria->add(RolePermissionTableMap::COL_PAY_DEBIT, $this->pay_debit);
         }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_CUSTOMER)) {
-            $criteria->add(RolePermissionTableMap::COL_DESTROY_CUSTOMER, $this->destroy_customer);
+        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_DEBIT)) {
+            $criteria->add(RolePermissionTableMap::COL_READ_DEBIT, $this->read_debit);
         }
         if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_PRODUCT)) {
             $criteria->add(RolePermissionTableMap::COL_CREATE_PRODUCT, $this->create_product);
@@ -3547,6 +3255,18 @@ abstract class RolePermission implements ActiveRecordInterface
         if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_SALES)) {
             $criteria->add(RolePermissionTableMap::COL_DESTROY_SALES, $this->destroy_sales);
         }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_SECOND_PARTY)) {
+            $criteria->add(RolePermissionTableMap::COL_CREATE_SECOND_PARTY, $this->create_second_party);
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_SECOND_PARTY)) {
+            $criteria->add(RolePermissionTableMap::COL_READ_SECOND_PARTY, $this->read_second_party);
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_UPDATE_SECOND_PARTY)) {
+            $criteria->add(RolePermissionTableMap::COL_UPDATE_SECOND_PARTY, $this->update_second_party);
+        }
+        if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_SECOND_PARTY)) {
+            $criteria->add(RolePermissionTableMap::COL_DESTROY_SECOND_PARTY, $this->destroy_second_party);
+        }
         if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_STOCK)) {
             $criteria->add(RolePermissionTableMap::COL_CREATE_STOCK, $this->create_stock);
         }
@@ -3558,18 +3278,6 @@ abstract class RolePermission implements ActiveRecordInterface
         }
         if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_STOCK)) {
             $criteria->add(RolePermissionTableMap::COL_DESTROY_STOCK, $this->destroy_stock);
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_SUPPLIER)) {
-            $criteria->add(RolePermissionTableMap::COL_CREATE_SUPPLIER, $this->create_supplier);
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_SUPPLIER)) {
-            $criteria->add(RolePermissionTableMap::COL_READ_SUPPLIER, $this->read_supplier);
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_UPDATE_SUPPLIER)) {
-            $criteria->add(RolePermissionTableMap::COL_UPDATE_SUPPLIER, $this->update_supplier);
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_DESTROY_SUPPLIER)) {
-            $criteria->add(RolePermissionTableMap::COL_DESTROY_SUPPLIER, $this->destroy_supplier);
         }
         if ($this->isColumnModified(RolePermissionTableMap::COL_CREATE_UNIT)) {
             $criteria->add(RolePermissionTableMap::COL_CREATE_UNIT, $this->create_unit);
@@ -3597,18 +3305,6 @@ abstract class RolePermission implements ActiveRecordInterface
         }
         if ($this->isColumnModified(RolePermissionTableMap::COL_RESET_PASS_USER)) {
             $criteria->add(RolePermissionTableMap::COL_RESET_PASS_USER, $this->reset_pass_user);
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_PAY_CREDIT)) {
-            $criteria->add(RolePermissionTableMap::COL_PAY_CREDIT, $this->pay_credit);
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_CREDIT)) {
-            $criteria->add(RolePermissionTableMap::COL_READ_CREDIT, $this->read_credit);
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_PAY_DEBIT)) {
-            $criteria->add(RolePermissionTableMap::COL_PAY_DEBIT, $this->pay_debit);
-        }
-        if ($this->isColumnModified(RolePermissionTableMap::COL_READ_DEBIT)) {
-            $criteria->add(RolePermissionTableMap::COL_READ_DEBIT, $this->read_debit);
         }
 
         return $criteria;
@@ -3704,10 +3400,10 @@ abstract class RolePermission implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setId($this->getId());
-        $copyObj->setCreateCustomer($this->getCreateCustomer());
-        $copyObj->setReadCustomer($this->getReadCustomer());
-        $copyObj->setUpdateCustomer($this->getUpdateCustomer());
-        $copyObj->setDestroyCustomer($this->getDestroyCustomer());
+        $copyObj->setPayCredit($this->getPayCredit());
+        $copyObj->setReadCredit($this->getReadCredit());
+        $copyObj->setPayDebit($this->getPayDebit());
+        $copyObj->setReadDebit($this->getReadDebit());
         $copyObj->setCreateProduct($this->getCreateProduct());
         $copyObj->setReadProduct($this->getReadProduct());
         $copyObj->setUpdateProduct($this->getUpdateProduct());
@@ -3720,14 +3416,14 @@ abstract class RolePermission implements ActiveRecordInterface
         $copyObj->setReadSales($this->getReadSales());
         $copyObj->setUpdateSales($this->getUpdateSales());
         $copyObj->setDestroySales($this->getDestroySales());
+        $copyObj->setCreateSecondParty($this->getCreateSecondParty());
+        $copyObj->setReadSecondParty($this->getReadSecondParty());
+        $copyObj->setUpdateSecondParty($this->getUpdateSecondParty());
+        $copyObj->setDestroySecondParty($this->getDestroySecondParty());
         $copyObj->setCreateStock($this->getCreateStock());
         $copyObj->setReadStock($this->getReadStock());
         $copyObj->setUpdateStock($this->getUpdateStock());
         $copyObj->setDestroyStock($this->getDestroyStock());
-        $copyObj->setCreateSupplier($this->getCreateSupplier());
-        $copyObj->setReadSupplier($this->getReadSupplier());
-        $copyObj->setUpdateSupplier($this->getUpdateSupplier());
-        $copyObj->setDestroySupplier($this->getDestroySupplier());
         $copyObj->setCreateUnit($this->getCreateUnit());
         $copyObj->setReadUnit($this->getReadUnit());
         $copyObj->setUpdateUnit($this->getUpdateUnit());
@@ -3737,10 +3433,6 @@ abstract class RolePermission implements ActiveRecordInterface
         $copyObj->setUpdateUser($this->getUpdateUser());
         $copyObj->setDestroyUser($this->getDestroyUser());
         $copyObj->setResetPassUser($this->getResetPassUser());
-        $copyObj->setPayCredit($this->getPayCredit());
-        $copyObj->setReadCredit($this->getReadCredit());
-        $copyObj->setPayDebit($this->getPayDebit());
-        $copyObj->setReadDebit($this->getReadDebit());
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -3824,10 +3516,10 @@ abstract class RolePermission implements ActiveRecordInterface
             $this->aRole->removePermission($this);
         }
         $this->id = null;
-        $this->create_customer = null;
-        $this->read_customer = null;
-        $this->update_customer = null;
-        $this->destroy_customer = null;
+        $this->pay_credit = null;
+        $this->read_credit = null;
+        $this->pay_debit = null;
+        $this->read_debit = null;
         $this->create_product = null;
         $this->read_product = null;
         $this->update_product = null;
@@ -3840,14 +3532,14 @@ abstract class RolePermission implements ActiveRecordInterface
         $this->read_sales = null;
         $this->update_sales = null;
         $this->destroy_sales = null;
+        $this->create_second_party = null;
+        $this->read_second_party = null;
+        $this->update_second_party = null;
+        $this->destroy_second_party = null;
         $this->create_stock = null;
         $this->read_stock = null;
         $this->update_stock = null;
         $this->destroy_stock = null;
-        $this->create_supplier = null;
-        $this->read_supplier = null;
-        $this->update_supplier = null;
-        $this->destroy_supplier = null;
         $this->create_unit = null;
         $this->read_unit = null;
         $this->update_unit = null;
@@ -3857,10 +3549,6 @@ abstract class RolePermission implements ActiveRecordInterface
         $this->update_user = null;
         $this->destroy_user = null;
         $this->reset_pass_user = null;
-        $this->pay_credit = null;
-        $this->read_credit = null;
-        $this->pay_debit = null;
-        $this->read_debit = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();

@@ -47,16 +47,16 @@ class Credits
             ->filterByStatus('Active')
             ->filterById($params->credit_id)
             ->useSalesQuery()
-                ->leftJoin('Customer')
-                ->withColumn('Customer.Id', 'customer_id')
-                ->withColumn('Customer.Name', 'customer_name')
+                ->leftJoin('SecondParty')
+                ->withColumn('SecondParty.Id', 'second_party_id')
+                ->withColumn('SecondParty.Name', 'second_party_name')
             ->endUse()
             ->withColumn('Credit.Id', 'credit_id')
             ->withColumn('CONVERT(Credit.Total, SIGNED) - CONVERT(Credit.Paid, SIGNED)', 'credit')
             ->select(array(
                 'credit_id',
-                'customer_id',
-                'customer_name',
+                'second_party_id',
+                'second_party_name',
                 'credit'
             ))
             ->findOne($con);
@@ -131,26 +131,26 @@ class Credits
         $credits = CreditQuery::create()
             ->filterByStatus('Active')
             ->useSalesQuery()
-                ->leftJoin('Customer')
-                ->withColumn('Customer.Id', 'customer_id')
-                ->withColumn('Customer.Name', 'customer_name')
+                ->leftJoin('SecondParty')
+                ->withColumn('SecondParty.Id', 'second_party_id')
+                ->withColumn('SecondParty.Name', 'second_party_name')
                 ->withColumn('Sales.Date', 'date')
             ->endUse()
             ->withColumn('CONVERT(Credit.Total, SIGNED) - CONVERT(Credit.Paid, SIGNED)', 'balance');
             
         if(isset($params->id)) $credits->filterById($params->id);
         if(isset($params->sales_id)) $credits->filterBySalesId($params->sales_id);
-        if(isset($params->customer_id)) {
+        if(isset($params->second_party_id)) {
             $credits
                 ->useSalesQuery()
-                    ->filterByCustomerId($params->customer_id)
+                    ->filterBySecondPartyId($params->second_party_id)
                 ->endUse();
         }
-        if(isset($params->customer)) {
+        if(isset($params->second_party)) {
             $credits
                 ->useSalesQuery()
-                    ->useCustomerQuery()
-                        ->filterByName("%{$params->customer}%")
+                    ->useSecondPartyQuery()
+                        ->filterByName("%{$params->second_party}%")
                     ->endUse()
                 ->endUse();
         }
@@ -171,8 +171,8 @@ class Credits
                 'sales_id',
                 'total',
                 'paid',
-                'customer_id',
-                'customer_name',
+                'second_party_id',
+                'second_party_name',
                 'date',
                 'balance'
             ));
@@ -217,19 +217,19 @@ class Credits
             ->withColumn('Cashier.Name', 'cashier_name')
             ->useCreditQuery()
                 ->useSalesQuery()
-                    ->leftJoin('Customer')
-                    ->withColumn('Customer.Id', 'customer_id')
-                    ->withColumn('Customer.Name', 'customer_name')
+                    ->leftJoin('SecondParty')
+                    ->withColumn('SecondParty.Id', 'second_party_id')
+                    ->withColumn('SecondParty.Name', 'second_party_name')
                 ->endUse()
             ->endUse();
             
         if(isset($params->credit_id)) $creditPayments->filterByCreditId($params->credit_id);
-        if(isset($params->customer)) {
+        if(isset($params->second_party)) {
             $creditPayments
                 ->useCreditQuery()
                     ->useSalesQuery()
-                        ->useCustomerQuery()
-                            ->filterByName('%' . $params->customer . '%')
+                        ->useSecondPartyQuery()
+                            ->filterByName('%' . $params->second_party . '%')
                         ->endUse()
                     ->endUse()
                 ->endUse();
@@ -245,8 +245,8 @@ class Credits
                 'paid',
                 'cashier_id',
                 'cashier_name',
-                'customer_id',
-                'customer_name'
+                'second_party_id',
+                'second_party_name'
             ));
 
         foreach($params->sort as $sorter){

@@ -3,11 +3,11 @@
 namespace App;
 
 use ORM\CreditQuery;
-use ORM\Customer;
-use ORM\CustomerQuery;
 use ORM\RolePermissionQuery;
 use ORM\RowHistory;
 use ORM\SalesQuery;
+use ORM\SecondParty;
+use ORM\SecondPartyQuery;
 
 class Customers
 {
@@ -22,7 +22,7 @@ class Customers
         
         $sales = SalesQuery::create()
             ->filterByStatus('Active')
-            ->filterByCustomerId($params->customer_id)
+            ->filterBySecondPartyId($params->customer_id)
             ->filterByDate(array('min' => $start, 'max' => $until))
             ->withColumn('COUNT(Sales.Id)', 'sales_count')
             ->withColumn('SUM(Sales.TotalPrice)', 'sales_total')
@@ -41,7 +41,7 @@ class Customers
         
         $sales = SalesQuery::create()
             ->filterByStatus('Active')
-            ->filterByCustomerId($params->customer_id)
+            ->filterBySecondPartyId($params->customer_id)
             ->filterByDate(array('min' => $start, 'max' => $until))
             ->withColumn('COUNT(Sales.Id)', 'sales_count')
             ->withColumn('SUM(Sales.TotalPrice)', 'sales_total')
@@ -57,7 +57,7 @@ class Customers
         $credits = CreditQuery::create()
             ->filterByStatus('Active')
             ->useSalesQuery()
-                ->filterByCustomerId($params->customer_id)
+                ->filterBySecondPartyId($params->customer_id)
             ->endUse()
             ->withColumn('CONVERT(Credit.Total, SIGNED) - CONVERT(Credit.Paid, SIGNED)', 'balance')
             ->select(array(
@@ -83,9 +83,10 @@ class Customers
 
     private static function seeker($params, $currentUser, $con)
     {
-        $customer = CustomerQuery::create()
+        $customer = SecondPartyQuery::create()
             ->filterByStatus('Active')
-            ->withColumn('DATE_FORMAT(NOW(), "%Y") - DATE_FORMAT(Customer.Birthday, "%Y") - (DATE_FORMAT(NOW(), "00-%m-%d") < DATE_FORMAT(Customer.Birthday, "00-%m-%d"))', 'age')
+            ->filterByType('Customer')
+            ->withColumn('DATE_FORMAT(NOW(), "%Y") - DATE_FORMAT(SecondParty.Birthday, "%Y") - (DATE_FORMAT(NOW(), "00-%m-%d") < DATE_FORMAT(SecondParty.Birthday, "00-%m-%d"))', 'age')
             ->select(array(
                 'id',
                 'registered_date',
@@ -118,7 +119,7 @@ class Customers
 
             $sales = SalesQuery::create()
                 ->filterByStatus('Active')
-                ->filterByCustomerId($params->customer_id)
+                ->filterBySecondPartyId($params->customer_id)
                 ->filterByDate(array('min' => $date->format('Y-m-01'), 'max' => $date->format('Y-m-t')))
                 ->withColumn('SUM(Sales.TotalPrice)', 'sales_total')
                 ->select([
@@ -143,11 +144,11 @@ class Customers
     public static function create($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('create_customer')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('create_second_party')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         // create new record
-        $customer = new Customer();
+        $customer = new SecondParty();
         $customer
             ->setRegisteredDate($params->registered_date)
             ->setName($params->name)
@@ -155,6 +156,7 @@ class Customers
             ->setBirthday($params->birthday)
             ->setGender($params->gender)
             ->setPhone($params->phone)
+            ->setType('Customer')
             ->setStatus('Active')
             ->save($con);
 
@@ -178,10 +180,10 @@ class Customers
     public static function destroy($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('destroy_customer')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('destroy_second_party')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $customers = CustomerQuery::create()->filterById($params->id)->find($con);
+        $customers = SecondPartyQuery::create()->filterById($params->id)->find($con);
         if (!$customers) throw new \Exception('Data tidak ditemukan');
 
         foreach($customers as $customer)
@@ -208,7 +210,7 @@ class Customers
     public static function listSales($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('read_customer')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('read_second_party')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
         
         if (!isset($params->customer_id)) throw new \Exception('Missing parameter');
@@ -218,16 +220,16 @@ class Customers
 
         $sales = SalesQuery::create()
             ->filterByStatus('Active')
-            ->filterByCustomerId($params->customer_id)
+            ->filterBySecondPartyId($params->customer_id)
             ->filterByDate(array('min' => $start, 'max' => $until))
-            ->leftJoin('Customer')
+            ->leftJoin('SecondParty')
             ->leftJoin('Cashier')
-            ->withColumn('Customer.Name', 'customer_name')
+            ->withColumn('SecondParty.Name', 'second_party_name')
             ->withColumn('Cashier.Name', 'cashier_name')
             ->select(array(
                 'id',
                 'date',
-                'customer_id',
+                'second_party_id',
                 'total_price',
                 'cashier_id'
             ))
@@ -249,7 +251,7 @@ class Customers
     public static function loadFormEdit($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('update_customer')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('update_second_party')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         $params->customer_id = $params->id;
@@ -265,15 +267,16 @@ class Customers
     public static function read($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('read_customer')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('read_second_party')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         $page = (isset($params->page) ? $params->page : 0);
         $limit = (isset($params->limit) ? $params->limit : 100);
 
-        $customers = CustomerQuery::create()
+        $customers = SecondPartyQuery::create()
             ->filterByStatus('Active')
-            ->where('Customer.Id not like ?', 0);
+            ->filterByType('Customer')
+            ->where('SecondParty.Id not like ?', 0);
 
         if(isset($params->name)) $customers->filterByName('%' . $params->name . '%');
 
@@ -311,10 +314,10 @@ class Customers
     public static function update($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('update_unit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('update_second_party')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $customer = CustomerQuery::create()->filterByStatus('Active')->findOneById($params->id, $con);
+        $customer = SecondPartyQuery::create()->filterByStatus('Active')->findOneById($params->id, $con);
         if(!$customer) throw new \Exception('Data tidak ditemukan');
 
         $customer
@@ -343,9 +346,9 @@ class Customers
     public static function viewDetail($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('read_customer')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('read_second_party')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
-
+        
         $customer = Customers::seeker($params, $currentUser, $con);
         
         $stats = Customers::getStats($params, $currentUser, $con);

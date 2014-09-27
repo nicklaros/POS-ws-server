@@ -4,8 +4,8 @@ namespace App;
 
 use ORM\RolePermissionQuery;
 use ORM\RowHistory;
-use ORM\Supplier;
-use ORM\SupplierQuery;
+use ORM\SecondParty;
+use ORM\SecondPartyQuery;
 
 class Suppliers
 {
@@ -13,15 +13,17 @@ class Suppliers
     public static function create($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('create_supplier')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('create_second_party')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         // create new record
-        $supplier = new Supplier();
+        $supplier = new SecondParty();
         $supplier
+            ->setRegisteredDate(Date('Y-m-d'))
             ->setName($params->name)
             ->setAddress($params->address)
             ->setPhone($params->phone)
+            ->setType('Supplier')
             ->setStatus('Active')
             ->save($con);
 
@@ -45,10 +47,10 @@ class Suppliers
     public static function destroy($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('destroy_supplier')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('destroy_second_party')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $suppliers = SupplierQuery::create()->filterByStatus('Active')->filterById($params->id)->find($con);
+        $suppliers = SecondPartyQuery::create()->filterByStatus('Active')->filterById($params->id)->find($con);
         if (!$suppliers) throw new \Exception('Data tidak ditemukan');
 
         foreach($suppliers as $supplier)
@@ -75,10 +77,10 @@ class Suppliers
     public static function loadFormEdit($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('update_supplier')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('update_second_party')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $supplier = SupplierQuery::create()
+        $supplier = SecondPartyQuery::create()
             ->filterByStatus('Active')
             ->select(array(
                 'id',
@@ -99,15 +101,16 @@ class Suppliers
     public static function read($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('read_supplier')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('read_second_party')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
         $page = (isset($params->page) ? $params->page : 0);
         $limit = (isset($params->limit) ? $params->limit : 100);
 
-        $suppliers = SupplierQuery::create()
+        $suppliers = SecondPartyQuery::create()
             ->filterByStatus('Active')
-            ->where('Supplier.Id not like ?', 0);
+            ->filterByType('Supplier')
+            ->where('SecondParty.Id not like ?', 0);
 
         if(isset($params->name)) $suppliers->filterByName('%' . $params->name . '%');
 
@@ -142,10 +145,10 @@ class Suppliers
     public static function update($params, $currentUser, $con)
     {
         // check role's permission
-        $permission = RolePermissionQuery::create()->select('update_unit')->findOneById($currentUser->role_id, $con);
+        $permission = RolePermissionQuery::create()->select('update_second_party')->findOneById($currentUser->role_id, $con);
         if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
 
-        $supplier = SupplierQuery::create()->filterByStatus('Active')->findOneById($params->id, $con);
+        $supplier = SecondPartyQuery::create()->filterByStatus('Active')->findOneById($params->id, $con);
         if(!$supplier) throw new \Exception('Data tidak ditemukan');
 
         $supplier

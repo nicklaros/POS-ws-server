@@ -18,14 +18,14 @@ class Sale
     private static function seeker($params, $currentUser, $con)
     {
         $sales = SalesQuery::create()
-            ->leftJoin('Customer')
+            ->leftJoin('SecondParty')
             ->leftJoin('Cashier')
             ->filterByStatus('Active')
             ->filterById($params->id)
             ->select(array(
                 'id',
                 'date',
-                'customer_id',
+                'second_party_id',
                 'buy_price',
                 'total_price',
                 'paid',
@@ -33,7 +33,7 @@ class Sale
                 'note'
             ))
             ->withColumn('CAST(Sales.Paid AS SIGNED) - CAST(Sales.TotalPrice AS SIGNED)', 'balance')
-            ->withColumn('Customer.Name', 'customer_name')
+            ->withColumn('SecondParty.Name', 'second_party_name')
             ->withColumn('Cashier.Name', 'cashier_name')
             ->findOne($con);
 
@@ -153,7 +153,7 @@ class Sale
         $sales = new Sales();
         $sales
             ->setDate($params->date)
-            ->setCustomerId($params->customer_id)
+            ->setSecondPartyId($params->second_party_id)
             ->setBuyPrice($params->buy_price)
             ->setTotalPrice($params->total_price)
             ->setPaid($params->paid)
@@ -261,13 +261,13 @@ class Sale
         $limit = (isset($params->limit) ? $params->limit : 100);
 
         $sales = SalesQuery::create()
-            ->leftJoin('Customer')
+            ->leftJoin('SecondParty')
             ->leftJoin('Cashier')
             ->filterByStatus('Active');
             
         if(isset($params->id)) $sales->filterById($params->id);
-        if(isset($params->customer_id)) $sales->useCustomerQuery()->filterById($params->customer_id)->endUse();
-        if(isset($params->customer)) $sales->useCustomerQuery()->filterByName('%' . $params->customer . '%')->endUse();
+        if(isset($params->second_party_id)) $sales->useSecondPartyQuery()->filterById($params->second_party_id)->endUse();
+        if(isset($params->customer)) $sales->useSecondPartyQuery()->filterByName('%' . $params->customer . '%')->endUse();
         if(isset($params->start_date)) $sales->filterByDate(array('min' => $params->start_date));
         if(isset($params->until_date)) $sales->filterByDate(array('max' => $params->until_date));
         if(isset($params->payment_status)){
@@ -283,12 +283,12 @@ class Sale
 
         $sales = $sales
             ->withColumn('CAST(Sales.Paid AS SIGNED) - CAST(Sales.TotalPrice AS SIGNED)', 'balance')
-            ->withColumn('Customer.Name', 'customer_name')
+            ->withColumn('SecondParty.Name', 'second_party_name')
             ->withColumn('Cashier.Name', 'cashier_name')
             ->select(array(
                 'id',
                 'date',
-                'customer_id',
+                'second_party_id',
                 'buy_price',
                 'total_price',
                 'paid',
@@ -346,7 +346,7 @@ class Sale
 
         $sales
             ->setDate($params->date)
-            ->setCustomerId($params->customer_id)
+            ->setSecondPartyId($params->second_party_id)
             ->setBuyPrice($params->buy_price)
             ->setTotalPrice($params->total_price)
             ->setPaid($params->paid)

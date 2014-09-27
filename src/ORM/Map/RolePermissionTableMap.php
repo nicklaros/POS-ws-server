@@ -59,7 +59,7 @@ class RolePermissionTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 38;
+    const NUM_COLUMNS = 34;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class RolePermissionTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 38;
+    const NUM_HYDRATE_COLUMNS = 34;
 
     /**
      * the column name for the ID field
@@ -77,24 +77,24 @@ class RolePermissionTableMap extends TableMap
     const COL_ID = 'role_permission.ID';
 
     /**
-     * the column name for the CREATE_CUSTOMER field
+     * the column name for the PAY_CREDIT field
      */
-    const COL_CREATE_CUSTOMER = 'role_permission.CREATE_CUSTOMER';
+    const COL_PAY_CREDIT = 'role_permission.PAY_CREDIT';
 
     /**
-     * the column name for the READ_CUSTOMER field
+     * the column name for the READ_CREDIT field
      */
-    const COL_READ_CUSTOMER = 'role_permission.READ_CUSTOMER';
+    const COL_READ_CREDIT = 'role_permission.READ_CREDIT';
 
     /**
-     * the column name for the UPDATE_CUSTOMER field
+     * the column name for the PAY_DEBIT field
      */
-    const COL_UPDATE_CUSTOMER = 'role_permission.UPDATE_CUSTOMER';
+    const COL_PAY_DEBIT = 'role_permission.PAY_DEBIT';
 
     /**
-     * the column name for the DESTROY_CUSTOMER field
+     * the column name for the READ_DEBIT field
      */
-    const COL_DESTROY_CUSTOMER = 'role_permission.DESTROY_CUSTOMER';
+    const COL_READ_DEBIT = 'role_permission.READ_DEBIT';
 
     /**
      * the column name for the CREATE_PRODUCT field
@@ -157,6 +157,26 @@ class RolePermissionTableMap extends TableMap
     const COL_DESTROY_SALES = 'role_permission.DESTROY_SALES';
 
     /**
+     * the column name for the CREATE_SECOND_PARTY field
+     */
+    const COL_CREATE_SECOND_PARTY = 'role_permission.CREATE_SECOND_PARTY';
+
+    /**
+     * the column name for the READ_SECOND_PARTY field
+     */
+    const COL_READ_SECOND_PARTY = 'role_permission.READ_SECOND_PARTY';
+
+    /**
+     * the column name for the UPDATE_SECOND_PARTY field
+     */
+    const COL_UPDATE_SECOND_PARTY = 'role_permission.UPDATE_SECOND_PARTY';
+
+    /**
+     * the column name for the DESTROY_SECOND_PARTY field
+     */
+    const COL_DESTROY_SECOND_PARTY = 'role_permission.DESTROY_SECOND_PARTY';
+
+    /**
      * the column name for the CREATE_STOCK field
      */
     const COL_CREATE_STOCK = 'role_permission.CREATE_STOCK';
@@ -175,26 +195,6 @@ class RolePermissionTableMap extends TableMap
      * the column name for the DESTROY_STOCK field
      */
     const COL_DESTROY_STOCK = 'role_permission.DESTROY_STOCK';
-
-    /**
-     * the column name for the CREATE_SUPPLIER field
-     */
-    const COL_CREATE_SUPPLIER = 'role_permission.CREATE_SUPPLIER';
-
-    /**
-     * the column name for the READ_SUPPLIER field
-     */
-    const COL_READ_SUPPLIER = 'role_permission.READ_SUPPLIER';
-
-    /**
-     * the column name for the UPDATE_SUPPLIER field
-     */
-    const COL_UPDATE_SUPPLIER = 'role_permission.UPDATE_SUPPLIER';
-
-    /**
-     * the column name for the DESTROY_SUPPLIER field
-     */
-    const COL_DESTROY_SUPPLIER = 'role_permission.DESTROY_SUPPLIER';
 
     /**
      * the column name for the CREATE_UNIT field
@@ -242,26 +242,6 @@ class RolePermissionTableMap extends TableMap
     const COL_RESET_PASS_USER = 'role_permission.RESET_PASS_USER';
 
     /**
-     * the column name for the PAY_CREDIT field
-     */
-    const COL_PAY_CREDIT = 'role_permission.PAY_CREDIT';
-
-    /**
-     * the column name for the READ_CREDIT field
-     */
-    const COL_READ_CREDIT = 'role_permission.READ_CREDIT';
-
-    /**
-     * the column name for the PAY_DEBIT field
-     */
-    const COL_PAY_DEBIT = 'role_permission.PAY_DEBIT';
-
-    /**
-     * the column name for the READ_DEBIT field
-     */
-    const COL_READ_DEBIT = 'role_permission.READ_DEBIT';
-
-    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -273,12 +253,12 @@ class RolePermissionTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'CreateCustomer', 'ReadCustomer', 'UpdateCustomer', 'DestroyCustomer', 'CreateProduct', 'ReadProduct', 'UpdateProduct', 'DestroyProduct', 'CreatePurchase', 'ReadPurchase', 'UpdatePurchase', 'DestroyPurchase', 'CreateSales', 'ReadSales', 'UpdateSales', 'DestroySales', 'CreateStock', 'ReadStock', 'UpdateStock', 'DestroyStock', 'CreateSupplier', 'ReadSupplier', 'UpdateSupplier', 'DestroySupplier', 'CreateUnit', 'ReadUnit', 'UpdateUnit', 'DestroyUnit', 'CreateUser', 'ReadUser', 'UpdateUser', 'DestroyUser', 'ResetPassUser', 'PayCredit', 'ReadCredit', 'PayDebit', 'ReadDebit', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'createCustomer', 'readCustomer', 'updateCustomer', 'destroyCustomer', 'createProduct', 'readProduct', 'updateProduct', 'destroyProduct', 'createPurchase', 'readPurchase', 'updatePurchase', 'destroyPurchase', 'createSales', 'readSales', 'updateSales', 'destroySales', 'createStock', 'readStock', 'updateStock', 'destroyStock', 'createSupplier', 'readSupplier', 'updateSupplier', 'destroySupplier', 'createUnit', 'readUnit', 'updateUnit', 'destroyUnit', 'createUser', 'readUser', 'updateUser', 'destroyUser', 'resetPassUser', 'payCredit', 'readCredit', 'payDebit', 'readDebit', ),
-        self::TYPE_COLNAME       => array(RolePermissionTableMap::COL_ID, RolePermissionTableMap::COL_CREATE_CUSTOMER, RolePermissionTableMap::COL_READ_CUSTOMER, RolePermissionTableMap::COL_UPDATE_CUSTOMER, RolePermissionTableMap::COL_DESTROY_CUSTOMER, RolePermissionTableMap::COL_CREATE_PRODUCT, RolePermissionTableMap::COL_READ_PRODUCT, RolePermissionTableMap::COL_UPDATE_PRODUCT, RolePermissionTableMap::COL_DESTROY_PRODUCT, RolePermissionTableMap::COL_CREATE_PURCHASE, RolePermissionTableMap::COL_READ_PURCHASE, RolePermissionTableMap::COL_UPDATE_PURCHASE, RolePermissionTableMap::COL_DESTROY_PURCHASE, RolePermissionTableMap::COL_CREATE_SALES, RolePermissionTableMap::COL_READ_SALES, RolePermissionTableMap::COL_UPDATE_SALES, RolePermissionTableMap::COL_DESTROY_SALES, RolePermissionTableMap::COL_CREATE_STOCK, RolePermissionTableMap::COL_READ_STOCK, RolePermissionTableMap::COL_UPDATE_STOCK, RolePermissionTableMap::COL_DESTROY_STOCK, RolePermissionTableMap::COL_CREATE_SUPPLIER, RolePermissionTableMap::COL_READ_SUPPLIER, RolePermissionTableMap::COL_UPDATE_SUPPLIER, RolePermissionTableMap::COL_DESTROY_SUPPLIER, RolePermissionTableMap::COL_CREATE_UNIT, RolePermissionTableMap::COL_READ_UNIT, RolePermissionTableMap::COL_UPDATE_UNIT, RolePermissionTableMap::COL_DESTROY_UNIT, RolePermissionTableMap::COL_CREATE_USER, RolePermissionTableMap::COL_READ_USER, RolePermissionTableMap::COL_UPDATE_USER, RolePermissionTableMap::COL_DESTROY_USER, RolePermissionTableMap::COL_RESET_PASS_USER, RolePermissionTableMap::COL_PAY_CREDIT, RolePermissionTableMap::COL_READ_CREDIT, RolePermissionTableMap::COL_PAY_DEBIT, RolePermissionTableMap::COL_READ_DEBIT, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_CREATE_CUSTOMER', 'COL_READ_CUSTOMER', 'COL_UPDATE_CUSTOMER', 'COL_DESTROY_CUSTOMER', 'COL_CREATE_PRODUCT', 'COL_READ_PRODUCT', 'COL_UPDATE_PRODUCT', 'COL_DESTROY_PRODUCT', 'COL_CREATE_PURCHASE', 'COL_READ_PURCHASE', 'COL_UPDATE_PURCHASE', 'COL_DESTROY_PURCHASE', 'COL_CREATE_SALES', 'COL_READ_SALES', 'COL_UPDATE_SALES', 'COL_DESTROY_SALES', 'COL_CREATE_STOCK', 'COL_READ_STOCK', 'COL_UPDATE_STOCK', 'COL_DESTROY_STOCK', 'COL_CREATE_SUPPLIER', 'COL_READ_SUPPLIER', 'COL_UPDATE_SUPPLIER', 'COL_DESTROY_SUPPLIER', 'COL_CREATE_UNIT', 'COL_READ_UNIT', 'COL_UPDATE_UNIT', 'COL_DESTROY_UNIT', 'COL_CREATE_USER', 'COL_READ_USER', 'COL_UPDATE_USER', 'COL_DESTROY_USER', 'COL_RESET_PASS_USER', 'COL_PAY_CREDIT', 'COL_READ_CREDIT', 'COL_PAY_DEBIT', 'COL_READ_DEBIT', ),
-        self::TYPE_FIELDNAME     => array('id', 'create_customer', 'read_customer', 'update_customer', 'destroy_customer', 'create_product', 'read_product', 'update_product', 'destroy_product', 'create_purchase', 'read_purchase', 'update_purchase', 'destroy_purchase', 'create_sales', 'read_sales', 'update_sales', 'destroy_sales', 'create_stock', 'read_stock', 'update_stock', 'destroy_stock', 'create_supplier', 'read_supplier', 'update_supplier', 'destroy_supplier', 'create_unit', 'read_unit', 'update_unit', 'destroy_unit', 'create_user', 'read_user', 'update_user', 'destroy_user', 'reset_pass_user', 'pay_credit', 'read_credit', 'pay_debit', 'read_debit', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, )
+        self::TYPE_PHPNAME       => array('Id', 'PayCredit', 'ReadCredit', 'PayDebit', 'ReadDebit', 'CreateProduct', 'ReadProduct', 'UpdateProduct', 'DestroyProduct', 'CreatePurchase', 'ReadPurchase', 'UpdatePurchase', 'DestroyPurchase', 'CreateSales', 'ReadSales', 'UpdateSales', 'DestroySales', 'CreateSecondParty', 'ReadSecondParty', 'UpdateSecondParty', 'DestroySecondParty', 'CreateStock', 'ReadStock', 'UpdateStock', 'DestroyStock', 'CreateUnit', 'ReadUnit', 'UpdateUnit', 'DestroyUnit', 'CreateUser', 'ReadUser', 'UpdateUser', 'DestroyUser', 'ResetPassUser', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'payCredit', 'readCredit', 'payDebit', 'readDebit', 'createProduct', 'readProduct', 'updateProduct', 'destroyProduct', 'createPurchase', 'readPurchase', 'updatePurchase', 'destroyPurchase', 'createSales', 'readSales', 'updateSales', 'destroySales', 'createSecondParty', 'readSecondParty', 'updateSecondParty', 'destroySecondParty', 'createStock', 'readStock', 'updateStock', 'destroyStock', 'createUnit', 'readUnit', 'updateUnit', 'destroyUnit', 'createUser', 'readUser', 'updateUser', 'destroyUser', 'resetPassUser', ),
+        self::TYPE_COLNAME       => array(RolePermissionTableMap::COL_ID, RolePermissionTableMap::COL_PAY_CREDIT, RolePermissionTableMap::COL_READ_CREDIT, RolePermissionTableMap::COL_PAY_DEBIT, RolePermissionTableMap::COL_READ_DEBIT, RolePermissionTableMap::COL_CREATE_PRODUCT, RolePermissionTableMap::COL_READ_PRODUCT, RolePermissionTableMap::COL_UPDATE_PRODUCT, RolePermissionTableMap::COL_DESTROY_PRODUCT, RolePermissionTableMap::COL_CREATE_PURCHASE, RolePermissionTableMap::COL_READ_PURCHASE, RolePermissionTableMap::COL_UPDATE_PURCHASE, RolePermissionTableMap::COL_DESTROY_PURCHASE, RolePermissionTableMap::COL_CREATE_SALES, RolePermissionTableMap::COL_READ_SALES, RolePermissionTableMap::COL_UPDATE_SALES, RolePermissionTableMap::COL_DESTROY_SALES, RolePermissionTableMap::COL_CREATE_SECOND_PARTY, RolePermissionTableMap::COL_READ_SECOND_PARTY, RolePermissionTableMap::COL_UPDATE_SECOND_PARTY, RolePermissionTableMap::COL_DESTROY_SECOND_PARTY, RolePermissionTableMap::COL_CREATE_STOCK, RolePermissionTableMap::COL_READ_STOCK, RolePermissionTableMap::COL_UPDATE_STOCK, RolePermissionTableMap::COL_DESTROY_STOCK, RolePermissionTableMap::COL_CREATE_UNIT, RolePermissionTableMap::COL_READ_UNIT, RolePermissionTableMap::COL_UPDATE_UNIT, RolePermissionTableMap::COL_DESTROY_UNIT, RolePermissionTableMap::COL_CREATE_USER, RolePermissionTableMap::COL_READ_USER, RolePermissionTableMap::COL_UPDATE_USER, RolePermissionTableMap::COL_DESTROY_USER, RolePermissionTableMap::COL_RESET_PASS_USER, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID', 'COL_PAY_CREDIT', 'COL_READ_CREDIT', 'COL_PAY_DEBIT', 'COL_READ_DEBIT', 'COL_CREATE_PRODUCT', 'COL_READ_PRODUCT', 'COL_UPDATE_PRODUCT', 'COL_DESTROY_PRODUCT', 'COL_CREATE_PURCHASE', 'COL_READ_PURCHASE', 'COL_UPDATE_PURCHASE', 'COL_DESTROY_PURCHASE', 'COL_CREATE_SALES', 'COL_READ_SALES', 'COL_UPDATE_SALES', 'COL_DESTROY_SALES', 'COL_CREATE_SECOND_PARTY', 'COL_READ_SECOND_PARTY', 'COL_UPDATE_SECOND_PARTY', 'COL_DESTROY_SECOND_PARTY', 'COL_CREATE_STOCK', 'COL_READ_STOCK', 'COL_UPDATE_STOCK', 'COL_DESTROY_STOCK', 'COL_CREATE_UNIT', 'COL_READ_UNIT', 'COL_UPDATE_UNIT', 'COL_DESTROY_UNIT', 'COL_CREATE_USER', 'COL_READ_USER', 'COL_UPDATE_USER', 'COL_DESTROY_USER', 'COL_RESET_PASS_USER', ),
+        self::TYPE_FIELDNAME     => array('id', 'pay_credit', 'read_credit', 'pay_debit', 'read_debit', 'create_product', 'read_product', 'update_product', 'destroy_product', 'create_purchase', 'read_purchase', 'update_purchase', 'destroy_purchase', 'create_sales', 'read_sales', 'update_sales', 'destroy_sales', 'create_second_party', 'read_second_party', 'update_second_party', 'destroy_second_party', 'create_stock', 'read_stock', 'update_stock', 'destroy_stock', 'create_unit', 'read_unit', 'update_unit', 'destroy_unit', 'create_user', 'read_user', 'update_user', 'destroy_user', 'reset_pass_user', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, )
     );
 
     /**
@@ -288,12 +268,12 @@ class RolePermissionTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'CreateCustomer' => 1, 'ReadCustomer' => 2, 'UpdateCustomer' => 3, 'DestroyCustomer' => 4, 'CreateProduct' => 5, 'ReadProduct' => 6, 'UpdateProduct' => 7, 'DestroyProduct' => 8, 'CreatePurchase' => 9, 'ReadPurchase' => 10, 'UpdatePurchase' => 11, 'DestroyPurchase' => 12, 'CreateSales' => 13, 'ReadSales' => 14, 'UpdateSales' => 15, 'DestroySales' => 16, 'CreateStock' => 17, 'ReadStock' => 18, 'UpdateStock' => 19, 'DestroyStock' => 20, 'CreateSupplier' => 21, 'ReadSupplier' => 22, 'UpdateSupplier' => 23, 'DestroySupplier' => 24, 'CreateUnit' => 25, 'ReadUnit' => 26, 'UpdateUnit' => 27, 'DestroyUnit' => 28, 'CreateUser' => 29, 'ReadUser' => 30, 'UpdateUser' => 31, 'DestroyUser' => 32, 'ResetPassUser' => 33, 'PayCredit' => 34, 'ReadCredit' => 35, 'PayDebit' => 36, 'ReadDebit' => 37, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'createCustomer' => 1, 'readCustomer' => 2, 'updateCustomer' => 3, 'destroyCustomer' => 4, 'createProduct' => 5, 'readProduct' => 6, 'updateProduct' => 7, 'destroyProduct' => 8, 'createPurchase' => 9, 'readPurchase' => 10, 'updatePurchase' => 11, 'destroyPurchase' => 12, 'createSales' => 13, 'readSales' => 14, 'updateSales' => 15, 'destroySales' => 16, 'createStock' => 17, 'readStock' => 18, 'updateStock' => 19, 'destroyStock' => 20, 'createSupplier' => 21, 'readSupplier' => 22, 'updateSupplier' => 23, 'destroySupplier' => 24, 'createUnit' => 25, 'readUnit' => 26, 'updateUnit' => 27, 'destroyUnit' => 28, 'createUser' => 29, 'readUser' => 30, 'updateUser' => 31, 'destroyUser' => 32, 'resetPassUser' => 33, 'payCredit' => 34, 'readCredit' => 35, 'payDebit' => 36, 'readDebit' => 37, ),
-        self::TYPE_COLNAME       => array(RolePermissionTableMap::COL_ID => 0, RolePermissionTableMap::COL_CREATE_CUSTOMER => 1, RolePermissionTableMap::COL_READ_CUSTOMER => 2, RolePermissionTableMap::COL_UPDATE_CUSTOMER => 3, RolePermissionTableMap::COL_DESTROY_CUSTOMER => 4, RolePermissionTableMap::COL_CREATE_PRODUCT => 5, RolePermissionTableMap::COL_READ_PRODUCT => 6, RolePermissionTableMap::COL_UPDATE_PRODUCT => 7, RolePermissionTableMap::COL_DESTROY_PRODUCT => 8, RolePermissionTableMap::COL_CREATE_PURCHASE => 9, RolePermissionTableMap::COL_READ_PURCHASE => 10, RolePermissionTableMap::COL_UPDATE_PURCHASE => 11, RolePermissionTableMap::COL_DESTROY_PURCHASE => 12, RolePermissionTableMap::COL_CREATE_SALES => 13, RolePermissionTableMap::COL_READ_SALES => 14, RolePermissionTableMap::COL_UPDATE_SALES => 15, RolePermissionTableMap::COL_DESTROY_SALES => 16, RolePermissionTableMap::COL_CREATE_STOCK => 17, RolePermissionTableMap::COL_READ_STOCK => 18, RolePermissionTableMap::COL_UPDATE_STOCK => 19, RolePermissionTableMap::COL_DESTROY_STOCK => 20, RolePermissionTableMap::COL_CREATE_SUPPLIER => 21, RolePermissionTableMap::COL_READ_SUPPLIER => 22, RolePermissionTableMap::COL_UPDATE_SUPPLIER => 23, RolePermissionTableMap::COL_DESTROY_SUPPLIER => 24, RolePermissionTableMap::COL_CREATE_UNIT => 25, RolePermissionTableMap::COL_READ_UNIT => 26, RolePermissionTableMap::COL_UPDATE_UNIT => 27, RolePermissionTableMap::COL_DESTROY_UNIT => 28, RolePermissionTableMap::COL_CREATE_USER => 29, RolePermissionTableMap::COL_READ_USER => 30, RolePermissionTableMap::COL_UPDATE_USER => 31, RolePermissionTableMap::COL_DESTROY_USER => 32, RolePermissionTableMap::COL_RESET_PASS_USER => 33, RolePermissionTableMap::COL_PAY_CREDIT => 34, RolePermissionTableMap::COL_READ_CREDIT => 35, RolePermissionTableMap::COL_PAY_DEBIT => 36, RolePermissionTableMap::COL_READ_DEBIT => 37, ),
-        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_CREATE_CUSTOMER' => 1, 'COL_READ_CUSTOMER' => 2, 'COL_UPDATE_CUSTOMER' => 3, 'COL_DESTROY_CUSTOMER' => 4, 'COL_CREATE_PRODUCT' => 5, 'COL_READ_PRODUCT' => 6, 'COL_UPDATE_PRODUCT' => 7, 'COL_DESTROY_PRODUCT' => 8, 'COL_CREATE_PURCHASE' => 9, 'COL_READ_PURCHASE' => 10, 'COL_UPDATE_PURCHASE' => 11, 'COL_DESTROY_PURCHASE' => 12, 'COL_CREATE_SALES' => 13, 'COL_READ_SALES' => 14, 'COL_UPDATE_SALES' => 15, 'COL_DESTROY_SALES' => 16, 'COL_CREATE_STOCK' => 17, 'COL_READ_STOCK' => 18, 'COL_UPDATE_STOCK' => 19, 'COL_DESTROY_STOCK' => 20, 'COL_CREATE_SUPPLIER' => 21, 'COL_READ_SUPPLIER' => 22, 'COL_UPDATE_SUPPLIER' => 23, 'COL_DESTROY_SUPPLIER' => 24, 'COL_CREATE_UNIT' => 25, 'COL_READ_UNIT' => 26, 'COL_UPDATE_UNIT' => 27, 'COL_DESTROY_UNIT' => 28, 'COL_CREATE_USER' => 29, 'COL_READ_USER' => 30, 'COL_UPDATE_USER' => 31, 'COL_DESTROY_USER' => 32, 'COL_RESET_PASS_USER' => 33, 'COL_PAY_CREDIT' => 34, 'COL_READ_CREDIT' => 35, 'COL_PAY_DEBIT' => 36, 'COL_READ_DEBIT' => 37, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'create_customer' => 1, 'read_customer' => 2, 'update_customer' => 3, 'destroy_customer' => 4, 'create_product' => 5, 'read_product' => 6, 'update_product' => 7, 'destroy_product' => 8, 'create_purchase' => 9, 'read_purchase' => 10, 'update_purchase' => 11, 'destroy_purchase' => 12, 'create_sales' => 13, 'read_sales' => 14, 'update_sales' => 15, 'destroy_sales' => 16, 'create_stock' => 17, 'read_stock' => 18, 'update_stock' => 19, 'destroy_stock' => 20, 'create_supplier' => 21, 'read_supplier' => 22, 'update_supplier' => 23, 'destroy_supplier' => 24, 'create_unit' => 25, 'read_unit' => 26, 'update_unit' => 27, 'destroy_unit' => 28, 'create_user' => 29, 'read_user' => 30, 'update_user' => 31, 'destroy_user' => 32, 'reset_pass_user' => 33, 'pay_credit' => 34, 'read_credit' => 35, 'pay_debit' => 36, 'read_debit' => 37, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'PayCredit' => 1, 'ReadCredit' => 2, 'PayDebit' => 3, 'ReadDebit' => 4, 'CreateProduct' => 5, 'ReadProduct' => 6, 'UpdateProduct' => 7, 'DestroyProduct' => 8, 'CreatePurchase' => 9, 'ReadPurchase' => 10, 'UpdatePurchase' => 11, 'DestroyPurchase' => 12, 'CreateSales' => 13, 'ReadSales' => 14, 'UpdateSales' => 15, 'DestroySales' => 16, 'CreateSecondParty' => 17, 'ReadSecondParty' => 18, 'UpdateSecondParty' => 19, 'DestroySecondParty' => 20, 'CreateStock' => 21, 'ReadStock' => 22, 'UpdateStock' => 23, 'DestroyStock' => 24, 'CreateUnit' => 25, 'ReadUnit' => 26, 'UpdateUnit' => 27, 'DestroyUnit' => 28, 'CreateUser' => 29, 'ReadUser' => 30, 'UpdateUser' => 31, 'DestroyUser' => 32, 'ResetPassUser' => 33, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'payCredit' => 1, 'readCredit' => 2, 'payDebit' => 3, 'readDebit' => 4, 'createProduct' => 5, 'readProduct' => 6, 'updateProduct' => 7, 'destroyProduct' => 8, 'createPurchase' => 9, 'readPurchase' => 10, 'updatePurchase' => 11, 'destroyPurchase' => 12, 'createSales' => 13, 'readSales' => 14, 'updateSales' => 15, 'destroySales' => 16, 'createSecondParty' => 17, 'readSecondParty' => 18, 'updateSecondParty' => 19, 'destroySecondParty' => 20, 'createStock' => 21, 'readStock' => 22, 'updateStock' => 23, 'destroyStock' => 24, 'createUnit' => 25, 'readUnit' => 26, 'updateUnit' => 27, 'destroyUnit' => 28, 'createUser' => 29, 'readUser' => 30, 'updateUser' => 31, 'destroyUser' => 32, 'resetPassUser' => 33, ),
+        self::TYPE_COLNAME       => array(RolePermissionTableMap::COL_ID => 0, RolePermissionTableMap::COL_PAY_CREDIT => 1, RolePermissionTableMap::COL_READ_CREDIT => 2, RolePermissionTableMap::COL_PAY_DEBIT => 3, RolePermissionTableMap::COL_READ_DEBIT => 4, RolePermissionTableMap::COL_CREATE_PRODUCT => 5, RolePermissionTableMap::COL_READ_PRODUCT => 6, RolePermissionTableMap::COL_UPDATE_PRODUCT => 7, RolePermissionTableMap::COL_DESTROY_PRODUCT => 8, RolePermissionTableMap::COL_CREATE_PURCHASE => 9, RolePermissionTableMap::COL_READ_PURCHASE => 10, RolePermissionTableMap::COL_UPDATE_PURCHASE => 11, RolePermissionTableMap::COL_DESTROY_PURCHASE => 12, RolePermissionTableMap::COL_CREATE_SALES => 13, RolePermissionTableMap::COL_READ_SALES => 14, RolePermissionTableMap::COL_UPDATE_SALES => 15, RolePermissionTableMap::COL_DESTROY_SALES => 16, RolePermissionTableMap::COL_CREATE_SECOND_PARTY => 17, RolePermissionTableMap::COL_READ_SECOND_PARTY => 18, RolePermissionTableMap::COL_UPDATE_SECOND_PARTY => 19, RolePermissionTableMap::COL_DESTROY_SECOND_PARTY => 20, RolePermissionTableMap::COL_CREATE_STOCK => 21, RolePermissionTableMap::COL_READ_STOCK => 22, RolePermissionTableMap::COL_UPDATE_STOCK => 23, RolePermissionTableMap::COL_DESTROY_STOCK => 24, RolePermissionTableMap::COL_CREATE_UNIT => 25, RolePermissionTableMap::COL_READ_UNIT => 26, RolePermissionTableMap::COL_UPDATE_UNIT => 27, RolePermissionTableMap::COL_DESTROY_UNIT => 28, RolePermissionTableMap::COL_CREATE_USER => 29, RolePermissionTableMap::COL_READ_USER => 30, RolePermissionTableMap::COL_UPDATE_USER => 31, RolePermissionTableMap::COL_DESTROY_USER => 32, RolePermissionTableMap::COL_RESET_PASS_USER => 33, ),
+        self::TYPE_RAW_COLNAME   => array('COL_ID' => 0, 'COL_PAY_CREDIT' => 1, 'COL_READ_CREDIT' => 2, 'COL_PAY_DEBIT' => 3, 'COL_READ_DEBIT' => 4, 'COL_CREATE_PRODUCT' => 5, 'COL_READ_PRODUCT' => 6, 'COL_UPDATE_PRODUCT' => 7, 'COL_DESTROY_PRODUCT' => 8, 'COL_CREATE_PURCHASE' => 9, 'COL_READ_PURCHASE' => 10, 'COL_UPDATE_PURCHASE' => 11, 'COL_DESTROY_PURCHASE' => 12, 'COL_CREATE_SALES' => 13, 'COL_READ_SALES' => 14, 'COL_UPDATE_SALES' => 15, 'COL_DESTROY_SALES' => 16, 'COL_CREATE_SECOND_PARTY' => 17, 'COL_READ_SECOND_PARTY' => 18, 'COL_UPDATE_SECOND_PARTY' => 19, 'COL_DESTROY_SECOND_PARTY' => 20, 'COL_CREATE_STOCK' => 21, 'COL_READ_STOCK' => 22, 'COL_UPDATE_STOCK' => 23, 'COL_DESTROY_STOCK' => 24, 'COL_CREATE_UNIT' => 25, 'COL_READ_UNIT' => 26, 'COL_UPDATE_UNIT' => 27, 'COL_DESTROY_UNIT' => 28, 'COL_CREATE_USER' => 29, 'COL_READ_USER' => 30, 'COL_UPDATE_USER' => 31, 'COL_DESTROY_USER' => 32, 'COL_RESET_PASS_USER' => 33, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'pay_credit' => 1, 'read_credit' => 2, 'pay_debit' => 3, 'read_debit' => 4, 'create_product' => 5, 'read_product' => 6, 'update_product' => 7, 'destroy_product' => 8, 'create_purchase' => 9, 'read_purchase' => 10, 'update_purchase' => 11, 'destroy_purchase' => 12, 'create_sales' => 13, 'read_sales' => 14, 'update_sales' => 15, 'destroy_sales' => 16, 'create_second_party' => 17, 'read_second_party' => 18, 'update_second_party' => 19, 'destroy_second_party' => 20, 'create_stock' => 21, 'read_stock' => 22, 'update_stock' => 23, 'destroy_stock' => 24, 'create_unit' => 25, 'read_unit' => 26, 'update_unit' => 27, 'destroy_unit' => 28, 'create_user' => 29, 'read_user' => 30, 'update_user' => 31, 'destroy_user' => 32, 'reset_pass_user' => 33, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, )
     );
 
     /**
@@ -313,10 +293,10 @@ class RolePermissionTableMap extends TableMap
         $this->setUseIdGenerator(false);
         // columns
         $this->addForeignPrimaryKey('ID', 'Id', 'BIGINT' , 'role', 'ID', true, 20, null);
-        $this->addColumn('CREATE_CUSTOMER', 'CreateCustomer', 'BOOLEAN', false, 1, null);
-        $this->addColumn('READ_CUSTOMER', 'ReadCustomer', 'BOOLEAN', false, 1, null);
-        $this->addColumn('UPDATE_CUSTOMER', 'UpdateCustomer', 'BOOLEAN', false, 1, null);
-        $this->addColumn('DESTROY_CUSTOMER', 'DestroyCustomer', 'BOOLEAN', false, 1, null);
+        $this->addColumn('PAY_CREDIT', 'PayCredit', 'BOOLEAN', false, 1, null);
+        $this->addColumn('READ_CREDIT', 'ReadCredit', 'BOOLEAN', false, 1, null);
+        $this->addColumn('PAY_DEBIT', 'PayDebit', 'BOOLEAN', false, 1, null);
+        $this->addColumn('READ_DEBIT', 'ReadDebit', 'BOOLEAN', false, 1, null);
         $this->addColumn('CREATE_PRODUCT', 'CreateProduct', 'BOOLEAN', false, 1, null);
         $this->addColumn('READ_PRODUCT', 'ReadProduct', 'BOOLEAN', false, 1, null);
         $this->addColumn('UPDATE_PRODUCT', 'UpdateProduct', 'BOOLEAN', false, 1, null);
@@ -329,14 +309,14 @@ class RolePermissionTableMap extends TableMap
         $this->addColumn('READ_SALES', 'ReadSales', 'BOOLEAN', false, 1, null);
         $this->addColumn('UPDATE_SALES', 'UpdateSales', 'BOOLEAN', false, 1, null);
         $this->addColumn('DESTROY_SALES', 'DestroySales', 'BOOLEAN', false, 1, null);
+        $this->addColumn('CREATE_SECOND_PARTY', 'CreateSecondParty', 'BOOLEAN', false, 1, null);
+        $this->addColumn('READ_SECOND_PARTY', 'ReadSecondParty', 'BOOLEAN', false, 1, null);
+        $this->addColumn('UPDATE_SECOND_PARTY', 'UpdateSecondParty', 'BOOLEAN', false, 1, null);
+        $this->addColumn('DESTROY_SECOND_PARTY', 'DestroySecondParty', 'BOOLEAN', false, 1, null);
         $this->addColumn('CREATE_STOCK', 'CreateStock', 'BOOLEAN', false, 1, null);
         $this->addColumn('READ_STOCK', 'ReadStock', 'BOOLEAN', false, 1, null);
         $this->addColumn('UPDATE_STOCK', 'UpdateStock', 'BOOLEAN', false, 1, null);
         $this->addColumn('DESTROY_STOCK', 'DestroyStock', 'BOOLEAN', false, 1, null);
-        $this->addColumn('CREATE_SUPPLIER', 'CreateSupplier', 'BOOLEAN', false, 1, null);
-        $this->addColumn('READ_SUPPLIER', 'ReadSupplier', 'BOOLEAN', false, 1, null);
-        $this->addColumn('UPDATE_SUPPLIER', 'UpdateSupplier', 'BOOLEAN', false, 1, null);
-        $this->addColumn('DESTROY_SUPPLIER', 'DestroySupplier', 'BOOLEAN', false, 1, null);
         $this->addColumn('CREATE_UNIT', 'CreateUnit', 'BOOLEAN', false, 1, null);
         $this->addColumn('READ_UNIT', 'ReadUnit', 'BOOLEAN', false, 1, null);
         $this->addColumn('UPDATE_UNIT', 'UpdateUnit', 'BOOLEAN', false, 1, null);
@@ -346,10 +326,6 @@ class RolePermissionTableMap extends TableMap
         $this->addColumn('UPDATE_USER', 'UpdateUser', 'BOOLEAN', false, 1, null);
         $this->addColumn('DESTROY_USER', 'DestroyUser', 'BOOLEAN', false, 1, null);
         $this->addColumn('RESET_PASS_USER', 'ResetPassUser', 'BOOLEAN', false, 1, null);
-        $this->addColumn('PAY_CREDIT', 'PayCredit', 'BOOLEAN', false, 1, null);
-        $this->addColumn('READ_CREDIT', 'ReadCredit', 'BOOLEAN', false, 1, null);
-        $this->addColumn('PAY_DEBIT', 'PayDebit', 'BOOLEAN', false, 1, null);
-        $this->addColumn('READ_DEBIT', 'ReadDebit', 'BOOLEAN', false, 1, null);
     } // initialize()
 
     /**
@@ -502,10 +478,10 @@ class RolePermissionTableMap extends TableMap
     {
         if (null === $alias) {
             $criteria->addSelectColumn(RolePermissionTableMap::COL_ID);
-            $criteria->addSelectColumn(RolePermissionTableMap::COL_CREATE_CUSTOMER);
-            $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_CUSTOMER);
-            $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_CUSTOMER);
-            $criteria->addSelectColumn(RolePermissionTableMap::COL_DESTROY_CUSTOMER);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_PAY_CREDIT);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_CREDIT);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_PAY_DEBIT);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_DEBIT);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_CREATE_PRODUCT);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_PRODUCT);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_PRODUCT);
@@ -518,14 +494,14 @@ class RolePermissionTableMap extends TableMap
             $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_SALES);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_SALES);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_DESTROY_SALES);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_CREATE_SECOND_PARTY);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_SECOND_PARTY);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_SECOND_PARTY);
+            $criteria->addSelectColumn(RolePermissionTableMap::COL_DESTROY_SECOND_PARTY);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_CREATE_STOCK);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_STOCK);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_STOCK);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_DESTROY_STOCK);
-            $criteria->addSelectColumn(RolePermissionTableMap::COL_CREATE_SUPPLIER);
-            $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_SUPPLIER);
-            $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_SUPPLIER);
-            $criteria->addSelectColumn(RolePermissionTableMap::COL_DESTROY_SUPPLIER);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_CREATE_UNIT);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_UNIT);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_UNIT);
@@ -535,16 +511,12 @@ class RolePermissionTableMap extends TableMap
             $criteria->addSelectColumn(RolePermissionTableMap::COL_UPDATE_USER);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_DESTROY_USER);
             $criteria->addSelectColumn(RolePermissionTableMap::COL_RESET_PASS_USER);
-            $criteria->addSelectColumn(RolePermissionTableMap::COL_PAY_CREDIT);
-            $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_CREDIT);
-            $criteria->addSelectColumn(RolePermissionTableMap::COL_PAY_DEBIT);
-            $criteria->addSelectColumn(RolePermissionTableMap::COL_READ_DEBIT);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
-            $criteria->addSelectColumn($alias . '.CREATE_CUSTOMER');
-            $criteria->addSelectColumn($alias . '.READ_CUSTOMER');
-            $criteria->addSelectColumn($alias . '.UPDATE_CUSTOMER');
-            $criteria->addSelectColumn($alias . '.DESTROY_CUSTOMER');
+            $criteria->addSelectColumn($alias . '.PAY_CREDIT');
+            $criteria->addSelectColumn($alias . '.READ_CREDIT');
+            $criteria->addSelectColumn($alias . '.PAY_DEBIT');
+            $criteria->addSelectColumn($alias . '.READ_DEBIT');
             $criteria->addSelectColumn($alias . '.CREATE_PRODUCT');
             $criteria->addSelectColumn($alias . '.READ_PRODUCT');
             $criteria->addSelectColumn($alias . '.UPDATE_PRODUCT');
@@ -557,14 +529,14 @@ class RolePermissionTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.READ_SALES');
             $criteria->addSelectColumn($alias . '.UPDATE_SALES');
             $criteria->addSelectColumn($alias . '.DESTROY_SALES');
+            $criteria->addSelectColumn($alias . '.CREATE_SECOND_PARTY');
+            $criteria->addSelectColumn($alias . '.READ_SECOND_PARTY');
+            $criteria->addSelectColumn($alias . '.UPDATE_SECOND_PARTY');
+            $criteria->addSelectColumn($alias . '.DESTROY_SECOND_PARTY');
             $criteria->addSelectColumn($alias . '.CREATE_STOCK');
             $criteria->addSelectColumn($alias . '.READ_STOCK');
             $criteria->addSelectColumn($alias . '.UPDATE_STOCK');
             $criteria->addSelectColumn($alias . '.DESTROY_STOCK');
-            $criteria->addSelectColumn($alias . '.CREATE_SUPPLIER');
-            $criteria->addSelectColumn($alias . '.READ_SUPPLIER');
-            $criteria->addSelectColumn($alias . '.UPDATE_SUPPLIER');
-            $criteria->addSelectColumn($alias . '.DESTROY_SUPPLIER');
             $criteria->addSelectColumn($alias . '.CREATE_UNIT');
             $criteria->addSelectColumn($alias . '.READ_UNIT');
             $criteria->addSelectColumn($alias . '.UPDATE_UNIT');
@@ -574,10 +546,6 @@ class RolePermissionTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.UPDATE_USER');
             $criteria->addSelectColumn($alias . '.DESTROY_USER');
             $criteria->addSelectColumn($alias . '.RESET_PASS_USER');
-            $criteria->addSelectColumn($alias . '.PAY_CREDIT');
-            $criteria->addSelectColumn($alias . '.READ_CREDIT');
-            $criteria->addSelectColumn($alias . '.PAY_DEBIT');
-            $criteria->addSelectColumn($alias . '.READ_DEBIT');
         }
     }
 

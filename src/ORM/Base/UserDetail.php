@@ -2622,10 +2622,10 @@ abstract class UserDetail implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildSales[] List of ChildSales objects
      */
-    public function getSalessJoinCustomer(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getSalessJoinSecondParty(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildSalesQuery::create(null, $criteria);
-        $query->joinWith('Customer', $joinBehavior);
+        $query->joinWith('SecondParty', $joinBehavior);
 
         return $this->getSaless($query, $con);
     }
