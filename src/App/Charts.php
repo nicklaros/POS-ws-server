@@ -8,6 +8,47 @@ use ORM\SalesQuery;
 class Charts
 {
     
+    private static function getDailyTransaction($date, $con)
+    {
+        $data = [];
+        
+        for ($i = 1; $i <= $date->count; $i++) {
+            $sales = SalesQuery::create()
+                ->filterByStatus('Active')
+                ->filterByDate($date->query->format('Y-m-d'))
+                ->withColumn('SUM(Sales.TotalPrice)', 'sales')
+                ->select([
+                    'sales'
+                ])
+                ->find($con);
+
+            $purchase = PurchaseQuery::create()
+                ->filterByStatus('Active')
+                ->filterByDate($date->query->format('Y-m-d'))
+                ->withColumn('SUM(Purchase.TotalPrice)', 'purchase')
+                ->select([
+                    'purchase'
+                ])
+                ->find($con);
+
+            $row = [
+                'date' => $date->query->format('Y-m-d'),
+                'sales' => (isset($sales[0]) ? $sales[0] : 0),
+                'purchase' => (isset($purchase[0]) ? $purchase[0] : 0)
+            ];
+            
+            $data[] =  $row;
+            
+            $date->query->add(new \DateInterval('P1D'));
+
+        }
+
+        $results['success'] = true;
+        $results['data'] = $data;
+        
+        return $results;
+    }
+    
     private static function getSalesVsPurchase($date, $con)
     {
         $data = [];
@@ -48,6 +89,23 @@ class Charts
         return $results;
     }
 
+    public static function customDailyTransaction($params, $currentUser, $con)
+    {
+        if (!isset($params->start) || !isset($params->until)) throw new \Exception('Missing parameter');
+        
+        $date = new \stdClass();
+        $date->query = new \DateTime($params->start);
+        $date->until = new \DateTime($params->until);
+        
+        $interval = $date->query->diff($date->until);
+        
+        $date->count = $interval->days + 1;
+        
+        $results = Charts::getDailyTransaction($date, $con);
+        
+        return $results;
+    }
+
     public static function customSalesVsPurchase($params, $currentUser, $con)
     {
         if (!isset($params->start) || !isset($params->until)) throw new \Exception('Missing parameter');
@@ -63,41 +121,12 @@ class Charts
 
     public static function last30DaysTransaction($params, $currentUser, $con)
     {
-        $queryDate = new \DateTime();
-        $queryDate->sub(new \DateInterval('P30D'));
-
-        $data = [];
-        for ($i=1; $i<=30; $i++) {
-            $queryDate->add(new \DateInterval('P1D'));
-
-            $sales = SalesQuery::create()
-                ->filterByStatus('Active')
-                ->filterByDate($queryDate->format('Y-m-d'))
-                ->withColumn('SUM(Sales.TotalPrice)', 'sales')
-                ->select([
-                    'sales'
-                ])
-                ->find($con);
-
-            $purchase = PurchaseQuery::create()
-                ->filterByStatus('Active')
-                ->filterByDate($queryDate->format('Y-m-d'))
-                ->withColumn('SUM(Purchase.TotalPrice)', 'purchase')
-                ->select([
-                    'purchase'
-                ])
-                ->find($con);
-
-            $row = [
-                'date' => $queryDate->format('Y-m-d'),
-                'sales' => (isset($sales[0]) ? $sales[0] : 0),
-                'purchase' => (isset($purchase[0]) ? $purchase[0] : 0)
-            ];
-            $data[] =  $row;
-        }
-
-        $results['success'] = true;
-        $results['data'] = $data;
+        $date = new \stdClass();
+        $date->query = new \DateTime();
+        $date->query->sub(new \DateInterval('P30D'));
+        $date->count = 30;
+        
+        $results = Charts::getDailyTransaction($date, $con);
         
         return $results;
     }
@@ -107,42 +136,12 @@ class Charts
         if (!isset($params->month)) throw new \Exception('Missing parameter');
         
         $picked = new \DateTime($params->month);
-        $queryDate = new \DateTime($picked->format('Y-m-01'));
-        $dayCount = $queryDate->format('t');
 
-        $data = [];
-        for ($i=1; $i<=$dayCount; $i++) {
-            $sales = SalesQuery::create()
-                ->filterByStatus('Active')
-                ->filterByDate($queryDate->format('Y-m-d'))
-                ->withColumn('SUM(Sales.TotalPrice)', 'sales')
-                ->select([
-                    'sales'
-                ])
-                ->find($con);
-
-            $purchase = PurchaseQuery::create()
-                ->filterByStatus('Active')
-                ->filterByDate($queryDate->format('Y-m-d'))
-                ->withColumn('SUM(Purchase.TotalPrice)', 'purchase')
-                ->select([
-                    'purchase'
-                ])
-                ->find($con);
-
-            $row = [
-                'date' => $queryDate->format('Y-m-d'),
-                'sales' => (isset($sales[0]) ? $sales[0] : 0),
-                'purchase' => (isset($purchase[0]) ? $purchase[0] : 0)
-            ];
-            $data[] =  $row;
-            
-            $queryDate->add(new \DateInterval('P1D'));
-
-        }
-
-        $results['success'] = true;
-        $results['data'] = $data;
+        $date = new \stdClass();
+        $date->query = new \DateTime($picked->format('Y-m-01'));
+        $date->count = $date->query->format('t');
+        
+        $results = Charts::getDailyTransaction($date, $con);
         
         return $results;
     }

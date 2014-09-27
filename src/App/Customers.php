@@ -3,6 +3,7 @@
 namespace App;
 
 use ORM\CreditQuery;
+use ORM\DebitQuery;
 use ORM\RolePermissionQuery;
 use ORM\RowHistory;
 use ORM\SalesQuery;
@@ -54,6 +55,7 @@ class Customers
         $data['sales_count_this_year'] = (isset($sales[0]['sales_count']) ? $sales[0]['sales_count'] : 0);
         $data['sales_total_this_year'] = (isset($sales[0]['sales_total']) ? $sales[0]['sales_total'] : 0);
         
+        // get current credit balance
         $credits = CreditQuery::create()
             ->filterByStatus('Active')
             ->useSalesQuery()
@@ -73,6 +75,27 @@ class Customers
         }
         
         $data['credit'] = $credit_total;
+        
+        // get current debit balance
+        $debits = DebitQuery::create()
+            ->filterByStatus('Active')
+            ->usePurchaseQuery()
+                ->filterBySecondPartyId($params->customer_id)
+            ->endUse()
+            ->withColumn('CONVERT(Debit.Total, SIGNED) - CONVERT(Debit.Paid, SIGNED)', 'balance')
+            ->select(array(
+                'balance'
+            ))
+            ->find($con);
+        
+        $debit_total = 0;
+        foreach($debits as $debit) {
+            if ($debit > 0) {
+                $debit_total += $debit;
+            }
+        }
+        
+        $data['debit'] = $debit_total;
         
         $data['customer_id'] = $params->customer_id;
 

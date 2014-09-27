@@ -2,6 +2,8 @@
 
 namespace App;
 
+use ORM\CreditQuery;
+use ORM\DebitQuery;
 use ORM\PurchaseQuery;
 use ORM\PurchaseDetailQuery;
 use ORM\SalesQuery;
@@ -176,6 +178,48 @@ class Reports
 
         $data['purchase_count'] = (isset($purchase[0]['purchase_count']) ? $purchase[0]['purchase_count'] : 0);
         $data['purchase_total'] = (isset($purchase[0]['purchase_total']) ? $purchase[0]['purchase_total'] : 0);
+        
+        // get current credit balance
+        $credits = CreditQuery::create()
+            ->filterByStatus('Active')
+            ->useSalesQuery()
+                ->filterByDate(array('max' => $date->until))
+            ->endUse()
+            ->withColumn('CONVERT(Credit.Total, SIGNED) - CONVERT(Credit.Paid, SIGNED)', 'balance')
+            ->select(array(
+                'balance'
+            ))
+            ->find($con);
+        
+        $credit_total = 0;
+        foreach($credits as $credit) {
+            if ($credit > 0) {
+                $credit_total += $credit;
+            }
+        }
+        
+        $data['credit'] = $credit_total;
+        
+        // get current debit balance
+        $debits = DebitQuery::create()
+            ->filterByStatus('Active')
+            ->usePurchaseQuery()
+                ->filterByDate(array('max' => $date->until))
+            ->endUse()
+            ->withColumn('CONVERT(Debit.Total, SIGNED) - CONVERT(Debit.Paid, SIGNED)', 'balance')
+            ->select(array(
+                'balance'
+            ))
+            ->find($con);
+        
+        $debit_total = 0;
+        foreach($debits as $debit) {
+            if ($debit > 0) {
+                $debit_total += $debit;
+            }
+        }
+        
+        $data['debit'] = $debit_total;
 
         $results['success'] = true;
         $results['data'] = $data;
@@ -193,7 +237,7 @@ class Reports
         
         $interval = $date->start->diff($date->until);
         
-        if ($interval->format('%m') > 3)  throw new \Exception('Jangka Waktu tidak boleh melebihi 3 bulan');
+        if ($interval->format('%m') > 2)  throw new \Exception('Jangka Waktu tidak boleh melebihi 3 bulan');
         
         $results = Reports::getStats($date, $con);
         

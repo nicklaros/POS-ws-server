@@ -188,6 +188,7 @@ class Mains implements MessageComponentInterface {
         // list of all method that can be called in current module
         $registeredMethod = array(
             'customSalesVsPurchase',
+            'customDailyTransaction',
             'dailyTransaction',
             'last30DaysTransaction',
             'monthlySalesVsPurchase',
@@ -503,6 +504,12 @@ class Mains implements MessageComponentInterface {
             $salesVsPurchase['event'] = 'chart/customSalesVsPurchase';
             $salesVsPurchase['data'] = $data;
             $from->send(json_encode($salesVsPurchase));
+            
+            // send transaction chart's data on picked month
+            $data = $this->chart('customDailyTransaction', $params, $from, $con);
+            $transaction['event'] = 'chart/customDailyTransaction';
+            $transaction['data'] = $data;
+            $from->send(json_encode($transaction));
             
             // send purchase data
             $data = Reports::customPurchase($params, $currentUser, $con);

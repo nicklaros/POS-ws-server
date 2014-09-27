@@ -3,6 +3,7 @@
 namespace App;
 
 use ORM\Debit;
+use ORM\DebitQuery;
 use ORM\Notification;
 use ORM\NotificationOnUser;
 use ORM\NotificationOnUserQuery;
@@ -240,7 +241,7 @@ class Purchases
             ->setStatus('Active')
             ->save($con);
         
-        // check wether this transaction is debit or not
+        // check wether this transaction is debit or not, then if yes, create new debit record
         $balance = $params->paid - $params->total_price;
         
         if ($balance < 0) {
@@ -408,9 +409,42 @@ class Purchases
             ->setDate($params->date)
             ->setSecondPartyId($params->second_party_id)
             ->setTotalPrice($params->total_price)
+            ->setPaid($params->paid)
             ->setNote($params->note)
             ->setStatus('Active')
             ->save($con);
+        
+        // check wether this transaction is debit or not, then if yes, create new debit record
+        $balance = $params->paid - $params->total_price;
+        
+        if ($balance < 0) {
+            $debit = DebitQuery::create()
+                ->filterByPurchaseId($purchase->getId())
+                ->findOne($con);
+            
+            if (!$debit) {
+                $debit = new Debit();
+            }
+            
+            $debit
+                ->setPurchaseId($purchase->getId())
+                ->setTotal(abs($balance))
+                ->setStatus('Active')
+                ->save($con);
+            
+        } else {
+            $debit = DebitQuery::create()
+                ->filterByPurchaseId($purchase->getId())
+                ->findOne($con);
+            
+            if ($debit) {
+                $debit
+                    ->setPurchaseId($purchase->getId())
+                    ->setTotal(0)
+                    ->setStatus('Canceled')
+                    ->save($con);
+            }
+        }
         
         $products = json_decode($params->products);
         

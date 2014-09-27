@@ -39,33 +39,6 @@ class Combos
         return $results;
     }
 
-    public static function secondParty($params, $currentUser, $con)
-    {
-        $secondPartys = SecondPartyQuery::create()
-            ->filterByStatus('Active')
-            ->orderBy('name', 'ASC');
-
-        if(isset($params->query)) $secondPartys->where('SecondParty.Name like ?', "%{$params->query}%");
-        
-        $secondPartys = $secondPartys
-            ->select(array(
-                'id',
-                'name'
-            ))
-            ->limit(20)
-            ->find($con);
-
-        $data = [];
-        foreach($secondPartys as $secondParty) {
-            $data[] = $secondParty;
-        }
-        
-        $results['success'] = true;
-        $results['data'] = $data;
-        
-        return $results;
-    }
-
     public static function customer($params, $currentUser, $con)
     {
         $customers = SecondPartyQuery::create()
@@ -118,6 +91,34 @@ class Combos
         foreach($products as $product) {
             $data[] = $product;
         }
+        $results['success'] = true;
+        $results['data'] = $data;
+        
+        return $results;
+    }
+
+    public static function secondParty($params, $currentUser, $con)
+    {
+        $secondPartys = SecondPartyQuery::create()
+            ->filterByStatus('Active')
+            ->orderBy('name', 'ASC');
+
+        if(isset($params->query)) $secondPartys->where('SecondParty.Name like ?', "%{$params->query}%");
+        
+        $secondPartys = $secondPartys
+            ->select(array(
+                'id',
+                'name',
+                'type'
+            ))
+            ->limit(20)
+            ->find($con);
+
+        $data = [];
+        foreach($secondPartys as $secondParty) {
+            $data[] = $secondParty;
+        }
+        
         $results['success'] = true;
         $results['data'] = $data;
         
