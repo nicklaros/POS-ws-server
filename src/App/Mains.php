@@ -446,7 +446,8 @@ class Mains implements MessageComponentInterface {
             'monthlyPurchase',
             'monthlyPurchasedProduct',
             'monthlySaledProduct',
-            'monthlySales'
+            'monthlySales',
+            'monthlySalesCashier'
         );
 
         // if called method is not registered then deny access
@@ -496,6 +497,12 @@ class Mains implements MessageComponentInterface {
             $sales['event'] = 'report/monthlySales';
             $sales['data'] = $data;
             $from->send(json_encode($sales));
+            
+            // send sales cashier data
+            $data = Reports::monthlySalesCashier($params, $currentUser, $con);
+            $salesCashier['event'] = 'report/monthlySalesCashier';
+            $salesCashier['data'] = $data;
+            $from->send(json_encode($salesCashier));
         } 
         elseif ($method == 'custom') {
             
@@ -534,6 +541,12 @@ class Mains implements MessageComponentInterface {
             $sales['event'] = 'report/customSales';
             $sales['data'] = $data;
             $from->send(json_encode($sales));
+            
+            // send sales cashier data
+            $data = Reports::customSalesCashier($params, $currentUser, $con);
+            $salesCashier['event'] = 'report/customSalesCashier';
+            $salesCashier['data'] = $data;
+            $from->send(json_encode($salesCashier));
             
         }
         

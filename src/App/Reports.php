@@ -116,6 +116,38 @@ class Reports
         return $results;
     }
     
+    private static function getSalesCashier($date, $con) 
+    {
+        $sales = SalesQuery::create()
+            ->filterByStatus('Active')
+            ->filterByDate(array('min' => $date->start, 'max' => $date->until))
+            ->withColumn('COUNT(Sales.Id)', 'sales_amount')
+            ->withColumn('SUM(Sales.TotalPrice)', 'sales_total')
+            ->leftJoin('Cashier')
+            ->withColumn('Cashier.Id', 'id')
+            ->withColumn('Cashier.Name', 'cashier_name')
+            ->select(array(
+                'id',
+                'cashier_name',
+                'sales_amount',
+                'sales_total'
+            ))
+            ->groupBy('cashier_id')
+            ->orderBy('sales_total', 'DESC')
+            ->orderBy('id', 'ASC')
+            ->find($con);
+        
+        $data = [];
+        foreach($sales as $sale) {
+            $data[] = $sale;
+        }
+        
+        $results['success'] = true;
+        $results['data'] = $data;
+        
+        return $results;
+    } 
+    
     private static function getSales($date, $con) 
     {
         $sales = SalesQuery::create()
@@ -296,6 +328,19 @@ class Reports
         return $results;
     }
 
+    public static function customSalesCashier($params, $currentUser, $con)
+    {
+        if (!isset($params->start) || !isset($params->until)) throw new \Exception('Missing parameter');
+        
+        $date = new \stdClass();
+        $date->start = new \DateTime($params->start);
+        $date->until = new \DateTime($params->until);
+
+        $results = Reports::getSalesCashier($date, $con);
+        
+        return $results;
+    }
+
     public static function monthly($params, $currentUser, $con)
     {
         if (!isset($params->month)) throw new \Exception('Missing parameter');
@@ -367,6 +412,21 @@ class Reports
         $date->until = new \DateTime($picked->format('Y-m-t'));
 
         $results = Reports::getSales($date, $con);
+        
+        return $results;
+    }
+
+    public static function monthlySalesCashier($params, $currentUser, $con)
+    {
+        if (!isset($params->month)) throw new \Exception('Missing parameter');
+        
+        $picked = new \DateTime($params->month);
+        
+        $date = new \stdClass();
+        $date->start = new \DateTime($picked->format('Y-m-01'));
+        $date->until = new \DateTime($picked->format('Y-m-t'));
+
+        $results = Reports::getSalesCashier($date, $con);
         
         return $results;
     }

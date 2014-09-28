@@ -123,7 +123,7 @@ class Charts
     {
         $date = new \stdClass();
         $date->query = new \DateTime();
-        $date->query->sub(new \DateInterval('P30D'));
+        $date->query->sub(new \DateInterval('P29D'));
         $date->count = 30;
         
         $results = Charts::getDailyTransaction($date, $con);
