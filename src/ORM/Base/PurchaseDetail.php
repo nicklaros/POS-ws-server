@@ -78,7 +78,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
 
     /**
      * The value for the amount field.
-     * @var        int
+     * @var        string
      */
     protected $amount;
 
@@ -89,16 +89,16 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     protected $total_price;
 
     /**
-     * The value for the status field.
-     * @var        string
-     */
-    protected $status;
-
-    /**
      * The value for the notification_id field.
      * @var        string
      */
     protected $notification_id;
+
+    /**
+     * The value for the status field.
+     * @var        string
+     */
+    protected $status;
 
     /**
      * @var        ChildPurchase
@@ -373,7 +373,7 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     /**
      * Get the [amount] column value.
      *
-     * @return int
+     * @return string
      */
     public function getAmount()
     {
@@ -391,16 +391,6 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     }
 
     /**
-     * Get the [status] column value.
-     *
-     * @return string
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
      * Get the [notification_id] column value.
      *
      * @return string
@@ -408,6 +398,16 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     public function getNotificationId()
     {
         return $this->notification_id;
+    }
+
+    /**
+     * Get the [status] column value.
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 
     /**
@@ -456,16 +456,16 @@ abstract class PurchaseDetail implements ActiveRecordInterface
             $this->stock_id = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PurchaseDetailTableMap::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->amount = (null !== $col) ? (int) $col : null;
+            $this->amount = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PurchaseDetailTableMap::translateFieldName('TotalPrice', TableMap::TYPE_PHPNAME, $indexType)];
             $this->total_price = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PurchaseDetailTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->status = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PurchaseDetailTableMap::translateFieldName('NotificationId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PurchaseDetailTableMap::translateFieldName('NotificationId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->notification_id = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PurchaseDetailTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->status = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -578,13 +578,13 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     /**
      * Set the value of [amount] column.
      *
-     * @param  int $v new value
+     * @param  string $v new value
      * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
      */
     public function setAmount($v)
     {
         if ($v !== null) {
-            $v = (int) $v;
+            $v = (string) $v;
         }
 
         if ($this->amount !== $v) {
@@ -616,26 +616,6 @@ abstract class PurchaseDetail implements ActiveRecordInterface
     } // setTotalPrice()
 
     /**
-     * Set the value of [status] column.
-     *
-     * @param  string $v new value
-     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
-     */
-    public function setStatus($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->status !== $v) {
-            $this->status = $v;
-            $this->modifiedColumns[PurchaseDetailTableMap::COL_STATUS] = true;
-        }
-
-        return $this;
-    } // setStatus()
-
-    /**
      * Set the value of [notification_id] column.
      *
      * @param  string $v new value
@@ -658,6 +638,26 @@ abstract class PurchaseDetail implements ActiveRecordInterface
 
         return $this;
     } // setNotificationId()
+
+    /**
+     * Set the value of [status] column.
+     *
+     * @param  string $v new value
+     * @return $this|\ORM\PurchaseDetail The current object (for fluent API support)
+     */
+    public function setStatus($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->status !== $v) {
+            $this->status = $v;
+            $this->modifiedColumns[PurchaseDetailTableMap::COL_STATUS] = true;
+        }
+
+        return $this;
+    } // setStatus()
 
     /**
      * Reloads this object from datastore based on primary key and (optionally) resets all associated objects.
@@ -876,11 +876,11 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         if ($this->isColumnModified(PurchaseDetailTableMap::COL_TOTAL_PRICE)) {
             $modifiedColumns[':p' . $index++]  = 'TOTAL_PRICE';
         }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_STATUS)) {
-            $modifiedColumns[':p' . $index++]  = 'STATUS';
-        }
         if ($this->isColumnModified(PurchaseDetailTableMap::COL_NOTIFICATION_ID)) {
             $modifiedColumns[':p' . $index++]  = 'NOTIFICATION_ID';
+        }
+        if ($this->isColumnModified(PurchaseDetailTableMap::COL_STATUS)) {
+            $modifiedColumns[':p' . $index++]  = 'STATUS';
         }
 
         $sql = sprintf(
@@ -903,16 +903,16 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                         $stmt->bindValue($identifier, $this->stock_id, PDO::PARAM_INT);
                         break;
                     case 'AMOUNT':
-                        $stmt->bindValue($identifier, $this->amount, PDO::PARAM_INT);
+                        $stmt->bindValue($identifier, $this->amount, PDO::PARAM_STR);
                         break;
                     case 'TOTAL_PRICE':
                         $stmt->bindValue($identifier, $this->total_price, PDO::PARAM_INT);
                         break;
-                    case 'STATUS':
-                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
-                        break;
                     case 'NOTIFICATION_ID':
                         $stmt->bindValue($identifier, $this->notification_id, PDO::PARAM_INT);
+                        break;
+                    case 'STATUS':
+                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -992,10 +992,10 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                 return $this->getTotalPrice();
                 break;
             case 5:
-                return $this->getStatus();
+                return $this->getNotificationId();
                 break;
             case 6:
-                return $this->getNotificationId();
+                return $this->getStatus();
                 break;
             default:
                 return null;
@@ -1031,8 +1031,8 @@ abstract class PurchaseDetail implements ActiveRecordInterface
             $keys[2] => $this->getStockId(),
             $keys[3] => $this->getAmount(),
             $keys[4] => $this->getTotalPrice(),
-            $keys[5] => $this->getStatus(),
-            $keys[6] => $this->getNotificationId(),
+            $keys[5] => $this->getNotificationId(),
+            $keys[6] => $this->getStatus(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1099,10 +1099,10 @@ abstract class PurchaseDetail implements ActiveRecordInterface
                 $this->setTotalPrice($value);
                 break;
             case 5:
-                $this->setStatus($value);
+                $this->setNotificationId($value);
                 break;
             case 6:
-                $this->setNotificationId($value);
+                $this->setStatus($value);
                 break;
         } // switch()
 
@@ -1146,10 +1146,10 @@ abstract class PurchaseDetail implements ActiveRecordInterface
             $this->setTotalPrice($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setStatus($arr[$keys[5]]);
+            $this->setNotificationId($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setNotificationId($arr[$keys[6]]);
+            $this->setStatus($arr[$keys[6]]);
         }
     }
 
@@ -1201,11 +1201,11 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         if ($this->isColumnModified(PurchaseDetailTableMap::COL_TOTAL_PRICE)) {
             $criteria->add(PurchaseDetailTableMap::COL_TOTAL_PRICE, $this->total_price);
         }
-        if ($this->isColumnModified(PurchaseDetailTableMap::COL_STATUS)) {
-            $criteria->add(PurchaseDetailTableMap::COL_STATUS, $this->status);
-        }
         if ($this->isColumnModified(PurchaseDetailTableMap::COL_NOTIFICATION_ID)) {
             $criteria->add(PurchaseDetailTableMap::COL_NOTIFICATION_ID, $this->notification_id);
+        }
+        if ($this->isColumnModified(PurchaseDetailTableMap::COL_STATUS)) {
+            $criteria->add(PurchaseDetailTableMap::COL_STATUS, $this->status);
         }
 
         return $criteria;
@@ -1297,8 +1297,8 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         $copyObj->setStockId($this->getStockId());
         $copyObj->setAmount($this->getAmount());
         $copyObj->setTotalPrice($this->getTotalPrice());
-        $copyObj->setStatus($this->getStatus());
         $copyObj->setNotificationId($this->getNotificationId());
+        $copyObj->setStatus($this->getStatus());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1501,8 +1501,8 @@ abstract class PurchaseDetail implements ActiveRecordInterface
         $this->stock_id = null;
         $this->amount = null;
         $this->total_price = null;
-        $this->status = null;
         $this->notification_id = null;
+        $this->status = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();

@@ -74,10 +74,6 @@ class Stocks
             ->setStatus('Active')
             ->save($con);
 
-        $params->id = $stock->getId();
-        
-        $stock = Stocks::seeker($params, $currentUser, $con);
-
         // log history
         $rowHistory = new RowHistory();
         $rowHistory->setRowId($params->id)
@@ -86,6 +82,10 @@ class Stocks
             ->setOperation('create')
             ->setUserId($currentUser->id)
             ->save($con);
+
+        $params->id = $stock->getId();
+        
+        $stock = Stocks::seeker($params, $currentUser, $con);
         
         $results['success'] = true;
         $results['data'] = $stock['data'];
@@ -126,8 +126,8 @@ class Stocks
             ->setAmount(isset($params->amount) ? $params->amount : 0)
             ->setBuy($params->buy)
             ->setSellPublic($params->sell_public)
-            ->setSellDistributor($params->sell_distributor)
-            ->setSellMisc($params->sell_misc)
+            ->setSellDistributor($params->sell_distributor == 0 ? $params->sell_public : $params->sell_distributor)
+            ->setSellMisc($params->sell_misc == 0 ? $params->sell_public : $params->sell_misc)
             ->setDiscount($params->discount)
             ->setUnlimited(isset($params->unlimited) ? $params->unlimited : 0)
             ->setStatus('Active')
@@ -142,8 +142,12 @@ class Stocks
             ->setUserId($currentUser->id)
             ->save($con);
 
+        $params->id = $stock->getId();
+        
+        $stock = Stocks::seeker($params, $currentUser, $con);
+
         $results['success'] = true;
-        $results['id'] = $stock->getId();
+        $results['data'] = $stock['data'];
 
         return $results;
     }
@@ -221,8 +225,14 @@ class Stocks
             
         $stock->useProductQuery()->filterByStatus('Active')->endUse();
 
-        if(isset($params->code)) $stock->useProductQuery()->filterByCode("%$params->code%")->endUse();
-        if(isset($params->product)) $stock->useProductQuery()->filterByName("%$params->product%")->endUse();
+        if(isset($params->code_or_name)) {
+            $stock
+                ->useProductQuery()
+                    ->condition('cond1', 'Product.Name like ?', '%' . $params->code_or_name . '%')
+                    ->condition('cond2', 'Product.Code like ?', '%' . $params->code_or_name . '%')
+                    ->where(array('cond1', 'cond2'), 'or')
+                ->endUse();
+        } 
         if(isset($params->product_id)) $stock->useProductQuery()->filterById($params->product_id)->endUse();
 
         $stock = $stock
@@ -283,8 +293,8 @@ class Stocks
             ->setUnitId($params->unit_id)
             ->setBuy($params->buy)
             ->setSellPublic($params->sell_public)
-            ->setSellDistributor($params->sell_distributor)
-            ->setSellMisc($params->sell_misc)
+            ->setSellDistributor($params->sell_distributor == 0 ? $params->sell_public : $params->sell_distributor)
+            ->setSellMisc($params->sell_misc == 0 ? $params->sell_public : $params->sell_misc)
             ->setDiscount($params->discount)
             ->setUnlimited(isset($params->unlimited) ? $params->unlimited : 0)
             ->save($con);

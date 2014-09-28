@@ -92,13 +92,22 @@ class Mains implements MessageComponentInterface {
 
         // list of all module that can be requested
         $registeredModule = array(
+            'chart',
             'combo',
+            'credit',
+            'customer',
+            'debit',
             'notification',
+            'option',
             'populate',
             'product',
             'purchase',
+            'report',
             'sales',
+            'secondParty',
             'stock',
+            'supplier',
+            'unit',
             'user'
         );
 
@@ -110,7 +119,7 @@ class Mains implements MessageComponentInterface {
 
         // this is where magic begins..
         // route to requested module
-        $data = $this->$module($from, $method, $params, $con);
+        $data = $this->$module($method, $params, $from, $con);
 
         // commit transaction
         $con->commit();
@@ -130,15 +139,42 @@ class Mains implements MessageComponentInterface {
             ||
             $event == 'purchase/update'
         ){
-            $data = $this->notification($from, 'read', $params, $con);
+            // get update of last 30 Days transaction's data
+            $data = $this->chart('last30DaysTransaction', new \stdClass(), $from, $con);
+            $last30DaysTransaction['event'] = 'chart/last30DaysTransaction';
+            $last30DaysTransaction['data'] = $data;
             
-            // store to results variable before spitting it out back to client
-            $results['event'] = 'notification/read';
-            $results['data'] = $data;
-            
+            // iterate through all connected client
             foreach ($this->clients as $client) 
             {
+                // get notification update of each client
+                $data = $this->notification('read', new \stdClass(), $client, $con);
+                $results['event'] = 'notification/read';
+                $results['data'] = $data;
+
+                // push notification to each client
                 $client->send(json_encode($results));
+                
+                // push last 30 Days transaction's data to each client
+                $client->send(json_encode($last30DaysTransaction));
+            }
+        } elseif (
+            $event == 'sales/create'
+            ||
+            $event == 'sales/destroy'
+            ||
+            $event == 'sales/update'
+        ){
+            // get update of last 30 Days transaction's data
+            $data = $this->chart('last30DaysTransaction', new \stdClass(), $from, $con);
+            $last30DaysTransaction['event'] = 'chart/last30DaysTransaction';
+            $last30DaysTransaction['data'] = $data;
+            
+            // iterate through all connected client
+            foreach ($this->clients as $client) 
+            {   
+                // push last 30 Days transaction's data to each client
+                $client->send(json_encode($last30DaysTransaction));
             }
         }
         
@@ -146,7 +182,32 @@ class Mains implements MessageComponentInterface {
         return;
     }
 
-    private function combo($from, $method, $params, $con){
+    private function chart($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'customSalesVsPurchase',
+            'customDailyTransaction',
+            'dailyTransaction',
+            'last30DaysTransaction',
+            'monthlySalesVsPurchase',
+            'monthlyCustomerTransaction'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Charts::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+
+    private function combo($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
@@ -154,7 +215,9 @@ class Mains implements MessageComponentInterface {
             'cashier',
             'customer',
             'product',
+            'secondParty',
             'stock',
+            'supplier',
             'unit'
         );
 
@@ -170,7 +233,91 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
 
-    private function notification($from, $method, $params, $con){
+    private function credit($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'cancelPayment',
+            'loadFormPay',
+            'pay',
+            'read',
+            'readPayment'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Credits::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+    
+    private function customer($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create',
+            'destroy',
+            'listSales',
+            'loadFormEdit',
+            'read',
+            'update',
+            'viewDetail'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Customers::$method($params, $currentUser, $con);
+        
+        // followup action
+        if ($method == 'viewDetail') {
+            
+            // send transaction chart's data on picked month
+            $data = Customers::last7MonthsTransactions($params, $currentUser, $con);
+            $transaction['event'] = 'customer/last7MonthsTransactions';
+            $transaction['data'] = $data;            
+            $from->send(json_encode($transaction));
+        } 
+        
+        return $results;
+    }
+
+    private function debit($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'cancelPayment',
+            'loadFormPay',
+            'pay',
+            'read',
+            'readPayment'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Debits::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+
+    private function notification($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
@@ -191,7 +338,32 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
     
-    private function populate($from, $method, $params, $con){
+    private function option($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'changePassword',
+            'loadAppPhoto',
+            'loadBiodata',
+            'loadClientIdentity',
+            'updateBiodata',
+            'updateClientIdentity'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Options::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+    
+    private function populate($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
@@ -211,7 +383,7 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
     
-    private function product($from, $method, $params, $con){
+    private function product($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
@@ -235,13 +407,13 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
 
-    private function purchase($from, $method, $params, $con){
+    private function purchase($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
         $registeredMethod = array(
+            'cancel',
             'create',
-            'destroy',
             'loadFormEdit',
             'read',
             'update',
@@ -260,13 +432,134 @@ class Mains implements MessageComponentInterface {
         return $results;
     }
 
-    private function sales($from, $method, $params, $con){
+    private function report($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
         $registeredMethod = array(
+            'custom',
+            'customPurchase',
+            'customPurchasedProduct',
+            'customSaledProduct',
+            'customSales',
+            'monthly',
+            'monthlyPurchase',
+            'monthlyPurchasedProduct',
+            'monthlySaledProduct',
+            'monthlySales',
+            'monthlySalesCashier'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Reports::$method($params, $currentUser, $con);
+
+        // followup action
+        if ($method == 'monthly') {
+            
+            // send Sales vs Purchase comparison
+            $data = $this->chart('monthlySalesVsPurchase', $params, $from, $con);
+            $salesVsPurchase['event'] = 'chart/monthlySalesVsPurchase';
+            $salesVsPurchase['data'] = $data;            
+            $from->send(json_encode($salesVsPurchase));
+            
+            // send transaction chart's data on picked month
+            $data = $this->chart('dailyTransaction', $params, $from, $con);
+            $transaction['event'] = 'chart/dailyTransaction';
+            $transaction['data'] = $data;            
+            $from->send(json_encode($transaction));
+            
+            // send purchase data
+            $data = Reports::monthlyPurchase($params, $currentUser, $con);
+            $purchase['event'] = 'report/monthlyPurchase';
+            $purchase['data'] = $data;
+            $from->send(json_encode($purchase));
+            
+            // send purchased product
+            $data = Reports::monthlyPurchasedProduct($params, $currentUser, $con);
+            $purchasedProduct['event'] = 'report/monthlyPurchasedProduct';
+            $purchasedProduct['data'] = $data;            
+            $from->send(json_encode($purchasedProduct));
+            
+            // send saled product
+            $data = Reports::monthlySaledProduct($params, $currentUser, $con);
+            $saledProduct['event'] = 'report/monthlySaledProduct';
+            $saledProduct['data'] = $data;            
+            $from->send(json_encode($saledProduct));
+            
+            // send sales data
+            $data = Reports::monthlySales($params, $currentUser, $con);
+            $sales['event'] = 'report/monthlySales';
+            $sales['data'] = $data;
+            $from->send(json_encode($sales));
+            
+            // send sales cashier data
+            $data = Reports::monthlySalesCashier($params, $currentUser, $con);
+            $salesCashier['event'] = 'report/monthlySalesCashier';
+            $salesCashier['data'] = $data;
+            $from->send(json_encode($salesCashier));
+        } 
+        elseif ($method == 'custom') {
+            
+            // send Sales vs Purchase comparison
+            $data = $this->chart('customSalesVsPurchase', $params, $from, $con);
+            $salesVsPurchase['event'] = 'chart/customSalesVsPurchase';
+            $salesVsPurchase['data'] = $data;
+            $from->send(json_encode($salesVsPurchase));
+            
+            // send transaction chart's data on picked month
+            $data = $this->chart('customDailyTransaction', $params, $from, $con);
+            $transaction['event'] = 'chart/customDailyTransaction';
+            $transaction['data'] = $data;
+            $from->send(json_encode($transaction));
+            
+            // send purchase data
+            $data = Reports::customPurchase($params, $currentUser, $con);
+            $purchase['event'] = 'report/customPurchase';
+            $purchase['data'] = $data;
+            $from->send(json_encode($purchase));
+            
+            // send purchased product
+            $data = Reports::customPurchasedProduct($params, $currentUser, $con);
+            $purchasedProduct['event'] = 'report/customPurchasedProduct';
+            $purchasedProduct['data'] = $data;
+            $from->send(json_encode($purchasedProduct));
+            
+            // send saled product
+            $data = Reports::customSaledProduct($params, $currentUser, $con);
+            $saledProduct['event'] = 'report/customSaledProduct';
+            $saledProduct['data'] = $data;
+            $from->send(json_encode($saledProduct));
+            
+            // send sales data
+            $data = Reports::customSales($params, $currentUser, $con);
+            $sales['event'] = 'report/customSales';
+            $sales['data'] = $data;
+            $from->send(json_encode($sales));
+            
+            // send sales cashier data
+            $data = Reports::customSalesCashier($params, $currentUser, $con);
+            $salesCashier['event'] = 'report/customSalesCashier';
+            $salesCashier['data'] = $data;
+            $from->send(json_encode($salesCashier));
+            
+        }
+        
+        return $results;
+    }
+
+    private function sales($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'cancel',
             'create',
-            'destroy',
             'loadFormEdit',
             'read',
             'update',
@@ -284,8 +577,28 @@ class Mains implements MessageComponentInterface {
 
         return $results;
     }
+    
+    private function secondParty($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create'
+        );
 
-    private function stock($from, $method, $params, $con){
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = SecondPartys::$method($params, $currentUser, $con);
+        
+        return $results;
+    }
+
+    private function stock($method, $params, $from, $con){
         $results = [];
         
         // list of all method that can be called in current module
@@ -310,8 +623,56 @@ class Mains implements MessageComponentInterface {
 
         return $results;
     }
+    
+    private function supplier($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create',
+            'destroy',
+            'loadFormEdit',
+            'read',
+            'update'
+        );
 
-    private function user($from, $method, $params, $con){
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Suppliers::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+    
+    private function unit($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create',
+            'destroy',
+            'loadFormEdit',
+            'read',
+            'update'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Units::$method($params, $currentUser, $con);
+
+        return $results;
+    }
+
+    private function user($method, $params, $from, $con){
         $results = [];
                 
         // list of all method that can be called in current module

@@ -2,6 +2,8 @@
 
 namespace App;
 
+use ORM\Debit;
+use ORM\DebitQuery;
 use ORM\Notification;
 use ORM\NotificationOnUser;
 use ORM\NotificationOnUserQuery;
@@ -20,7 +22,6 @@ class Purchases
 
     private static function newPriceNotification($stock, $purchaseDetail, $con)
     {
-        
         // check price change
         $priceDifference = $stock->getBuy() - ( $purchaseDetail->getTotalPrice() / $purchaseDetail->getAmount() );
         if ( $priceDifference == 0 ) {
@@ -42,7 +43,7 @@ class Purchases
             $notificationData->to_price = $stock->getBuy() - $priceDifference;
             
             // update stock buy price
-            $stock->setBuy($notificationData->to_price)->save($con)
+            $stock->setBuy($notificationData->to_price)->save($con);
             
             // check whether price notification for this purchase detail is already there
             $oldNotification = $purchaseDetail->getNotification();
@@ -104,11 +105,6 @@ class Purchases
             $notificationId = $notification->getId();
             
         } else {
-            $oldNotification = $purchaseDetail->getNotification();
-            if ($oldNotification) {
-                $oldNotification->delete($con);
-            }
-            
             $notificationId = 0;
         }
         
@@ -118,17 +114,19 @@ class Purchases
     private static function seeker($params, $currentUser, $con)
     {
         $purchase = PurchaseQuery::create()
-            ->leftJoin('Supplier')
+            ->leftJoin('SecondParty')
             ->filterByStatus('Active')
             ->filterById($params->id)
+            ->withColumn('CAST(Purchase.Paid AS SIGNED) - CAST(Purchase.TotalPrice AS SIGNED)', 'balance')
+            ->withColumn('SecondParty.Name', 'second_party_name')
             ->select(array(
                 'id',
                 'date',
-                'supplier_id',
+                'second_party_id',
                 'total_price',
+                'paid',
                 'note'
             ))
-            ->withColumn('Supplier.Name', 'supplier_name')
             ->findOne($con);
 
         if(!$purchase) throw new \Exception("Data tidak ditemukan");
@@ -164,70 +162,7 @@ class Purchases
         return $results;
     }
 
-    public static function create($params, $currentUser, $con)
-    {
-        // check role's permission
-        $permission = RolePermissionQuery::create()->select('create_purchase')->findOneById($currentUser->role_id, $con);
-        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
-
-        // create new purchase
-        $purchase = new Purchase();
-        $purchase
-            ->setDate($params->date)
-            ->setSupplierId($params->supplier_id)
-            ->setTotalPrice($params->total_price)
-            ->setNote($params->note)
-            ->setStatus('Active')
-            ->save($con);
-
-        $products = json_decode($params->products);
-        
-        foreach ($products as $product)
-        {
-            // create new record representing product stock which is being purchased
-            $purchaseDetail = new PurchaseDetail();
-            $purchaseDetail
-                ->setPurchaseId($purchase->getId())
-                ->setStockId($product->stock_id)
-                ->setAmount($product->amount)
-                ->setTotalPrice($product->total_price)
-                ->setStatus('Active')
-                ->save($con);
-
-            // add stock amount
-            $stock = StockQuery::create()->findOneById($product->stock_id, $con);
-            if ($stock->getUnlimited() == false) {
-                $stock
-                    ->setAmount($stock->getAmount() + $product->amount)
-                    ->save($con);
-            }
-            
-            $notification = Purchases::newPriceNotification($stock, $purchaseDetail, $con);
-            
-            $purchaseDetail
-                ->setNotificationId($notification)
-                ->save($con);
-        }        
-
-        $logData['params'] = $params;
-        
-        // log history
-        $purchaseHistory = new PurchaseHistory();
-        $purchaseHistory
-            ->setUserId($currentUser->id)
-            ->setPurchaseId($purchase->getId())
-            ->setTime(time())
-            ->setOperation('create')
-            ->setData(json_encode($logData))
-            ->save($con);
-
-        $results['success'] = true;
-        $results['id'] = $purchase->getId();
-
-        return $results;
-    }
-
-    public static function destroy($params, $currentUser, $con)
+    public static function cancel($params, $currentUser, $con)
     {
         // check role's permission
         $permission = RolePermissionQuery::create()->select('destroy_purchase')->findOneById($currentUser->role_id, $con);
@@ -288,6 +223,82 @@ class Purchases
 
         return $results;
     }
+
+    public static function create($params, $currentUser, $con)
+    {
+        // check role's permission
+        $permission = RolePermissionQuery::create()->select('create_purchase')->findOneById($currentUser->role_id, $con);
+        if (!$permission || $permission != 1) throw new \Exception('Akses ditolak. Anda tidak mempunyai izin untuk melakukan operasi ini.');
+
+        // create new purchase
+        $purchase = new Purchase();
+        $purchase
+            ->setDate($params->date)
+            ->setSecondPartyId($params->second_party_id)
+            ->setTotalPrice($params->total_price)
+            ->setPaid($params->paid)
+            ->setNote($params->note)
+            ->setStatus('Active')
+            ->save($con);
+        
+        // check wether this transaction is debit or not, then if yes, create new debit record
+        $balance = $params->paid - $params->total_price;
+        
+        if ($balance < 0) {
+            $debit = new Debit();
+            $debit
+                ->setPurchaseId($purchase->getId())
+                ->setTotal(abs($balance))
+                ->setStatus('Active')
+                ->save($con);
+        }
+
+        $products = json_decode($params->products);
+        
+        foreach ($products as $product)
+        {
+            // create new record representing product stock which is being purchased
+            $purchaseDetail = new PurchaseDetail();
+            $purchaseDetail
+                ->setPurchaseId($purchase->getId())
+                ->setStockId($product->stock_id)
+                ->setAmount($product->amount)
+                ->setTotalPrice($product->total_price)
+                ->setStatus('Active')
+                ->save($con);
+
+            // add stock amount
+            $stock = StockQuery::create()->findOneById($product->stock_id, $con);
+            if ($stock->getUnlimited() == false) {
+                $stock
+                    ->setAmount($stock->getAmount() + $product->amount)
+                    ->save($con);
+            }
+            
+            $notification = Purchases::newPriceNotification($stock, $purchaseDetail, $con);
+            
+            $purchaseDetail
+                ->setNotificationId($notification)
+                ->save($con);
+        }        
+
+        $logData['params'] = $params;
+        
+        // log history
+        $purchaseHistory = new PurchaseHistory();
+        $purchaseHistory
+            ->setUserId($currentUser->id)
+            ->setPurchaseId($purchase->getId())
+            ->setTime(time())
+            ->setOperation('create')
+            ->setData(json_encode($logData))
+            ->save($con);
+
+        $results['success'] = true;
+        $results['id'] = $purchase->getId();
+
+        return $results;
+    }
     
     public static function loadFormEdit($params, $currentUser, $con)
     {
@@ -327,21 +338,24 @@ class Purchases
         $limit = (isset($params->limit) ? $params->limit : 100);
 
         $purchases = PurchaseQuery::create()
-            ->leftJoin('Supplier')
+            ->leftJoin('SecondParty')
             ->filterByStatus('Active');
             
-        if(isset($params->code)) $purchases->filterById($params->code);
-        if(isset($params->supplier)) $purchases->where('Supplier.Name like ?', '%' . $params->supplier . '%');
+        if(isset($params->supplier)) $purchases->where('SecondParty.Name like ?', '%' . $params->supplier . '%');
+        if(isset($params->start_date)) $purchases->filterByDate(array('min' => $params->start_date));
+        if(isset($params->until_date)) $purchases->filterByDate(array('max' => $params->until_date));
 
         $purchases = $purchases
+            ->withColumn('CAST(Purchase.Paid AS SIGNED) - CAST(Purchase.TotalPrice AS SIGNED)', 'balance')
+            ->withColumn('SecondParty.Name', 'second_party_name')
             ->select(array(
                 'id',
                 'date',
-                'supplier_id',
+                'second_party_id',
                 'total_price',
+                'paid',
                 'note'
-            ))
-            ->withColumn('Supplier.Name', 'supplier_name');
+            ));
 
         foreach($params->sort as $sorter){
             $purchases->orderBy($sorter->property, $sorter->direction);
@@ -363,6 +377,7 @@ class Purchases
         $logData['params'] = $params;
         $logData['resultId'] = $resultId;
         
+        /*
         // log history
         $purchaseHistory = new PurchaseHistory();
         $purchaseHistory
@@ -372,6 +387,7 @@ class Purchases
             ->setOperation('read')
             ->setData(json_encode($logData))
             ->save($con);
+        */
         
         $results['success'] = true;
         $results['data'] = $data;
@@ -391,11 +407,44 @@ class Purchases
 
         $purchase
             ->setDate($params->date)
-            ->setSupplierId($params->supplier_id)
+            ->setSecondPartyId($params->second_party_id)
             ->setTotalPrice($params->total_price)
+            ->setPaid($params->paid)
             ->setNote($params->note)
             ->setStatus('Active')
             ->save($con);
+        
+        // check wether this transaction is debit or not, then if yes, create new debit record
+        $balance = $params->paid - $params->total_price;
+        
+        if ($balance < 0) {
+            $debit = DebitQuery::create()
+                ->filterByPurchaseId($purchase->getId())
+                ->findOne($con);
+            
+            if (!$debit) {
+                $debit = new Debit();
+            }
+            
+            $debit
+                ->setPurchaseId($purchase->getId())
+                ->setTotal(abs($balance))
+                ->setStatus('Active')
+                ->save($con);
+            
+        } else {
+            $debit = DebitQuery::create()
+                ->filterByPurchaseId($purchase->getId())
+                ->findOne($con);
+            
+            if ($debit) {
+                $debit
+                    ->setPurchaseId($purchase->getId())
+                    ->setTotal(0)
+                    ->setStatus('Canceled')
+                    ->save($con);
+            }
+        }
         
         $products = json_decode($params->products);
         
@@ -460,9 +509,11 @@ class Purchases
             
             $notificationId = Purchases::newPriceNotification($stock, $newDetail, $con);
             
-            $newDetail
-                ->setNotificationId($notificationId)
-                ->save($con);
+            if ($isNew || !($notificationId == 0)) {
+                $newDetail
+                    ->setNotificationId($notificationId)
+                    ->save($con);
+            }
             
         }
 

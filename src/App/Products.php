@@ -36,9 +36,11 @@ class Products
             ->setOperation('create')
             ->setUserId($currentUser->id)
             ->save($con);
+        
+        $params->id = $product->getId();
 
         $results['success'] = true;
-        $results['id'] = $product->getId();
+        $results['data'] = $params;
 
         return $results;
     }
@@ -57,7 +59,10 @@ class Products
 
         foreach($products as $product)
         {
-            $product->setStatus('Deleted')->save($con);
+            $product
+                ->setCode('')
+                ->setStatus('Deleted')
+                ->save($con);
 
             $rowHistory = new RowHistory();
             $rowHistory->setRowId($product->getId())
@@ -109,9 +114,13 @@ class Products
         $products = ProductQuery::create()
             ->filterByStatus('Active');
 
-        if(isset($params->code)) $products->filterByCode("%$params->code%");
-        if(isset($params->name)) $products->filterByName("%$params->name%");
-
+        if(isset($params->code_or_name)) {
+            $products
+                ->condition('cond1', 'Product.Name like ?', '%' . $params->code_or_name . '%')
+                ->condition('cond2', 'Product.Code like ?', '%' . $params->code_or_name . '%')
+                ->where(array('cond1', 'cond2'), 'or');
+        }
+        
         $products = $products
             ->select(array(
                 'id',
@@ -150,6 +159,7 @@ class Products
             ->filterByCode($params->code)
             ->where("Product.Id not like ?", $params->id)
             ->count($con);
+        
         if ($product != 0) throw new \Exception('Kode produk sudah terpakai. Pilih kode lainnya.');
 
         $product = ProductQuery::create()->findOneById($params->id, $con);

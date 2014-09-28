@@ -2,8 +2,8 @@
 
 namespace App;
 
-use ORM\CustomerQuery;
 use ORM\ProductQuery;
+use ORM\SecondPartyQuery;
 use ORM\StockQuery;
 use ORM\UnitQuery;
 use ORM\UserDetailQuery;
@@ -19,7 +19,7 @@ class Combos
             ->endUse()
             ->orderBy('name', 'ASC');
 
-        if(isset($params->query)) $cashiers->where('UserDetail.Name like ?', "%$params->query%");
+        if(isset($params->query)) $cashiers->where('UserDetail.Name like ?', "%{$params->query}%");
         
         $cashiers = $cashiers
             ->select(array(
@@ -41,11 +41,12 @@ class Combos
 
     public static function customer($params, $currentUser, $con)
     {
-        $customers = CustomerQuery::create()
+        $customers = SecondPartyQuery::create()
             ->filterByStatus('Active')
+            ->filterByType('Customer')
             ->orderBy('name', 'ASC');
 
-        if(isset($params->query)) $customers->where('Customer.Name like ?', "%$params->query%");
+        if(isset($params->query)) $customers->where('SecondParty.Name like ?', "%{$params->query}%");
         
         $customers = $customers
             ->select(array(
@@ -72,8 +73,8 @@ class Combos
             ->orderBy('name', 'ASC');
 
         if(isset($params->query)){
-            $products->condition('cond1', 'Product.Name like ?', "%$params->query%");
-            $products->condition('cond2', 'Product.Code like ?', "%$params->query%");
+            $products->condition('cond1', 'Product.Name like ?', "%{$params->query}%");
+            $products->condition('cond2', 'Product.Code like ?', "%{$params->query}%");
             $products->where(array('cond1', 'cond2'), 'or');
         }
         
@@ -95,6 +96,34 @@ class Combos
         
         return $results;
     }
+
+    public static function secondParty($params, $currentUser, $con)
+    {
+        $secondPartys = SecondPartyQuery::create()
+            ->filterByStatus('Active')
+            ->orderBy('name', 'ASC');
+
+        if(isset($params->query)) $secondPartys->where('SecondParty.Name like ?', "%{$params->query}%");
+        
+        $secondPartys = $secondPartys
+            ->select(array(
+                'id',
+                'name',
+                'type'
+            ))
+            ->limit(20)
+            ->find($con);
+
+        $data = [];
+        foreach($secondPartys as $secondParty) {
+            $data[] = $secondParty;
+        }
+        
+        $results['success'] = true;
+        $results['data'] = $data;
+        
+        return $results;
+    }
     
     public static function stock($params, $currentUser, $con)
     {
@@ -104,8 +133,8 @@ class Combos
             ->leftJoin('Unit');
 
         if(isset($params->query)){
-            $stocks->condition('cond1', 'Product.Name like ?', "%$params->query%");
-            $stocks->condition('cond2', 'Product.Code like ?', "%$params->query%");
+            $stocks->condition('cond1', 'Product.Name like ?', "%{$params->query}%");
+            $stocks->condition('cond2', 'Product.Code like ?', "%{$params->query}%");
             $stocks->where(array('cond1', 'cond2'), 'or');
         }
         
@@ -137,19 +166,46 @@ class Combos
         return $results;
     }
 
+    public static function supplier($params, $currentUser, $con)
+    {
+        $suppliers = SecondPartyQuery::create()
+            ->filterByStatus('Active')
+            ->filterByType('Supplier')
+            ->orderBy('name', 'ASC');
+
+        if(isset($params->query)) $suppliers->where('SecondParty.Name like ?', "%{$params->query}%");
+        
+        $suppliers = $suppliers
+            ->select(array(
+                'id',
+                'name'
+            ))
+            ->limit(20)
+            ->find($con);
+
+        $data = [];
+        foreach($suppliers as $supplier) {
+            $data[] = $supplier;
+        }
+        $results['success'] = true;
+        $results['data'] = $data;
+        
+        return $results;
+    }
+
     public static function unit($params, $currentUser, $con)
     {
         $units = UnitQuery::create()
+            ->filterByStatus('Active')
             ->orderBy('name', 'ASC');
 
-        if (isset($params->query)) $units->where('Unit.Name like ?', "%$params->query%");
+        if (isset($params->query)) $units->where('Unit.Name like ?', "%{$params->query}%");
         
         $units = $units
             ->select(array(
                 'id',
                 'name'
             ))
-            ->limit(20)
             ->find($con);
 
         $data = [];

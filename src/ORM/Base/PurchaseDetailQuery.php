@@ -25,16 +25,16 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPurchaseDetailQuery orderByStockId($order = Criteria::ASC) Order by the stock_id column
  * @method     ChildPurchaseDetailQuery orderByAmount($order = Criteria::ASC) Order by the amount column
  * @method     ChildPurchaseDetailQuery orderByTotalPrice($order = Criteria::ASC) Order by the total_price column
- * @method     ChildPurchaseDetailQuery orderByStatus($order = Criteria::ASC) Order by the status column
  * @method     ChildPurchaseDetailQuery orderByNotificationId($order = Criteria::ASC) Order by the notification_id column
+ * @method     ChildPurchaseDetailQuery orderByStatus($order = Criteria::ASC) Order by the status column
  *
  * @method     ChildPurchaseDetailQuery groupById() Group by the id column
  * @method     ChildPurchaseDetailQuery groupByPurchaseId() Group by the purchase_id column
  * @method     ChildPurchaseDetailQuery groupByStockId() Group by the stock_id column
  * @method     ChildPurchaseDetailQuery groupByAmount() Group by the amount column
  * @method     ChildPurchaseDetailQuery groupByTotalPrice() Group by the total_price column
- * @method     ChildPurchaseDetailQuery groupByStatus() Group by the status column
  * @method     ChildPurchaseDetailQuery groupByNotificationId() Group by the notification_id column
+ * @method     ChildPurchaseDetailQuery groupByStatus() Group by the status column
  *
  * @method     ChildPurchaseDetailQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildPurchaseDetailQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -60,19 +60,19 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPurchaseDetail findOneById(string $id) Return the first ChildPurchaseDetail filtered by the id column
  * @method     ChildPurchaseDetail findOneByPurchaseId(string $purchase_id) Return the first ChildPurchaseDetail filtered by the purchase_id column
  * @method     ChildPurchaseDetail findOneByStockId(string $stock_id) Return the first ChildPurchaseDetail filtered by the stock_id column
- * @method     ChildPurchaseDetail findOneByAmount(int $amount) Return the first ChildPurchaseDetail filtered by the amount column
+ * @method     ChildPurchaseDetail findOneByAmount(string $amount) Return the first ChildPurchaseDetail filtered by the amount column
  * @method     ChildPurchaseDetail findOneByTotalPrice(int $total_price) Return the first ChildPurchaseDetail filtered by the total_price column
- * @method     ChildPurchaseDetail findOneByStatus(string $status) Return the first ChildPurchaseDetail filtered by the status column
  * @method     ChildPurchaseDetail findOneByNotificationId(string $notification_id) Return the first ChildPurchaseDetail filtered by the notification_id column
+ * @method     ChildPurchaseDetail findOneByStatus(string $status) Return the first ChildPurchaseDetail filtered by the status column
  *
  * @method     ChildPurchaseDetail[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildPurchaseDetail objects based on current ModelCriteria
  * @method     ChildPurchaseDetail[]|ObjectCollection findById(string $id) Return ChildPurchaseDetail objects filtered by the id column
  * @method     ChildPurchaseDetail[]|ObjectCollection findByPurchaseId(string $purchase_id) Return ChildPurchaseDetail objects filtered by the purchase_id column
  * @method     ChildPurchaseDetail[]|ObjectCollection findByStockId(string $stock_id) Return ChildPurchaseDetail objects filtered by the stock_id column
- * @method     ChildPurchaseDetail[]|ObjectCollection findByAmount(int $amount) Return ChildPurchaseDetail objects filtered by the amount column
+ * @method     ChildPurchaseDetail[]|ObjectCollection findByAmount(string $amount) Return ChildPurchaseDetail objects filtered by the amount column
  * @method     ChildPurchaseDetail[]|ObjectCollection findByTotalPrice(int $total_price) Return ChildPurchaseDetail objects filtered by the total_price column
- * @method     ChildPurchaseDetail[]|ObjectCollection findByStatus(string $status) Return ChildPurchaseDetail objects filtered by the status column
  * @method     ChildPurchaseDetail[]|ObjectCollection findByNotificationId(string $notification_id) Return ChildPurchaseDetail objects filtered by the notification_id column
+ * @method     ChildPurchaseDetail[]|ObjectCollection findByStatus(string $status) Return ChildPurchaseDetail objects filtered by the status column
  * @method     ChildPurchaseDetail[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -162,7 +162,7 @@ abstract class PurchaseDetailQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT ID, PURCHASE_ID, STOCK_ID, AMOUNT, TOTAL_PRICE, STATUS, NOTIFICATION_ID FROM purchase_detail WHERE ID = :p0';
+        $sql = 'SELECT ID, PURCHASE_ID, STOCK_ID, AMOUNT, TOTAL_PRICE, NOTIFICATION_ID, STATUS FROM purchase_detail WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -462,35 +462,6 @@ abstract class PurchaseDetailQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the status column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByStatus('fooValue');   // WHERE status = 'fooValue'
-     * $query->filterByStatus('%fooValue%'); // WHERE status LIKE '%fooValue%'
-     * </code>
-     *
-     * @param     string $status The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildPurchaseDetailQuery The current query, for fluid interface
-     */
-    public function filterByStatus($status = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($status)) {
-                $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $status)) {
-                $status = str_replace('*', '%', $status);
-                $comparison = Criteria::LIKE;
-            }
-        }
-
-        return $this->addUsingAlias(PurchaseDetailTableMap::COL_STATUS, $status, $comparison);
-    }
-
-    /**
      * Filter the query on the notification_id column
      *
      * Example usage:
@@ -531,6 +502,35 @@ abstract class PurchaseDetailQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(PurchaseDetailTableMap::COL_NOTIFICATION_ID, $notificationId, $comparison);
+    }
+
+    /**
+     * Filter the query on the status column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByStatus('fooValue');   // WHERE status = 'fooValue'
+     * $query->filterByStatus('%fooValue%'); // WHERE status LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $status The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPurchaseDetailQuery The current query, for fluid interface
+     */
+    public function filterByStatus($status = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($status)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $status)) {
+                $status = str_replace('*', '%', $status);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(PurchaseDetailTableMap::COL_STATUS, $status, $comparison);
     }
 
     /**
