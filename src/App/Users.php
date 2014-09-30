@@ -105,7 +105,7 @@ class Users
             ->withColumn('Detail.Address', 'address')
             ->withColumn('Detail.Phone', 'phone')
             ->leftJoin('Role')
-            ->withColumn('Role.Name', 'role')
+            ->withColumn('Role.Name', 'role_name')
             ->findOneById($params->id);
 
         if (!$user) throw new \Exception('Data tidak ditemukan');

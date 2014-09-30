@@ -78,7 +78,7 @@ class Mains implements MessageComponentInterface {
         
         // if user don't have role assigned then deny access
         $role = RoleQuery::create()->findOneById($from->Session->get('pos/current_user')->role_id);
-        if (!$role) throw new Exception('Akses ditolak. Anda belum punya role.');
+        if (!$role) throw new Exception('Akses ditolak. Anda belum punya Jabatan.');
 
         // uh... decoding event to get requested module and method
         $decode = explode('/', $event);
@@ -103,6 +103,7 @@ class Mains implements MessageComponentInterface {
             'product',
             'purchase',
             'report',
+            'role',
             'sales',
             'secondParty',
             'stock',
@@ -215,6 +216,7 @@ class Mains implements MessageComponentInterface {
             'cashier',
             'customer',
             'product',
+            'role',
             'secondParty',
             'stock',
             'supplier',
@@ -322,8 +324,11 @@ class Mains implements MessageComponentInterface {
         
         // list of all method that can be called in current module
         $registeredMethod = array(
+            'addOptionPrice',
             'destroy',
+            'loadOptionPrice',
             'read',
+            'subOptionPrice',
         );
 
         // if called method is not registered then deny access
@@ -550,6 +555,32 @@ class Mains implements MessageComponentInterface {
             
         }
         
+        return $results;
+    }
+    
+    private function role($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create',
+            'destroy',
+            'loadFormEdit',
+            'loadPermission',
+            'read',
+            'savePermission',
+            'update'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Roles::$method($params, $currentUser, $con);
+
         return $results;
     }
 
