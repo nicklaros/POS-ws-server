@@ -17,6 +17,6 @@ $mains = new SessionProvider(
     new Handler\MemcacheSessionHandler($memcache)
 );
 
-$app = new App();
+$app = new App('pos.localhost', 8080);
 $app->route('POS/Mains', $mains);
 $app->run();
