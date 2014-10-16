@@ -248,7 +248,7 @@
         <column name="stock_id"         type="BIGINT" size="20" />
         <column name="amount"           type="DECIMAL" size="10" scale="2" />
         <column name="unit_price"       type="INTEGER" size="10" />
-        <column name="discount"         type="TINYINT" size="3" />
+        <column name="discount"         type="DECIMAL" size="5" scale="2" />
         <column name="total_price"      type="INTEGER" size="10" />
         <column name="buy"              type="INTEGER" size="10" />
         <column name="sell_public"      type="INTEGER" size="10" />
@@ -299,7 +299,7 @@
         <column name="sell_public"      type="INTEGER" size="10" />
         <column name="sell_distributor" type="INTEGER" size="10" />
         <column name="sell_misc"        type="INTEGER" size="10" />
-        <column name="discount"         type="TINYINT" size="3" />
+        <column name="discount"         type="DECIMAL" size="5" scale="2" />
         <column name="unlimited"        type="BOOLEAN" />
         <column name="status"           type="CHAR" sqlType="ENUM('Active', 'Deleted', 'Not Active','Pending')" required="true" />
         <foreign-key foreignTable="product" phpName="Product" refPhpName="Stock" onDelete="CASCADE" onUpdate="RESTRICT">
