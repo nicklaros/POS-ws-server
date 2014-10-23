@@ -29,3 +29,11 @@ pass = admin
  - Clone or fork POS-ws-server to your computer
  - Use `composer update` command in POS-ws-server root directory to tell composer to gather 
    required repository for you
+ 
+# Running the Server
+ 
+ Go to POS-ws-server root directory and use the following command
+ 
+ ```bash
+$ php bin/server.php
+```
