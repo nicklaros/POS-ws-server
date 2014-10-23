@@ -22,7 +22,7 @@ pass = admin
  
 ## Frontend Repository
  
- [`POS`](https://github.com/nicklaros/POS)
+ [`POS - Next Generation Point Of Sale Application`](https://github.com/nicklaros/POS)
  
 # Setting Up Project
  
