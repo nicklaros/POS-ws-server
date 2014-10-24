@@ -1,4 +1,15 @@
 {
+    "name": "nicklaros/pos-ws-server",
+    "type": "application",
+    "description": "Websocket backend server for POS",
+    "keywords": ["pos","websocket"],
+    "homepage": "http://github.com/nicklaros/POS-ws-server",
+    "authors": [
+        {
+            "name": "Nick Laros",
+            "email": "nicklaros@gmail.com"
+        }
+    ],
     "autoload": {
         "psr-0": {
             "App": "src",
