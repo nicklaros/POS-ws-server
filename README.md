@@ -61,6 +61,7 @@ $ php bin/server.php
    - database: "pos"
    - user: "root"
    - password: "sqlpass"
+   
    Edit these two file if you want to change default setting
    - Frontend: `POS/remote/propel-config.php`
    - Backend: `POS-ws-server/propel-config.php`
