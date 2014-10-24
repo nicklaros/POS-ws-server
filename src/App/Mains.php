@@ -23,7 +23,7 @@ class Mains implements MessageComponentInterface {
         // Store the new connection to send messages to later
         $this->clients->attach($from);
 
-        echo "New connection! (res_id: {$from->resourceId}, {$from->Session->getName()}: {$from->Session->getId()})\n";
+        $this->log("New connection! (res_id: {$from->resourceId}, {$from->Session->getName()}: {$from->Session->getId()})");
     }
 
     public function onClose(ConnectionInterface $conn) {
@@ -34,7 +34,7 @@ class Mains implements MessageComponentInterface {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
 
-        echo "Connection {$conn->resourceId} has disconnected\n";
+        $this->log("Connection {$conn->resourceId} has disconnected");
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
@@ -42,7 +42,7 @@ class Mains implements MessageComponentInterface {
         $con = Propel::getConnection('pos');
         $con->rollBack();
 
-        echo "Client {$conn->resourceId} hit an error: {$e->getMessage()} in {$e->getFile()} on line {$e->getLine()} \n";
+        $this->log("Client {$conn->resourceId} hit an error: {$e->getMessage()} in {$e->getFile()} on line {$e->getLine()}");
 
         $data['success'] = false;
         $data['errmsg'] = $e->getMessage();
@@ -181,6 +181,10 @@ class Mains implements MessageComponentInterface {
         
         // finish
         return;
+    }
+    
+    private function log($msg) {
+        echo date('Y-m-d H:i:s ') . $msg . "\n";
     }
 
     private function chart($method, $params, $from, $con){
