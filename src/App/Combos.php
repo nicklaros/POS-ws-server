@@ -155,7 +155,9 @@ class Combos
     {
         $stocks = StockQuery::create()
             ->filterByStatus('Active')
-            ->leftJoin('Product')
+            ->useProductQuery()
+                ->filterByStatus('Active')
+            ->endUse()
             ->leftJoin('Unit');
 
         if(isset($params->query)){
