@@ -3,6 +3,7 @@
 namespace App;
 
 use ORM\ProductQuery;
+use ORM\RoleQuery;
 use ORM\SecondPartyQuery;
 use ORM\StockQuery;
 use ORM\UnitQuery;
@@ -97,6 +98,31 @@ class Combos
         return $results;
     }
 
+    public static function role($params, $currentUser, $con)
+    {
+        $roles = RoleQuery::create()
+            ->filterByStatus('Active')
+            ->orderBy('name', 'ASC');
+
+        if (isset($params->query)) $roles->where('Role.Name like ?', "%{$params->query}%");
+        
+        $roles = $roles
+            ->select(array(
+                'id',
+                'name'
+            ))
+            ->find($con);
+
+        $data = [];
+        foreach($roles as $role) {
+            $data[] = $role;
+        }
+        $results['success'] = true;
+        $results['data'] = $data;
+        
+        return $results;
+    }
+
     public static function secondParty($params, $currentUser, $con)
     {
         $secondPartys = SecondPartyQuery::create()
@@ -129,7 +155,9 @@ class Combos
     {
         $stocks = StockQuery::create()
             ->filterByStatus('Active')
-            ->leftJoin('Product')
+            ->useProductQuery()
+                ->filterByStatus('Active')
+            ->endUse()
             ->leftJoin('Unit');
 
         if(isset($params->query)){

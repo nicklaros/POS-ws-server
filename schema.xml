@@ -95,7 +95,7 @@
         <column name="id"       type="BIGINT" size="20" autoIncrement="true" primaryKey="true" required="true"/>
         <column name="type"     type="CHAR" sqlType="ENUM('price')" />
         <column name="role_id"  type="BIGINT" size="20" />
-        <foreign-key foreignTable="role" phpName="Role" refPhpName="NotificationOption" onDelete="CASCADE" onUpdate="RESTRICT">
+        <foreign-key foreignTable="role" phpName="Role" refPhpName="NotificationOption" onDelete="CASCADE" onUpdate="CASCADE">
             <reference local="role_id" foreign="id" />
         </foreign-key>
     </table>
@@ -164,6 +164,7 @@
     <table name="role" phpName="Role">
         <column name="id"       type="BIGINT" size="20" autoIncrement="true" primaryKey="true"  required="true" />
         <column name="name"     type="CHAR" size="128" />
+        <column name="status"   type="CHAR" sqlType="ENUM('Active', 'Deleted', 'Not Active','Pending')" required="true" />
     </table>
 
     <table name="role_permission" phpName="RolePermission">
@@ -180,6 +181,10 @@
         <column name="read_purchase"        type="BOOLEAN" />
         <column name="update_purchase"      type="BOOLEAN" />
         <column name="destroy_purchase"     type="BOOLEAN" />
+        <column name="create_role"          type="BOOLEAN" />
+        <column name="read_role"            type="BOOLEAN" />
+        <column name="update_role"          type="BOOLEAN" />
+        <column name="destroy_role"         type="BOOLEAN" />
         <column name="create_sales"         type="BOOLEAN" />
         <column name="read_sales"           type="BOOLEAN" />
         <column name="update_sales"         type="BOOLEAN" />
@@ -243,7 +248,7 @@
         <column name="stock_id"         type="BIGINT" size="20" />
         <column name="amount"           type="DECIMAL" size="10" scale="2" />
         <column name="unit_price"       type="INTEGER" size="10" />
-        <column name="discount"         type="TINYINT" size="3" />
+        <column name="discount"         type="DECIMAL" size="5" scale="2" />
         <column name="total_price"      type="INTEGER" size="10" />
         <column name="buy"              type="INTEGER" size="10" />
         <column name="sell_public"      type="INTEGER" size="10" />
@@ -294,7 +299,7 @@
         <column name="sell_public"      type="INTEGER" size="10" />
         <column name="sell_distributor" type="INTEGER" size="10" />
         <column name="sell_misc"        type="INTEGER" size="10" />
-        <column name="discount"         type="TINYINT" size="3" />
+        <column name="discount"         type="DECIMAL" size="5" scale="2" />
         <column name="unlimited"        type="BOOLEAN" />
         <column name="status"           type="CHAR" sqlType="ENUM('Active', 'Deleted', 'Not Active','Pending')" required="true" />
         <foreign-key foreignTable="product" phpName="Product" refPhpName="Stock" onDelete="CASCADE" onUpdate="RESTRICT">

@@ -23,7 +23,7 @@ class Mains implements MessageComponentInterface {
         // Store the new connection to send messages to later
         $this->clients->attach($from);
 
-        echo "New connection! (res_id: {$from->resourceId}, {$from->Session->getName()}: {$from->Session->getId()})\n";
+        $this->log("New connection! (res_id: {$from->resourceId}, {$from->Session->getName()}: {$from->Session->getId()})");
     }
 
     public function onClose(ConnectionInterface $conn) {
@@ -34,7 +34,7 @@ class Mains implements MessageComponentInterface {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
 
-        echo "Connection {$conn->resourceId} has disconnected\n";
+        $this->log("Connection {$conn->resourceId} has disconnected");
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
@@ -42,7 +42,7 @@ class Mains implements MessageComponentInterface {
         $con = Propel::getConnection('pos');
         $con->rollBack();
 
-        echo "Client {$conn->resourceId} hit an error: {$e->getMessage()} in {$e->getFile()} on line {$e->getLine()} \n";
+        $this->log("Client {$conn->resourceId} hit an error: {$e->getMessage()} in {$e->getFile()} on line {$e->getLine()}");
 
         $data['success'] = false;
         $data['errmsg'] = $e->getMessage();
@@ -78,7 +78,7 @@ class Mains implements MessageComponentInterface {
         
         // if user don't have role assigned then deny access
         $role = RoleQuery::create()->findOneById($from->Session->get('pos/current_user')->role_id);
-        if (!$role) throw new Exception('Akses ditolak. Anda belum punya role.');
+        if (!$role) throw new Exception('Akses ditolak. Anda belum punya Jabatan.');
 
         // uh... decoding event to get requested module and method
         $decode = explode('/', $event);
@@ -103,6 +103,7 @@ class Mains implements MessageComponentInterface {
             'product',
             'purchase',
             'report',
+            'role',
             'sales',
             'secondParty',
             'stock',
@@ -181,6 +182,10 @@ class Mains implements MessageComponentInterface {
         // finish
         return;
     }
+    
+    private function log($msg) {
+        echo date('Y-m-d H:i:s ') . $msg . "\n";
+    }
 
     private function chart($method, $params, $from, $con){
         $results = [];
@@ -215,6 +220,7 @@ class Mains implements MessageComponentInterface {
             'cashier',
             'customer',
             'product',
+            'role',
             'secondParty',
             'stock',
             'supplier',
@@ -322,8 +328,11 @@ class Mains implements MessageComponentInterface {
         
         // list of all method that can be called in current module
         $registeredMethod = array(
+            'addOptionPrice',
             'destroy',
+            'loadOptionPrice',
             'read',
+            'subOptionPrice',
         );
 
         // if called method is not registered then deny access
@@ -550,6 +559,32 @@ class Mains implements MessageComponentInterface {
             
         }
         
+        return $results;
+    }
+    
+    private function role($method, $params, $from, $con){
+        $results = [];
+        
+        // list of all method that can be called in current module
+        $registeredMethod = array(
+            'create',
+            'destroy',
+            'loadFormEdit',
+            'loadPermission',
+            'read',
+            'savePermission',
+            'update'
+        );
+
+        // if called method is not registered then deny access
+        if (!in_array($method, $registeredMethod)) throw new Exception('Wrong turn buddy');
+
+        // get Current User
+        $currentUser = $from->Session->get('pos/current_user');
+
+        // route to requested module and method
+        $results = Roles::$method($params, $currentUser, $con);
+
         return $results;
     }
 

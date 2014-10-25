@@ -26,7 +26,7 @@ $RECYCLE.BIN/
 .LSOverride
 
 # Icon must ends with two \r.
-Icon
+Icon
 
 # Thumbnails
 ._*
@@ -41,6 +41,3 @@ generated-classes/
 generated-conf/
 generated-sql/
 vendor/
-
-propel.xml
-propel-config.php

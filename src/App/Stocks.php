@@ -105,6 +105,7 @@ class Stocks
         
         // make sure there are no duplicate (same product and unit) variant in stock
         $stock = StockQuery::create()
+            ->filterByStatus('Active')
             ->leftJoin('Product')
             ->leftJoin('Unit')
             ->filterByProductId($params->product_id)
