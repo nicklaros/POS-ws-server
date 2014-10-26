@@ -38,6 +38,10 @@ pass = admin
 $ php bin/server.php
 ```
 
+# Database Scheme
+
+[Click here to view database scheme](https://github.com/nicklaros/POS-ws-server/blob/master/schema.xml)
+
 # Important Information
 
  - By default, POS will try to connect websocket at `ws://pos.localhost:8080`, so that means
