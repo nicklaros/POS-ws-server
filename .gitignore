@@ -35,9 +35,12 @@ Icon
 .Spotlight-V100
 .Trashes
 
-# Folder
+# Folders
 .idea/
 generated-classes/
 generated-conf/
 generated-sql/
 vendor/
+
+# Files
+composer.lock

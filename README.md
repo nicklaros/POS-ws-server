@@ -13,12 +13,12 @@ pass = admin
 
 ## Requirements
  - [`Composer`](https://getcomposer.org/)
- - [`Propel ORM`](http://propelorm.org/)
  - [`Memcache`](http://memcached.org/)
  - [`Zero MQ`](http://zeromq.org/)
  - Httpd server (nginx, apache atau lainnya)
  - MariaDB atau MySql
  - PHP 5.4 +
+ - [`Propel ORM`](http://propelorm.org/) [Optional]
  
 ## Frontend Repository
  
@@ -28,7 +28,7 @@ pass = admin
  
  - Clone or fork POS-ws-server to your computer
  - Use `composer update` command in POS-ws-server root directory to tell composer to gather 
-   required repository for you
+   required dependencies for you
  
 # Running the Server
  
